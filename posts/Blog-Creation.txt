@@ -1,0 +1,4 @@
+Hello world!
+
+Mini-Projekt 26-01-26:
+Vibe-Coden der Blog-Struktur

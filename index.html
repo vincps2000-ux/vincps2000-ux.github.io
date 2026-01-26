@@ -1,36 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Under Construction</title>
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            font-family: sans-serif;
-            background: #f3f3f3;
-        }
-        .message {
-            text-align: center;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        p {
-            font-size: 1.2rem;
-            color: #555;
-        }
-    </style>
-</head>
-<body>
-    <div class="message">
-        <h1>Under Construction</h1>
-        <p>This site will be available soon.</p>
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Simple Text Blog</title>
+        <style>
+            :root{
+                --bg: #f7f7fb;
+                --card: #ffffff;
+                --accent: #2b6cb0;
+                --muted: #666;
+            }
+            html,body{height:100%;}
+            body {
+                margin: 0;
+                font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+                background: linear-gradient(180deg,var(--bg),#eef2ff);
+                color: #111;
+                padding: 2rem;
+            }
+            .site {
+                max-width: 860px;
+                margin: 0 auto;
+            }
+            header {
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:1rem;
+                margin-bottom:1rem;
+            }
+            h1 {font-size:1.25rem;margin:0}
+            .subtitle{color:var(--muted);font-size:0.95rem}
+
+            .controls{display:flex;gap:.5rem;align-items:center}
+            .search{padding:.5rem .75rem;border-radius:6px;border:1px solid #ddd;background:#fff}
+
+            .posts{display:flex;flex-direction:column;gap:.75rem}
+            details.post{
+                background:var(--card);
+                border-radius:8px;
+                padding:0.5rem 0.75rem;
+                box-shadow:0 1px 0 rgba(0,0,0,0.04);
+                overflow:hidden;
+            }
+            summary.post-header{
+                list-style:none;cursor:pointer;display:flex;align-items:center;gap:.75rem;padding:.25rem 0;
+                font-weight:600;color:var(--accent);
+            }
+            summary.post-header::-webkit-details-marker{display:none}
+
+            .meta{color:var(--muted);font-weight:400;font-size:.9rem}
+            .post-content{padding:.5rem 0 0 .25rem;color:#222;white-space:pre-wrap;font-family: "Segoe UI", Roboto, Arial, sans-serif}
+
+            .empty{padding:2rem;text-align:center;color:var(--muted);background:transparent}
+            a.fresh{font-size:.85rem;color:var(--accent);text-decoration:none}
+
+            @media (max-width:520px){
+                body{padding:1rem}
+            }
+        </style>
+    </head>
+    <body>
+        <div class="site">
+            <header>
+                <div>
+                    <h1>Text Blog</h1>
+                    <div class="subtitle">Posts are stored in the <code>posts/</code> folder (headers = filenames)</div>
+                </div>
+                <div class="controls">
+                    <input id="search" class="search" placeholder="Filter posts by name or text..." />
+                </div>
+            </header>
+
+            <main>
+                <div id="posts" class="posts" aria-live="polite">
+                    <div class="empty">Loading posts...</div>
+                </div>
+            </main>
+        </div>
+
+        <script>
+            // Contract:
+            // - Fetch posts/list.json (array of filenames relative to posts/)
+            // - For each filename, fetch 'posts/' + filename and render a <details>
+            // - The summary header shows the filename; the body contains the file text
+
+            const postsEl = document.getElementById('posts');
+            const searchEl = document.getElementById('search');
+
+            async function loadList(){
+                try{
+                    const r = await fetch('posts/list.json', {cache: 'no-store'});
+                    if(!r.ok) throw new Error('Could not load posts/list.json');
+                    const list = await r.json();
+                    if(!Array.isArray(list) || list.length===0){
+                        postsEl.innerHTML = '<div class="empty">No posts found.</div>';
+                        return;
+                    }
+                    postsEl.innerHTML = '';
+                    for(const name of list){
+                        renderPostPlaceholder(name);
+                        fetchAndFill(name);
+                    }
+                }catch(err){
+                    console.error(err);
+                    postsEl.innerHTML = '<div class="empty">Failed to load posts.</div>';
+                }
+            }
+
+            function renderPostPlaceholder(filename){
+                const d = document.createElement('details');
+                d.className = 'post';
+                d.dataset.filename = filename;
+
+                const s = document.createElement('summary');
+                s.className = 'post-header';
+                s.textContent = filename;
+
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                meta.textContent = 'Loading...';
+
+                const content = document.createElement('div');
+                content.className = 'post-content';
+                content.textContent = '';
+
+                d.appendChild(s);
+                d.appendChild(meta);
+                d.appendChild(content);
+                postsEl.appendChild(d);
+            }
+
+            async function fetchAndFill(filename){
+                const path = 'posts/' + filename;
+                try{
+                    const r = await fetch(path, {cache: 'no-store'});
+                    const d = postsEl.querySelector(`details[data-filename="${filename}"]`);
+                    if(!r.ok){
+                        d.querySelector('.meta').textContent = 'Error loading';
+                        d.querySelector('.post-content').textContent = `Failed to fetch ${filename} — ${r.status}`;
+                        return;
+                    }
+                    const txt = await r.text();
+                    const lines = txt.split('\n');
+                    const firstLine = lines.find(l=>l.trim().length>0) || '';
+                    d.querySelector('.meta').textContent = firstLine ? firstLine.slice(0,120) : 'Text file';
+                    d.querySelector('.post-content').textContent = txt;
+                }catch(err){
+                    console.error(err);
+                    const d = postsEl.querySelector(`details[data-filename="${filename}"]`);
+                    if(d){
+                        d.querySelector('.meta').textContent = 'Error';
+                        d.querySelector('.post-content').textContent = String(err);
+                    }
+                }
+            }
+
+            function filterPosts(q){
+                q = q.trim().toLowerCase();
+                const items = postsEl.querySelectorAll('details.post');
+                for(const item of items){
+                    const name = item.dataset.filename.toLowerCase();
+                    const body = (item.querySelector('.post-content')?.textContent || '').toLowerCase();
+                    const show = !q || name.includes(q) || body.includes(q);
+                    item.style.display = show ? '' : 'none';
+                }
+            }
+
+            searchEl.addEventListener('input', e=>filterPosts(e.target.value));
+
+            // Kick off
+            loadList();
+        </script>
+    </body>
 </html>
