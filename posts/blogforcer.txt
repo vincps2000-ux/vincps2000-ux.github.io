@@ -4,3 +4,6 @@ Script is triggered by using command New-ScheduledTaskAction on the script, and 
 Still unknown:
 How TASK XML works.
 12 min
+
+Github-Project:
+https://github.com/vincps2000-ux/Blogforcer
