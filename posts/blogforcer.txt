@@ -1,0 +1,6 @@
+Build Blogforcer; Small Programm that check if i have added a entry today, and reminds me to do it.
+Uses Powershell for the Program.
+Script is triggered by using command New-ScheduledTaskAction on the script, and Register-ScheduledTask to register the scheduled task at user logon and session unlock.
+Still unknown:
+How TASK XML works.
+12 min
