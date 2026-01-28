@@ -1,0 +1,4 @@
+Found effective AI-Tool for creating Pixel-art sprites: https://www.pixellab.ai
+worked reasonable, created small Organisation-Flags/Logos for future game
+
+Also investigated python module http.server cli, useful for basic preview
