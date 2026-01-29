@@ -52,6 +52,7 @@
 
             .meta{color:var(--muted);font-weight:400;font-size:.9rem}
             .post-content{padding:.5rem 0 0 .25rem;color:#222;white-space:pre-wrap;font-family: "Segoe UI", Roboto, Arial, sans-serif}
+            .post-content img{max-width:100%;height:auto;border-radius:6px;margin:.5rem 0;display:block}
 
             .empty{padding:2rem;text-align:center;color:var(--muted);background:transparent}
             a.fresh{font-size:.85rem;color:var(--accent);text-decoration:none}
@@ -146,7 +147,9 @@
                     const lines = txt.split('\n');
                     const firstLine = lines.find(l=>l.trim().length>0) || '';
                     d.querySelector('.meta').textContent = firstLine ? firstLine.slice(0,120) : 'Text file';
-                    d.querySelector('.post-content').textContent = txt;
+                    // Parse $imagename$ patterns and convert to <img> tags
+                    const htmlContent = renderContent(txt);
+                    d.querySelector('.post-content').innerHTML = htmlContent;
                 }catch(err){
                     console.error(err);
                     const d = postsEl.querySelector(`details[data-filename="${filename}"]`);
@@ -155,6 +158,21 @@
                         d.querySelector('.post-content').textContent = String(err);
                     }
                 }
+            }
+
+            // Convert plain text to HTML, replacing $imagename$ with <img> tags
+            function renderContent(txt){
+                // Escape HTML special chars first
+                const escaped = txt
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                // Replace $imagename$ with <img src="pictures/imagename">
+                // Pattern: $filename.ext$ where filename can have letters, numbers, dashes, underscores
+                const withImages = escaped.replace(/\$([a-zA-Z0-9_\-\.]+)\$/g, (match, imgName) => {
+                    return `<img src="pictures/${imgName}" alt="${imgName}" loading="lazy">`;
+                });
+                return withImages;
             }
 
             function filterPosts(q){

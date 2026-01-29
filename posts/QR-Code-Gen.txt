@@ -1,0 +1,7 @@
+Generate QR-Code with a picture for this side, using this Generator-site: 
+https://www.qrcode-monkey.com/
+
+Generated Code:
+$qr-code.png$
+
+Added Picture support to blog
