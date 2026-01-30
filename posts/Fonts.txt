@@ -1,0 +1,9 @@
+Researched Fonts, Installed Jetbrains mono for the lignatures :
+https://www.jetbrains.com/lp/mono/#how-to-install
+
+Lignatures needed to be enabled in VSC-Settings, required Settings:
+"editor.fontFamily": "'JetBrains Mono', monospace",
+"editor.fontLigatures": true
+
+monospace means every symbol is same-length,
+the monospace in the "editor.fontFamily" setting is a fallback for system default monospace should Jetbrains Mono be missing
