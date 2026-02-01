@@ -1,0 +1,5 @@
+Build small skript, that connects with this API:
+https://www.weatherapi.com/api-explorer.aspx
+and checks if tommorw is either under 0 degree or has weather alerts.
+Uses WindowsRuntime ToastNotificationManager, ToastNotification and XmlDocument Modules,
+to send a windows Toast(Small Message box on the side).

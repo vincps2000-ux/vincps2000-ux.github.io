@@ -1,0 +1,4 @@
+Used Font Forge(https://fontforge.org/en-US/downloads/windows-dl/) 
+to modify Jetbrains to add a small crown to every Capital V Glyph.
+
+Font Forge is picky, Command Remove Overlap and Correct Direction were needed to get Windows to accept Font, despite Font Forge showing many "scary" Errors.
