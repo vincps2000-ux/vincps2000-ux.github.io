@@ -1,0 +1,7 @@
+Build small Powershell-Workpanel, used as Script-Collection and quick testing:
+
+$Workpanel.png$
+
+Commands are stored like this :
+C:\Users\vince\projects\weatherman;schtasks /run /tn "WeatherAlert_OnUnlock"; WeatherCheck
+To make expanding easy.
