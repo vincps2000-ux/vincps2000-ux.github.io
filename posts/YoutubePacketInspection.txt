@@ -1,0 +1,13 @@
+Used wireshark while running video to capture some packets.
+--> Encrypted using quic
+What is quic? 
+
+UDP  (Single handshake? How?) based, UDP is connectionless --> Errorprone, quic is protocol top fix those errors.
+Copared to tls(complex handshake) --> faster intial data time.
+Quic allows multiplexing on same connection with errorhandling.
+Allows serving ads same time as showing video.
+Also handles network migration changes e.g.  wifi to 4g
+https://www.auvik.com/franklyit/blog/what-is-quic-protocol/
+
+Experiment is dead from here, even ASN attribution to youtube of packets not possible.
+Testing with github(using TCP) allows proper ASN Lookup (140.82.121.5)
