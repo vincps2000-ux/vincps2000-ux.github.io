@@ -1,0 +1,6 @@
+Changed previously Powershell Application Workpanel into Vscode-Extension managable from sidebar:
+
+$VSC-Workpanel.png$
+
+2 Shots needed, one because extension was realized as simple F1 - Command first. 
+Note: always define UI Expectations, many details form around those!
