@@ -1,0 +1,12 @@
+Used exiftool (https://exiftool.org/) to manipulate picture metadata, so it appears to be shot at the Spynx.
+
+Problems at Install:
+exiftool is a clitool, when trying to integrate it as a System-variable, for easy cli access,
+The path to the exiftool folder did not show up in %Path%. This was due to too many Path Variables already being configured.
+I do not know why windows doesnt at least warn the User. Everything went smooth after that.
+
+Commands Used:
+To write location data:
+exiftool -GPSLatitude=29.9753 -GPSLongitude=31.1376 Imagepath
+To check if changes took: 
+exiftool Imagepath
