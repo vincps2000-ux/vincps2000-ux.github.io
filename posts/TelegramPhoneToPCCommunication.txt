@@ -1,0 +1,9 @@
+Used a Telegram-Bot to allow my PC to autonomisly send me a message. 
+
+How to create Bot:
+Message BotFather /newbot
+Enter Name and Bot Username
+--> Note down API-Key
+Send first Message manually to Bot.
+
+Rest is normal API-Stuff.
