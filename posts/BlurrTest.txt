@@ -1,0 +1,12 @@
+Ran simple unblur Test of Blurr-Strength with AI:
+Original Picture of well in my Hometown:
+$eberborgbrunnen.jpg$
+
+blurred picture, created using Gaussian blur kernel:
+$blurred.jpg$
+
+unblurred without Kernel-Information:
+$simpleUnblur.jpg$
+
+unblurred with passed Kernel-Information:
+$knownunblurr.jpg$
