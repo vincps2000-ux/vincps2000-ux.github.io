@@ -1,0 +1,4 @@
+Added Night&Day Mode with OS-aware switching.
+Added Ability to tag Dates to Blog-posts. Tagging starts with post BurrTest.
+Added Ability to filter by Date. Untagged Posts will be at the Bottom for now.
+Re-wrote Blog Naming and description.

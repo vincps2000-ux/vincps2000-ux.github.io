@@ -11,5 +11,6 @@
   "VSCode-Workpanel.txt",
   "ImageGPSMetadata.txt",
   "TelegramPhoneToPCCommunication.txt",
-  "BlurrTest.txt"
+  {"file": "BlurrTest.txt", "date": "2026-02-11"},
+  {"file": "UIRework.txt", "date": "2026-02-12"}
 ]

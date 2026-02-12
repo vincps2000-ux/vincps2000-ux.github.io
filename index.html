@@ -3,21 +3,67 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Simple Text Blog</title>
+        <title>Vincent Untiedt Tech Experimentation Blog</title>
+        <script>
+            /* Apply theme ASAP to avoid flash */
+            (function(){
+                const saved = localStorage.getItem('theme');
+                if(saved === 'dark' || saved === 'light'){
+                    document.documentElement.setAttribute('data-theme', saved);
+                }
+            })();
+        </script>
         <style>
-            :root{
+            /* ---- Light theme (default) ---- */
+            :root,
+            [data-theme="light"]{
                 --bg: #f7f7fb;
+                --bg-end: #eef2ff;
                 --card: #ffffff;
                 --accent: #2b6cb0;
                 --muted: #666;
+                --text: #111;
+                --text-secondary: #222;
+                --border: #ddd;
+                --input-bg: #fff;
+                --code-bg: #e8e8e8;
+            }
+            /* ---- Dark theme ---- */
+            [data-theme="dark"]{
+                --bg: #181a20;
+                --bg-end: #1e2028;
+                --card: #23252e;
+                --accent: #5b9bf5;
+                --muted: #9ca3af;
+                --text: #e4e4e7;
+                --text-secondary: #d1d5db;
+                --border: #3a3d47;
+                --input-bg: #23252e;
+                --code-bg: #2d2f39;
+            }
+            /* OS preference when no manual choice */
+            @media (prefers-color-scheme: dark){
+                :root:not([data-theme]){
+                    --bg: #181a20;
+                    --bg-end: #1e2028;
+                    --card: #23252e;
+                    --accent: #5b9bf5;
+                    --muted: #9ca3af;
+                    --text: #e4e4e7;
+                    --text-secondary: #d1d5db;
+                    --border: #3a3d47;
+                    --input-bg: #23252e;
+                    --code-bg: #2d2f39;
+                }
             }
             html,body{height:100%;}
             body {
                 margin: 0;
                 font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-                background: linear-gradient(180deg,var(--bg),#eef2ff);
-                color: #111;
+                background: linear-gradient(180deg,var(--bg),var(--bg-end));
+                color: var(--text);
                 padding: 2rem;
+                transition: background .3s, color .3s;
             }
             .site {
                 max-width: 860px;
@@ -33,16 +79,18 @@
             h1 {font-size:1.25rem;margin:0}
             .subtitle{color:var(--muted);font-size:0.95rem}
 
-            .controls{display:flex;gap:.5rem;align-items:center}
-            .search{padding:.5rem .75rem;border-radius:6px;border:1px solid #ddd;background:#fff}
+            .controls{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+            .search{padding:.5rem .75rem;border-radius:6px;border:1px solid var(--border);background:var(--input-bg);color:var(--text)}
+            .select{padding:.5rem .5rem;border-radius:6px;border:1px solid var(--border);background:var(--input-bg);color:var(--text)}
 
             .posts{display:flex;flex-direction:column;gap:.75rem}
             details.post{
                 background:var(--card);
                 border-radius:8px;
                 padding:0.5rem 0.75rem;
-                box-shadow:0 1px 0 rgba(0,0,0,0.04);
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
                 overflow:hidden;
+                transition: background .3s;
             }
             summary.post-header{
                 list-style:none;cursor:pointer;display:flex;align-items:center;gap:.75rem;padding:.25rem 0;
@@ -51,11 +99,21 @@
             summary.post-header::-webkit-details-marker{display:none}
 
             .meta{color:var(--muted);font-weight:400;font-size:.9rem}
-            .post-content{padding:.5rem 0 0 .25rem;color:#222;white-space:pre-wrap;font-family: "Segoe UI", Roboto, Arial, sans-serif}
+            .post-content{padding:.5rem 0 0 .25rem;color:var(--text-secondary);white-space:pre-wrap;font-family: "Segoe UI", Roboto, Arial, sans-serif}
             .post-content img{max-width:100%;height:auto;border-radius:6px;margin:.5rem 0;display:block}
 
             .empty{padding:2rem;text-align:center;color:var(--muted);background:transparent}
             a.fresh{font-size:.85rem;color:var(--accent);text-decoration:none}
+
+            code{background:var(--code-bg);padding:.1em .35em;border-radius:4px;font-size:.9em}
+
+            .theme-toggle{
+                background:var(--input-bg);border:1px solid var(--border);border-radius:6px;
+                padding:.4rem .6rem;cursor:pointer;font-size:1.1rem;line-height:1;
+                color:var(--text);transition:background .3s,border-color .3s;
+                display:flex;align-items:center;justify-content:center;
+            }
+            .theme-toggle:hover{border-color:var(--accent)}
 
             @media (max-width:520px){
                 body{padding:1rem}
@@ -66,11 +124,16 @@
         <div class="site">
             <header>
                 <div>
-                    <h1>Text Blog</h1>
-                    <div class="subtitle">Posts are stored in the <code>posts/</code> folder (headers = filenames)</div>
+                    <h1>Vincent Untiedt Tech Experimentation Blog</h1>
+                    <div class="subtitle">A very simple Blog where I post my daily after-work Experimentation. Effort is usually between 15-30 minutes. Goal is a Post per day, Life permitting.</div>
                 </div>
                 <div class="controls">
                     <input id="search" class="search" placeholder="Filter posts by name or text..." />
+                    <select id="sort" class="select" aria-label="Sort by date">
+                        <option value="date-desc">Date: Newest first</option>
+                        <option value="date-asc">Date: Oldest first</option>
+                    </select>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark theme">🌙</button>
                 </div>
             </header>
 
@@ -89,6 +152,40 @@
 
             const postsEl = document.getElementById('posts');
             const searchEl = document.getElementById('search');
+            const sortEl = document.getElementById('sort');
+
+            function normalizeEntry(entry){
+                if(typeof entry === 'string'){
+                    return { file: entry };
+                }
+                if(entry && typeof entry === 'object'){
+                    const file = typeof entry.file === 'string'
+                        ? entry.file
+                        : typeof entry.filename === 'string'
+                            ? entry.filename
+                            : typeof entry.name === 'string'
+                                ? entry.name
+                                : '';
+                    return {
+                        file,
+                        date: typeof entry.date === 'string' ? entry.date : '',
+                        title: typeof entry.title === 'string' ? entry.title : ''
+                    };
+                }
+                return { file: '' };
+            }
+
+            function getDisplayTitle(file, title){
+                if(title && title.trim()) return title.trim();
+                const base = file.replace(/\.txt$/i, '');
+                return base || file;
+            }
+
+            function parseDateValue(dateStr){
+                if(!dateStr) return NaN;
+                const t = Date.parse(dateStr);
+                return Number.isNaN(t) ? NaN : t;
+            }
 
             async function loadList(){
                 try{
@@ -100,9 +197,11 @@
                         return;
                     }
                     postsEl.innerHTML = '';
-                    for(const name of list){
-                        renderPostPlaceholder(name);
-                        fetchAndFill(name);
+                    const entries = list.map(normalizeEntry).filter(e=>typeof e.file === 'string' && e.file.trim().length>0);
+                    const sorted = sortEntries(entries, sortEl.value);
+                    for(const entry of sorted){
+                        renderPostPlaceholder(entry);
+                        fetchAndFill(entry);
                     }
                 }catch(err){
                     console.error(err);
@@ -110,14 +209,31 @@
                 }
             }
 
-            function renderPostPlaceholder(filename){
+            function sortEntries(entries, sortMode){
+                const dir = sortMode === 'date-asc' ? 1 : -1;
+                return [...entries].sort((a,b)=>{
+                    const da = parseDateValue(a.date);
+                    const db = parseDateValue(b.date);
+                    const aHas = !Number.isNaN(da);
+                    const bHas = !Number.isNaN(db);
+                    if(aHas && bHas) return (da - db) * dir;
+                    if(aHas && !bHas) return -1;
+                    if(!aHas && bHas) return 1;
+                    return a.file.localeCompare(b.file);
+                });
+            }
+
+            function renderPostPlaceholder(entry){
+                const filename = entry.file;
                 const d = document.createElement('details');
                 d.className = 'post';
                 d.dataset.filename = filename;
+                d.dataset.title = getDisplayTitle(filename, entry.title);
+                d.dataset.date = entry.date || '';
 
                 const s = document.createElement('summary');
                 s.className = 'post-header';
-                s.textContent = filename;
+                s.textContent = d.dataset.title;
 
                 const meta = document.createElement('div');
                 meta.className = 'meta';
@@ -133,7 +249,8 @@
                 postsEl.appendChild(d);
             }
 
-            async function fetchAndFill(filename){
+            async function fetchAndFill(entry){
+                const filename = entry.file;
                 const path = 'posts/' + filename;
                 try{
                     const r = await fetch(path, {cache: 'no-store'});
@@ -146,7 +263,9 @@
                     const txt = await r.text();
                     const lines = txt.split('\n');
                     const firstLine = lines.find(l=>l.trim().length>0) || '';
-                    d.querySelector('.meta').textContent = firstLine ? firstLine.slice(0,120) : 'Text file';
+                    const dateLabel = entry.date ? `Date: ${entry.date}` : '';
+                    const preview = firstLine ? firstLine.slice(0,120) : 'Text file';
+                    d.querySelector('.meta').textContent = dateLabel ? `${dateLabel} • ${preview}` : preview;
                     // Parse $imagename$ patterns and convert to <img> tags
                     const htmlContent = renderContent(txt);
                     d.querySelector('.post-content').innerHTML = htmlContent;
@@ -179,7 +298,7 @@
                 q = q.trim().toLowerCase();
                 const items = postsEl.querySelectorAll('details.post');
                 for(const item of items){
-                    const name = item.dataset.filename.toLowerCase();
+                    const name = (item.dataset.title || item.dataset.filename).toLowerCase();
                     const body = (item.querySelector('.post-content')?.textContent || '').toLowerCase();
                     const show = !q || name.includes(q) || body.includes(q);
                     item.style.display = show ? '' : 'none';
@@ -187,6 +306,37 @@
             }
 
             searchEl.addEventListener('input', e=>filterPosts(e.target.value));
+            sortEl.addEventListener('change', ()=>loadList());
+
+            // ---- Theme toggle ----
+            const themeBtn = document.getElementById('theme-toggle');
+
+            function getEffectiveTheme(){
+                const saved = localStorage.getItem('theme');
+                if(saved === 'dark' || saved === 'light') return saved;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            function applyThemeIcon(){
+                themeBtn.textContent = getEffectiveTheme() === 'dark' ? '☀️' : '🌙';
+            }
+
+            themeBtn.addEventListener('click', ()=>{
+                const current = getEffectiveTheme();
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                applyThemeIcon();
+            });
+
+            // Listen for OS theme changes (only applies when no manual override)
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
+                if(!localStorage.getItem('theme')){
+                    applyThemeIcon();
+                }
+            });
+
+            applyThemeIcon();
 
             // Kick off
             loadList();
