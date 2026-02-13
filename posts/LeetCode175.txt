@@ -1,0 +1,6 @@
+Solved Leet Code Problem 175: https://leetcode.com/problems/combine-two-tables/
+A Simple merge(join) between two tables, rest is simple MySQL Syntax.
+Most important is choosing the right join Type: 
+https://www.w3schools.com/mysql/mysql_join.asp
+
+Either left or right Join works, depending on which Table was choosen with "From", since tables are in simple 1:1 relation.
