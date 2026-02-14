@@ -1,0 +1,27 @@
+Searching for Descriptions of some Cookies saved in Browser under accounts.google.com
+
+No direct Listing of Cookie Uses available, informationen needed to be searched and aggregated.
+
+SSID --> 2 Year Lifespan, only real Information is that it is used for Ads:
+https://cookiedatabase.org/cookie/google-ads-optimization/ssid/
+https://captaincompliance.com/education/ssid-cookie/
+
+SOCS --> State of Cookie Settings , 13 Motnh Lifespan, stores Information regarding User Consent, which cookies are allowed, etc. :
+https://policies.google.com/technologies/cookies?hl=de
+
+SID --> Security Identifier, Identifies User Account in Browser Session, combined with HSID contains user Account ID and last sign in time.
+HSID --> Security Identifier, Identifies User Account in Browser Session, combined with HSID contains user Account ID and last sign in time.:
+https://www.perils.org/cookie-notice
+https://policies.google.com/technologies/cookies?hl=en-US
+
+SIDCC -->  Only LAst a single Day, use beyond Security and Ads not found by me:
+https://shop.aman.com/cookie-policy
+
+search_samesite --> Likely Cookie that holds Datat targeted by Cross-Site Scripting Attacks:
+https://developers.google.com/search/blog/2020/01/get-ready-for-new-samesitenone-secure?hl=de
+
+SAPISID --> Used for Google internal API-Authorisation:
+https://gist.github.com/tangoabcdelta/acb591abc0f66c97750a79a89ab0d7cb
+
+OTZ --> No technical Information available, described as marketing and Statistics Cookie: 
+https://www.a-mk.com/de/cookies/
