@@ -1,0 +1,6 @@
+Solved LeetCode Problem 67, a simple addition Programm for two binary Numbers.
+Key insight was adding a Carry Int, and finding the String functions pop_back() and back():
+https://cplusplus.com/reference/string/string/pop_back/
+https://cplusplus.com/reference/string/string/back/
+This significantly eased my Problems in navigating the Strings correctly from the first bit.
+The Rest was just remembering the Syntax.
