@@ -5,3 +5,6 @@ Win + R --> secpol.msc
 Completed Install --> Basic Configuration of Admin, etc.
 Interesting: Default admin-pw was provided as File in installed Program.
 Build simple Git-automation Pipeline, which stages & commits for now.
+
+Also solved leetcode 190, reversing bitwise representation of a int. 
+Key insight: using Bitset with normal constructor, reversing using normal for-Loop into another Bitset. Converting to unsigned long and then to int via cast.
