@@ -1,0 +1,7 @@
+Installed Jenkins(https://www.jenkins.io/) locally, created new user using command:
+net user exampleuser examplepassword /add 
+allowed user to log on as service using 
+Win + R --> secpol.msc
+Completed Install --> Basic Configuration of Admin, etc.
+Interesting: Default admin-pw was provided as File in installed Program.
+Build simple Git-automation Pipeline, which stages & commits for now.
