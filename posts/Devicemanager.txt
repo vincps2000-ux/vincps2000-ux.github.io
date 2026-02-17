@@ -1,0 +1,8 @@
+Deactivated Webcam, USB-Root, trackpoint and trackpad using Windows Device Manager.
+Interesting : trackpad is shown as normal HID Mouse.
+
+Also solved Leetcode Promblem 401. 
+Key Insights: To ensure Valid Times, simply filter out not valid times in Format Conversion step.
+To Find every Combition: https://en.cppreference.com/w/cpp/algorithm/next_permutation.html
+Start with smallest permutation (all 1s on the right of the VEctor).
+Not because its the smallest possibhle binary number, but because Vector<> less() compares the single ints left to right.
