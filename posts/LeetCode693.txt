@@ -1,0 +1,3 @@
+Bit sick, so only Leet Code problem 693, Key Insight:
+Convert Bitset into String, to allow trimming left zeros.
+simply Compare every char to the one before, if they match, return false.
