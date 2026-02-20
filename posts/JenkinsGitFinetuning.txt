@@ -1,1 +1,3 @@
 Added correct Git Commit name.
+Automated adding the entry into list.json.
+Added Automatic pushing to remote.
