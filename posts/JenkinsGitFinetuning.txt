@@ -1,3 +1,6 @@
 Added correct Git Commit name.
 Automated adding the entry into list.json.
 Added Automatic pushing to remote.
+
+Some Troubles with git: Classic PAT had to be created and set for the url via remote set-url origin <YOUR_GITHUB_USERNAME>:<YOUR_TOKEN>@github.com,
+only other way would be to log in as jenkins user and configure Git credentials there.
