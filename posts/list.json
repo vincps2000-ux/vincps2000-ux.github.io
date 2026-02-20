@@ -1,55 +1,22 @@
 ﻿[
-    {
-        "value":  [
-                      "Blog-Creation.txt",
-                      "blogforcer.txt",
-                      "AIPixelart.txt",
-                      "QR-Code-Gen.txt",
-                      "Fonts.txt",
-                      "CrownFont.txt",
-                      "WeathermanAPI.txt",
-                      "Workpanel.txt",
-                      "YoutubePacketInspection.txt",
-                      "VSCode-Workpanel.txt",
-                      "ImageGPSMetadata.txt",
-                      "TelegramPhoneToPCCommunication.txt",
-                      {
-                          "file":  "BlurrTest.txt",
-                          "date":  "2026-02-11"
-                      },
-                      {
-                          "file":  "UIRework.txt",
-                          "date":  "2026-02-12"
-                      },
-                      {
-                          "file":  "LeetCode175.txt",
-                          "date":  "2026-02-13"
-                      },
-                      {
-                          "file":  "GoogleCookies.txt",
-                          "date":  "2026-02-14"
-                      },
-                      {
-                          "file":  "LeetCode67.txt",
-                          "date":  "2026-02-15"
-                      },
-                      {
-                          "file":  "Jenkins.txt",
-                          "date":  "2026-02-16"
-                      },
-                      {
-                          "file":  "Devicemanager.txt",
-                          "date":  "2026-02-17"
-                      },
-                      {
-                          "file":  "LeetCode693.txt",
-                          "date":  "2026-02-18"
-                      }
-                  ],
-        "Count":  20
-    },
-    {
-        "file":  "JenkinsGitFinetuning.txt",
-        "date":  "2026-02-20"
-    }
+  "Blog-Creation.txt",
+  "blogforcer.txt",
+  "AIPixelart.txt",
+  "QR-Code-Gen.txt",
+  "Fonts.txt",
+  "CrownFont.txt",
+  "WeathermanAPI.txt",
+  "Workpanel.txt",
+  "YoutubePacketInspection.txt",
+  "VSCode-Workpanel.txt",
+  "ImageGPSMetadata.txt",
+  "TelegramPhoneToPCCommunication.txt",
+  {"file": "BlurrTest.txt", "date": "2026-02-11"},
+  {"file": "UIRework.txt", "date": "2026-02-12"},
+  {"file": "LeetCode175.txt", "date": "2026-02-13"},
+  {"file": "GoogleCookies.txt", "date": "2026-02-14"},
+  {"file": "LeetCode67.txt", "date": "2026-02-15"},
+  {"file": "Jenkins.txt", "date": "2026-02-16"},
+  {"file": "Devicemanager.txt", "date": "2026-02-17"},
+  {"file": "LeetCode693.txt", "date": "2026-02-18"}
 ]
