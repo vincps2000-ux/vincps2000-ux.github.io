@@ -115,6 +115,58 @@
             }
             .theme-toggle:hover{border-color:var(--accent)}
 
+            /* ---- Tabs ---- */
+            .tabs{
+                display:flex;gap:0;margin-bottom:1rem;
+            }
+            .tab-btn{
+                flex:1;padding:.6rem 1rem;border:1px solid var(--border);background:var(--input-bg);
+                color:var(--muted);font-weight:600;font-size:.95rem;cursor:pointer;
+                transition:background .2s,color .2s,border-color .2s;
+            }
+            .tab-btn:first-child{border-radius:8px 0 0 8px}
+            .tab-btn:last-child{border-radius:0 8px 8px 0}
+            .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+            .tab-panel{display:none}
+            .tab-panel.active{display:block}
+
+            /* ---- Calendar ---- */
+            .cal-nav{
+                display:flex;align-items:center;justify-content:space-between;
+                margin-bottom:.75rem;
+            }
+            .cal-nav button{
+                background:var(--input-bg);border:1px solid var(--border);border-radius:6px;
+                padding:.35rem .7rem;cursor:pointer;font-size:1rem;color:var(--text);
+                transition:border-color .2s;
+            }
+            .cal-nav button:hover{border-color:var(--accent)}
+            .cal-month-label{font-weight:700;font-size:1.05rem}
+            .cal-grid{
+                display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+            }
+            .cal-day-name{
+                text-align:center;font-size:.8rem;font-weight:600;color:var(--muted);padding:.25rem 0;
+            }
+            .cal-cell{
+                aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+                border-radius:6px;font-size:.85rem;color:var(--text);position:relative;
+            }
+            .cal-cell.empty{visibility:hidden}
+            .cal-cell.has-post{
+                background:#22c55e;color:#fff;font-weight:700;cursor:pointer;
+                box-shadow:0 1px 4px rgba(34,197,94,.35);
+            }
+            .cal-cell.has-post:hover{background:#16a34a}
+            .cal-cell.today{outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px}
+            .cal-tooltip{
+                display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+                background:var(--card);border:1px solid var(--border);border-radius:6px;
+                padding:.35rem .6rem;font-size:.78rem;white-space:nowrap;z-index:10;
+                box-shadow:0 2px 8px rgba(0,0,0,.15);color:var(--text);
+            }
+            .cal-cell.has-post:hover .cal-tooltip{display:block}
+
             @media (max-width:520px){
                 body{padding:1rem}
             }
@@ -137,9 +189,24 @@
                 </div>
             </header>
 
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="posts-panel">📝 Posts</button>
+                <button class="tab-btn" data-tab="calendar-panel">📅 Calendar</button>
+            </div>
+
             <main>
-                <div id="posts" class="posts" aria-live="polite">
-                    <div class="empty">Loading posts...</div>
+                <div id="posts-panel" class="tab-panel active">
+                    <div id="posts" class="posts" aria-live="polite">
+                        <div class="empty">Loading posts...</div>
+                    </div>
+                </div>
+                <div id="calendar-panel" class="tab-panel">
+                    <div class="cal-nav">
+                        <button id="cal-prev" aria-label="Previous month">◀</button>
+                        <span class="cal-month-label" id="cal-month-label"></span>
+                        <button id="cal-next" aria-label="Next month">▶</button>
+                    </div>
+                    <div class="cal-grid" id="cal-grid"></div>
                 </div>
             </main>
         </div>
@@ -338,8 +405,110 @@
 
             applyThemeIcon();
 
+            // ---- Tab switching ----
+            document.querySelectorAll('.tab-btn').forEach(btn=>{
+                btn.addEventListener('click', ()=>{
+                    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.tab).classList.add('active');
+                });
+            });
+
+            // ---- Calendar ----
+            const calGrid = document.getElementById('cal-grid');
+            const calLabel = document.getElementById('cal-month-label');
+            let calYear, calMonth; // 0-indexed month
+            let postDateMap = {}; // 'YYYY-MM-DD' -> [{file, title}]
+
+            async function loadCalendarData(){
+                try{
+                    const r = await fetch('posts/list.json', {cache:'no-store'});
+                    const list = await r.json();
+                    postDateMap = {};
+                    for(const raw of list){
+                        const e = normalizeEntry(raw);
+                        if(e.date){
+                            const d = e.date;
+                            if(!postDateMap[d]) postDateMap[d] = [];
+                            postDateMap[d].push({file: e.file, title: getDisplayTitle(e.file, e.title)});
+                        }
+                    }
+                    const now = new Date();
+                    calYear = now.getFullYear();
+                    calMonth = now.getMonth();
+                    renderCalendar();
+                }catch(e){console.error(e);}
+            }
+
+            function renderCalendar(){
+                const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                calLabel.textContent = `${monthNames[calMonth]} ${calYear}`;
+                calGrid.innerHTML = '';
+                const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                for(const dn of dayNames){
+                    const el = document.createElement('div');
+                    el.className = 'cal-day-name';
+                    el.textContent = dn;
+                    calGrid.appendChild(el);
+                }
+                const firstDay = new Date(calYear, calMonth, 1);
+                let startDow = firstDay.getDay(); // 0=Sun
+                startDow = startDow === 0 ? 6 : startDow - 1; // convert to Mon=0
+                const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+                const today = new Date();
+                const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                for(let i=0;i<startDow;i++){
+                    const blank = document.createElement('div');
+                    blank.className = 'cal-cell empty';
+                    calGrid.appendChild(blank);
+                }
+                for(let day=1;day<=daysInMonth;day++){
+                    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const cell = document.createElement('div');
+                    cell.className = 'cal-cell';
+                    cell.textContent = day;
+                    if(dateStr === todayStr) cell.classList.add('today');
+                    if(postDateMap[dateStr]){
+                        cell.classList.add('has-post');
+                        const entries = postDateMap[dateStr];
+                        const tip = document.createElement('span');
+                        tip.className = 'cal-tooltip';
+                        tip.textContent = entries.map(e=>e.title).join(', ');
+                        cell.appendChild(tip);
+                        cell.addEventListener('click',()=>{
+                            // Switch to Posts tab
+                            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                            document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+                            document.querySelector('.tab-btn[data-tab="posts-panel"]').classList.add('active');
+                            document.getElementById('posts-panel').classList.add('active');
+                            // Open and scroll to the first matching post
+                            const fname = entries[0].file;
+                            const det = postsEl.querySelector(`details[data-filename="${fname}"]`);
+                            if(det){
+                                det.open = true;
+                                det.scrollIntoView({behavior:'smooth',block:'center'});
+                            }
+                        });
+                    }
+                    calGrid.appendChild(cell);
+                }
+            }
+
+            document.getElementById('cal-prev').addEventListener('click',()=>{
+                calMonth--;
+                if(calMonth<0){calMonth=11;calYear--;}
+                renderCalendar();
+            });
+            document.getElementById('cal-next').addEventListener('click',()=>{
+                calMonth++;
+                if(calMonth>11){calMonth=0;calYear++;}
+                renderCalendar();
+            });
+
             // Kick off
             loadList();
+            loadCalendarData();
         </script>
     </body>
 </html>

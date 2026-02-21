@@ -1,0 +1,5 @@
+Added Blog-linked Calendar to this page, to motivate myself into frequent posting =)
+
+Tried using Wavespeed with z-image to enable local image generation.
+Sadly my Pc is running on Intel(R) Iris(R) Xe Graphics, and has no dedicated GPU,
+so using this model is not feasible.
