@@ -1,0 +1,13 @@
+Installed Note-Red(Low-Code Automation Tool): https://nodered.org/docs/getting-started/local
+
+Can be started using CMD command: node-red
+
+Little "Hello World" - Project:
+
+simple inject-Command that triggers every 20 sec
+--> exec block that runs wmic cpu get loadpercentage,
+--> small function block that converts into Output into a simple number,
+--> run into chart-block from installed module "node-red-dashboard"
+
+Result: A small CPU-Load Dashboard:
+$CPUDash.png$

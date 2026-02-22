@@ -50,5 +50,9 @@
     {
         "file":  "BlogCalendar.txt",
         "date":  "2026-02-21"
+    },
+    {
+        "file":  "NodeRed.txt",
+        "date":  "2026-02-22"
     }
 ]
