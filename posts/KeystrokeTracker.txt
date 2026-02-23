@@ -1,0 +1,13 @@
+Build small Powershell skript that captures the Amount of Keystrokes happening during a Timeperiod:
+$KeystrokeTracker.png$
+
+Project Goal is to collect Statistics about my Activity during Projects.
+Interesting Discovery: 
+When interacting with Bitwarden, Keystrokes are counted.
+
+Key Code that allows reacting keyboard: 
+SetWindowsHookEx(WH_KEYBOARD_LL, _proc,GetModuleHandle(mod.ModuleName), 0);
+Further Info: 
+https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa
+Hook ID(WH_KEYBOARD_LL) is 13:
+https://learn.microsoft.com/en-us/windows/win32/winmsg/lowlevelkeyboardproc
