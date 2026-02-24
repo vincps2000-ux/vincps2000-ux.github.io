@@ -1,0 +1,6 @@
+Added a Tab named Statistics, that wil display the Data gathered by last days Project.
+Questions for the Data i am gathering:
+Is there a diffrence in Activity on different Weekdays / Vacation / Moonphases / Seasons ?
+Will the keystroke metric changed based on AI Progress in the Next Years?
+
+Stats are kept in seperate file, outside of /posts Folder.

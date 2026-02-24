@@ -167,6 +167,41 @@
             }
             .cal-cell.has-post:hover .cal-tooltip{display:block}
 
+            /* ---- Stats panel ---- */
+            .stats-controls{
+                display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;
+                margin-bottom:1rem;
+            }
+            .stats-controls label{
+                font-weight:600;font-size:.9rem;color:var(--muted);
+            }
+            .stats-controls select{
+                padding:.45rem .6rem;border-radius:6px;border:1px solid var(--border);
+                background:var(--input-bg);color:var(--text);font-size:.9rem;
+            }
+            .stats-empty{
+                padding:2rem;text-align:center;color:var(--muted);font-size:.95rem;
+            }
+            .chart-container{
+                background:var(--card);border-radius:8px;padding:1rem;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
+                position:relative;height:350px;
+            }
+            .stats-summary{
+                display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;
+            }
+            .stat-card{
+                flex:1;min-width:140px;background:var(--card);border-radius:8px;
+                padding:.75rem 1rem;box-shadow:0 1px 3px rgba(0,0,0,0.08);
+                text-align:center;
+            }
+            .stat-card .stat-value{
+                font-size:1.4rem;font-weight:700;color:var(--accent);
+            }
+            .stat-card .stat-label{
+                font-size:.8rem;color:var(--muted);margin-top:.2rem;
+            }
+
             @media (max-width:520px){
                 body{padding:1rem}
             }
@@ -192,6 +227,7 @@
             <div class="tabs">
                 <button class="tab-btn active" data-tab="posts-panel">📝 Posts</button>
                 <button class="tab-btn" data-tab="calendar-panel">📅 Calendar</button>
+                <button class="tab-btn" data-tab="stats-panel">📊 Stats</button>
             </div>
 
             <main>
@@ -208,9 +244,20 @@
                     </div>
                     <div class="cal-grid" id="cal-grid"></div>
                 </div>
+                <div id="stats-panel" class="tab-panel">
+                    <div class="stats-controls">
+                        <label for="metric-select">Metric:</label>
+                        <select id="metric-select" class="select" aria-label="Select metric"></select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="stats-chart"></canvas>
+                    </div>
+                    <div class="stats-summary" id="stats-summary"></div>
+                </div>
             </main>
         </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
         <script>
             // Contract:
             // - Fetch posts/list.json (array of filenames relative to posts/)
@@ -506,9 +553,195 @@
                 renderCalendar();
             });
 
+            // ---- Stats tab ----
+            const metricSelect = document.getElementById('metric-select');
+            const statsSummary = document.getElementById('stats-summary');
+            let statsData = [];      // raw array from stats.json
+            let statsChart = null;   // Chart.js instance
+
+            // Human-readable labels for each metric key
+            const metricLabels = {
+                keystrokes:  'Keystrokes',
+                timeElapsed: 'Time Elapsed'
+            };
+
+            // Convert "hh:mm:ss" to total minutes (decimal) for charting
+            function hmsToMinutes(str){
+                if(!str) return 0;
+                const parts = str.split(':').map(Number);
+                if(parts.length === 3) return parts[0]*60 + parts[1] + parts[2]/60;
+                if(parts.length === 2) return parts[0] + parts[1]/60;
+                return parts[0] || 0;
+            }
+
+            // Format minutes back to "hh:mm:ss" for tooltip display
+            function minutesToHms(m){
+                const h = Math.floor(m / 60);
+                const min = Math.floor(m % 60);
+                const sec = Math.round((m - Math.floor(m)) * 60);
+                return `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+            }
+
+            // Auto-discover metric keys from the data (ignores file, date)
+            function discoverMetrics(data){
+                const skip = new Set(['file','date']);
+                const keys = new Set();
+                for(const entry of data){
+                    for(const k of Object.keys(entry)){
+                        if(!skip.has(k)) keys.add(k);
+                    }
+                }
+                return [...keys];
+            }
+
+            // Determine if a metric looks like a time field (contains ":")
+            function isTimeMetric(key, data){
+                for(const e of data){
+                    if(typeof e[key] === 'string' && e[key].includes(':')) return true;
+                }
+                return false;
+            }
+
+            // Get the numeric value for a metric (auto-converts time strings)
+            function metricValue(entry, key, isTime){
+                const raw = entry[key];
+                if(raw == null) return null;
+                if(isTime) return hmsToMinutes(raw);
+                return typeof raw === 'number' ? raw : parseFloat(raw) || 0;
+            }
+
+            function getChartColors(){
+                const style = getComputedStyle(document.documentElement);
+                return {
+                    accent: style.getPropertyValue('--accent').trim() || '#2b6cb0',
+                    text:   style.getPropertyValue('--text').trim()   || '#111',
+                    muted:  style.getPropertyValue('--muted').trim()  || '#666',
+                    border: style.getPropertyValue('--border').trim() || '#ddd',
+                    card:   style.getPropertyValue('--card').trim()   || '#fff'
+                };
+            }
+
+            function renderStatsChart(metricKey){
+                if(!statsData.length) return;
+                const isTime = isTimeMetric(metricKey, statsData);
+                const sorted = [...statsData]
+                    .filter(e => e.date && e[metricKey] != null)
+                    .sort((a,b) => a.date.localeCompare(b.date));
+
+                const labels = sorted.map(e => {
+                    const title = e.file ? e.file.replace(/\.txt$/i,'') : e.date;
+                    return `${e.date}  (${title})`;
+                });
+                const values = sorted.map(e => metricValue(e, metricKey, isTime));
+                const colors = getChartColors();
+                const label = metricLabels[metricKey] || metricKey;
+                const yLabel = isTime ? `${label} (minutes)` : label;
+
+                if(statsChart) statsChart.destroy();
+
+                statsChart = new Chart(document.getElementById('stats-chart'), {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label,
+                            data: values,
+                            borderColor: colors.accent,
+                            backgroundColor: colors.accent + '22',
+                            pointBackgroundColor: colors.accent,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.25,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { labels: { color: colors.text } },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => {
+                                        const v = ctx.parsed.y;
+                                        if(isTime) return `${label}: ${minutesToHms(v)}`;
+                                        return `${label}: ${v.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: colors.muted, maxRotation: 45 },
+                                grid:  { color: colors.border + '44' }
+                            },
+                            y: {
+                                title: { display: true, text: yLabel, color: colors.muted },
+                                ticks: {
+                                    color: colors.muted,
+                                    callback: v => isTime ? minutesToHms(v) : v.toLocaleString()
+                                },
+                                grid:  { color: colors.border + '44' },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Summary cards
+                const total = values.reduce((s,v) => s + v, 0);
+                const avg   = values.length ? total / values.length : 0;
+                const max   = Math.max(...values);
+                const fmt   = v => isTime ? minutesToHms(v) : v.toLocaleString(undefined,{maximumFractionDigits:0});
+
+                statsSummary.innerHTML = `
+                    <div class="stat-card"><div class="stat-value">${fmt(total)}</div><div class="stat-label">Total ${label}</div></div>
+                    <div class="stat-card"><div class="stat-value">${fmt(avg)}</div><div class="stat-label">Average per Post</div></div>
+                    <div class="stat-card"><div class="stat-value">${fmt(max)}</div><div class="stat-label">Max in a Session</div></div>
+                    <div class="stat-card"><div class="stat-value">${values.length}</div><div class="stat-label">Posts with Data</div></div>
+                `;
+            }
+
+            async function loadStats(){
+                try{
+                    const r = await fetch('stats.json', {cache:'no-store'});
+                    if(!r.ok) throw new Error(`stats.json ${r.status}`);
+                    statsData = await r.json();
+                    if(!Array.isArray(statsData) || !statsData.length){
+                        document.querySelector('#stats-panel .chart-container').innerHTML = '<div class="stats-empty">No stats data yet.</div>';
+                        return;
+                    }
+                    // Populate metric dropdown from discovered keys
+                    const metrics = discoverMetrics(statsData);
+                    metricSelect.innerHTML = '';
+                    for(const key of metrics){
+                        const opt = document.createElement('option');
+                        opt.value = key;
+                        opt.textContent = metricLabels[key] || key;
+                        metricSelect.appendChild(opt);
+                    }
+                    metricSelect.addEventListener('change', () => renderStatsChart(metricSelect.value));
+                    // Initial render
+                    if(metrics.length) renderStatsChart(metrics[0]);
+                }catch(err){
+                    console.error('Stats load error:', err);
+                    document.querySelector('#stats-panel .chart-container').innerHTML = '<div class="stats-empty">Could not load stats.</div>';
+                }
+            }
+
+            // Re-render chart when theme changes so colors update
+            const origThemeClick = themeBtn.onclick;
+            themeBtn.addEventListener('click', () => {
+                setTimeout(() => {
+                    if(statsChart && metricSelect.value) renderStatsChart(metricSelect.value);
+                }, 50);
+            });
+
             // Kick off
             loadList();
             loadCalendarData();
+            loadStats();
         </script>
     </body>
 </html>
