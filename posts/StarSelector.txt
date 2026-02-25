@@ -1,0 +1,20 @@
+Thought about how 0-5 Rating systems have become useless. 
+i think there are 2 Main Reasons for it:
+    - Bots
+    - users using it like thumbs up&down, and only really givin 0 or 5 stars. 4 stars means diffrent things for diffrent people.
+
+The first Problem could be mitigated, at least on marketplace-like sites by attaching a users rating weight to spend money.
+have a tally of Money spend e.g. User with 45$ spend. When he rates, remove 10$ fom the tally, and weight is affected normally. 
+If tally under 10, slowly diminish his rating weight.
+Users with 0$ spend start at lowest weight.
+This should aleviate Bot Problems on high volumne Items.
+
+The 2nd Problem could be solved in a proof-of-work kind of manor,
+by requiring a user to hold the Button for a more impactful Rating.
+A determined/ really satisfied Customer will be willing to hold longer than someone whos expectations were only met, etc.
+Same goes in the other direction.
+
+Proof of Concept:
+#star-selector#
+
+Updated Site to allow demos, added demo-tab. 

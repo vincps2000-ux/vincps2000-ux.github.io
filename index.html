@@ -202,6 +202,73 @@
                 font-size:.8rem;color:var(--muted);margin-top:.2rem;
             }
 
+            /* ---- Demo panel ---- */
+            .demo-grid{
+                display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;
+            }
+            .demo-card{
+                background:var(--card);border-radius:8px;padding:1.25rem;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);transition:background .3s;
+            }
+            .demo-card h3{
+                margin:0 0 .5rem;font-size:1rem;color:var(--accent);
+            }
+            .demo-card p.demo-desc{
+                font-size:.85rem;color:var(--muted);margin:0 0 1rem;
+            }
+
+            /* Star rating widget */
+            .star-widget{
+                display:flex;flex-direction:column;align-items:center;gap:.75rem;
+            }
+            .star-display{
+                display:flex;gap:4px;font-size:2.2rem;user-select:none;
+            }
+            .star-unit{
+                position:relative;display:inline-block;color:var(--border);
+            }
+            .star-unit .star-fill{
+                position:absolute;top:0;left:0;overflow:hidden;color:#f59e0b;white-space:nowrap;
+            }
+            .star-controls{
+                display:flex;align-items:center;gap:.75rem;
+            }
+            .star-controls button{
+                background:var(--input-bg);border:1px solid var(--border);border-radius:6px;
+                padding:.45rem .9rem;cursor:pointer;font-size:1rem;color:var(--text);
+                transition:border-color .2s,background .2s;
+                user-select:none;
+            }
+            .star-controls button:hover{border-color:var(--accent)}
+            .star-controls button:active{background:var(--accent);color:#fff}
+            .star-value{
+                font-weight:700;font-size:1rem;min-width:3.5em;text-align:center;
+                color:var(--text);font-variant-numeric:tabular-nums;
+            }
+            @keyframes starBounce{
+                0%  {transform:scale(1)}
+                15% {transform:scale(1.25)}
+                30% {transform:scale(0.9)}
+                45% {transform:scale(1.15)}
+                60% {transform:scale(0.95)}
+                75% {transform:scale(1.05)}
+                100%{transform:scale(1)}
+            }
+            .star-display.bounce{
+                animation:starBounce .6s ease;
+            }
+
+            /* Inline demo embed in posts */
+            .inline-demo{
+                margin:.75rem 0;padding:1rem;background:var(--card);
+                border:1px solid var(--border);border-radius:8px;
+                box-shadow:0 1px 3px rgba(0,0,0,0.06);
+            }
+            .inline-demo-label{
+                font-size:.75rem;color:var(--muted);margin-bottom:.5rem;
+                display:flex;align-items:center;gap:.35rem;
+            }
+
             @media (max-width:520px){
                 body{padding:1rem}
             }
@@ -228,6 +295,7 @@
                 <button class="tab-btn active" data-tab="posts-panel">📝 Posts</button>
                 <button class="tab-btn" data-tab="calendar-panel">📅 Calendar</button>
                 <button class="tab-btn" data-tab="stats-panel">📊 Stats</button>
+                <button class="tab-btn" data-tab="demo-panel">🧪 Demo</button>
             </div>
 
             <main>
@@ -253,6 +321,9 @@
                         <canvas id="stats-chart"></canvas>
                     </div>
                     <div class="stats-summary" id="stats-summary"></div>
+                </div>
+                <div id="demo-panel" class="tab-panel">
+                    <div class="demo-grid" id="demo-grid"></div>
                 </div>
             </main>
         </div>
@@ -394,6 +465,7 @@
             }
 
             // Convert plain text to HTML, replacing $imagename$ with <img> tags
+            // and #demoname# with inline interactive demos
             function renderContent(txt){
                 // Escape HTML special chars first
                 const escaped = txt
@@ -405,7 +477,21 @@
                 const withImages = escaped.replace(/\$([a-zA-Z0-9_\-\.]+)\$/g, (match, imgName) => {
                     return `<img src="pictures/${imgName}" alt="${imgName}" loading="lazy">`;
                 });
-                return withImages;
+                // Replace #demoname# with inline demo containers
+                const withDemos = withImages.replace(/#([a-zA-Z0-9_\-]+)#/g, (match, demoName) => {
+                    if(!DEMOS[demoName]) return match;
+                    const uid = 'inline-demo-' + demoName + '-' + Math.random().toString(36).slice(2,8);
+                    // Schedule rendering after the HTML is inserted into the DOM
+                    setTimeout(() => {
+                        const container = document.getElementById(uid);
+                        if(container && !container.dataset.init){
+                            container.dataset.init = '1';
+                            DEMOS[demoName](container);
+                        }
+                    }, 0);
+                    return `<div class="inline-demo" id="${uid}"><div class="inline-demo-label">🧪 Interactive Demo: ${demoName}</div></div>`;
+                });
+                return withDemos;
             }
 
             function filterPosts(q){
@@ -738,10 +824,141 @@
                 }, 50);
             });
 
+            // ---- Demo registry & widgets ----
+            const DEMOS = {};
+
+            // Star-selector demo builder
+            DEMOS['star-selector'] = function(container){
+                let rating = 2.5;
+                const INTERVAL_MS = 50; // tick interval when holding button
+                // Asymptotic step: fast near 2.5, very slow near 0 or 5.
+                // 30s to reach limit from 2.5 means ~600 ticks.
+                // Using step = k * distance^2 where integral from 0 to 2.5 = 2.5
+                // integral of k*d^2 dd from 0 to 2.5 = k*(2.5^3)/3 = 2.5  =>  k = 3/(2.5^2) = 0.48
+                // But we want 30s = 600 ticks, so step per tick = (0.48 * d^2) / (sum of steps)
+                // Simpler: step = baseStep * (distance / 2.5)^2, baseStep tuned so sum ≈ 2.5 in 600 ticks
+                // We'll use a continuous approach: step = 0.008 * (distance)^1.5
+                // This gives very slow approach near limits.
+                function getStep(dir){
+                    const distance = dir > 0 ? (5 - rating) : rating;
+                    if(distance <= 0) return 0;
+                    // Tuned so reaching 0 or 5 from 2.5 takes ~30s of holding (600 ticks at 50ms)
+                    // Min step of 0.002 ensures progress isn't killed by float rounding
+                    return Math.max(0.002, 0.006 * Math.pow(distance, 1.6));
+                }
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'star-widget';
+
+                // Star display
+                const starDisplay = document.createElement('div');
+                starDisplay.className = 'star-display';
+                const stars = [];
+                for(let i = 0; i < 5; i++){
+                    const unit = document.createElement('span');
+                    unit.className = 'star-unit';
+                    unit.innerHTML = '<span class="star-fill">★</span>★';
+                    stars.push(unit);
+                    starDisplay.appendChild(unit);
+                }
+
+                // Controls
+                const controls = document.createElement('div');
+                controls.className = 'star-controls';
+                const btnDown = document.createElement('button');
+                btnDown.textContent = '◀ −';
+                btnDown.title = 'Hold to decrease';
+                const valueLabel = document.createElement('span');
+                valueLabel.className = 'star-value';
+                const btnUp = document.createElement('button');
+                btnUp.textContent = '+ ▶';
+                btnUp.title = 'Hold to increase';
+                controls.appendChild(btnDown);
+                controls.appendChild(valueLabel);
+                controls.appendChild(btnUp);
+
+                wrapper.appendChild(starDisplay);
+                wrapper.appendChild(controls);
+                container.appendChild(wrapper);
+
+                function updateDisplay(){
+                    rating = Math.round(rating * 1000) / 1000; // avoid float noise
+                    if(rating < 0) rating = 0;
+                    if(rating > 5) rating = 5;
+                    for(let i = 0; i < 5; i++){
+                        const fill = Math.max(0, Math.min(1, rating - i));
+                        stars[i].querySelector('.star-fill').style.width = (fill * 100) + '%';
+                    }
+                    valueLabel.textContent = rating.toFixed(2) + ' ★';
+
+                    // Bounce at 5
+                    if(rating >= 5){
+                        starDisplay.classList.remove('bounce');
+                        void starDisplay.offsetWidth; // reflow to restart animation
+                        starDisplay.classList.add('bounce');
+                    }
+                }
+
+                // Hold-to-change mechanism
+                function setupHold(btn, dir){
+                    let intervalId = null;
+                    function tick(){
+                        const step = getStep(dir);
+                        if(step <= 0.0001) return;
+                        rating += step * dir;
+                        updateDisplay();
+                    }
+                    function startHold(e){
+                        e.preventDefault();
+                        tick(); // immediate first tick
+                        intervalId = setInterval(tick, INTERVAL_MS);
+                    }
+                    function stopHold(){
+                        if(intervalId){ clearInterval(intervalId); intervalId = null; }
+                    }
+                    btn.addEventListener('mousedown', startHold);
+                    btn.addEventListener('mouseup', stopHold);
+                    btn.addEventListener('mouseleave', stopHold);
+                    btn.addEventListener('touchstart', startHold, {passive:false});
+                    btn.addEventListener('touchend', stopHold);
+                    btn.addEventListener('touchcancel', stopHold);
+                }
+
+                setupHold(btnDown, -1);
+                setupHold(btnUp, 1);
+                updateDisplay();
+            };
+
+            // Build demo panel cards
+            function buildDemoPanel(){
+                const grid = document.getElementById('demo-grid');
+                if(!grid) return;
+                grid.innerHTML = '';
+                const demoList = [
+                    { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' }
+                ];
+                for(const demo of demoList){
+                    const card = document.createElement('div');
+                    card.className = 'demo-card';
+                    const h3 = document.createElement('h3');
+                    h3.textContent = demo.title;
+                    const p = document.createElement('p');
+                    p.className = 'demo-desc';
+                    p.textContent = demo.desc;
+                    const target = document.createElement('div');
+                    card.appendChild(h3);
+                    card.appendChild(p);
+                    card.appendChild(target);
+                    grid.appendChild(card);
+                    if(DEMOS[demo.id]) DEMOS[demo.id](target);
+                }
+            }
+
             // Kick off
             loadList();
             loadCalendarData();
             loadStats();
+            buildDemoPanel();
         </script>
     </body>
 </html>
