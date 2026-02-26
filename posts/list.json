@@ -1,106 +1,110 @@
 [
     {
-        "file":  "Blog-Creation.txt",
-        "date":  "2026-01-26"
+        "file": "Blog-Creation.txt",
+        "date": "2026-01-26"
     },
     {
-        "file":  "blogforcer.txt",
-        "date":  "2026-01-27"
+        "file": "blogforcer.txt",
+        "date": "2026-01-27"
     },
     {
-        "file":  "AIPixelart.txt",
-        "date":  "2026-01-28"
+        "file": "AIPixelart.txt",
+        "date": "2026-01-28"
     },
     {
-        "file":  "QR-Code-Gen.txt",
-        "date":  "2026-01-29"
+        "file": "QR-Code-Gen.txt",
+        "date": "2026-01-29"
     },
     {
-        "file":  "Fonts.txt",
-        "date":  "2026-01-30"
+        "file": "Fonts.txt",
+        "date": "2026-01-30"
     },
     {
-        "file":  "CrownFont.txt",
-        "date":  "2026-01-31"
+        "file": "CrownFont.txt",
+        "date": "2026-01-31"
     },
     {
-        "file":  "WeathermanAPI.txt",
-        "date":  "2026-02-01"
+        "file": "WeathermanAPI.txt",
+        "date": "2026-02-01"
     },
     {
-        "file":  "Workpanel.txt",
-        "date":  "2026-02-02"
+        "file": "Workpanel.txt",
+        "date": "2026-02-02"
     },
     {
-        "file":  "YoutubePacketInspection.txt",
-        "date":  "2026-02-03"
+        "file": "YoutubePacketInspection.txt",
+        "date": "2026-02-03"
     },
     {
-        "file":  "VSCode-Workpanel.txt",
-        "date":  "2026-02-04"
+        "file": "VSCode-Workpanel.txt",
+        "date": "2026-02-04"
     },
     {
-        "file":  "ImageGPSMetadata.txt",
-        "date":  "2026-02-07"
+        "file": "ImageGPSMetadata.txt",
+        "date": "2026-02-07"
     },
     {
-        "file":  "TelegramPhoneToPCCommunication.txt",
-        "date":  "2026-02-10"
+        "file": "TelegramPhoneToPCCommunication.txt",
+        "date": "2026-02-10"
     },
     {
-        "file":  "BlurrTest.txt",
-        "date":  "2026-02-11"
+        "file": "BlurrTest.txt",
+        "date": "2026-02-11"
     },
     {
-        "file":  "UIRework.txt",
-        "date":  "2026-02-12"
+        "file": "UIRework.txt",
+        "date": "2026-02-12"
     },
     {
-        "file":  "LeetCode175.txt",
-        "date":  "2026-02-13"
+        "file": "LeetCode175.txt",
+        "date": "2026-02-13"
     },
     {
-        "file":  "GoogleCookies.txt",
-        "date":  "2026-02-14"
+        "file": "GoogleCookies.txt",
+        "date": "2026-02-14"
     },
     {
-        "file":  "LeetCode67.txt",
-        "date":  "2026-02-15"
+        "file": "LeetCode67.txt",
+        "date": "2026-02-15"
     },
     {
-        "file":  "Jenkins.txt",
-        "date":  "2026-02-16"
+        "file": "Jenkins.txt",
+        "date": "2026-02-16"
     },
     {
-        "file":  "Devicemanager.txt",
-        "date":  "2026-02-17"
+        "file": "Devicemanager.txt",
+        "date": "2026-02-17"
     },
     {
-        "file":  "LeetCode693.txt",
-        "date":  "2026-02-18"
+        "file": "LeetCode693.txt",
+        "date": "2026-02-18"
     },
     {
-        "file":  "JenkinsGitFinetuning.txt",
-        "date":  "2026-02-20"
+        "file": "JenkinsGitFinetuning.txt",
+        "date": "2026-02-20"
     },
     {
-        "file":  "BlogCalendar.txt",
-        "date":  "2026-02-21"
+        "file": "BlogCalendar.txt",
+        "date": "2026-02-21"
     },
     {
-        "file":  "NodeRed.txt",
-        "date":  "2026-02-22"
+        "file": "NodeRed.txt",
+        "date": "2026-02-22"
     },
     {
-        "file":  "KeystrokeTracker.txt",
-        "date":  "2026-02-23"
+        "file": "KeystrokeTracker.txt",
+        "date": "2026-02-23"
     },
     {
-        "file":  "StatsTab.txt",
-        "date":  "2026-02-24"
+        "file": "StatsTab.txt",
+        "date": "2026-02-24"
     },
     {
-        "file":  "StarSelector.txt",
-        "date":  "2026-02-25"
+        "file": "StarSelector.txt",
+        "date": "2026-02-25"
+    },
+    {
+        "file": "JenkinsStatsAutomation.txt",
+        "date": "2026-02-26"
     }
 ]
