@@ -1,2 +1,8 @@
 Automates Output of previously added Stats into from a Import file into stats.json. 
+Added a new stage "Import-Stats" which runs this flow: 
+    Gets hardcoded paths for tagetfiles
+    --> Reads Statistics from Imnport file
+    --> Finds todays Blog
+    --> Loads stats.json
+    --> Remove Import File
 Modified Powershell Script with parameter Path to Output into.
