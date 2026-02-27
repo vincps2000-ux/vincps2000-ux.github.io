@@ -101,6 +101,8 @@
             .meta{color:var(--muted);font-weight:400;font-size:.9rem}
             .post-content{padding:.5rem 0 0 .25rem;color:var(--text-secondary);white-space:pre-wrap;font-family: "Segoe UI", Roboto, Arial, sans-serif}
             .post-content img{max-width:100%;height:auto;border-radius:6px;margin:.5rem 0;display:block}
+            .post-content a{color:var(--accent);text-decoration:underline;word-break:break-all}
+            .post-content a:hover{opacity:.8}
 
             .empty{padding:2rem;text-align:center;color:var(--muted);background:transparent}
             a.fresh{font-size:.85rem;color:var(--accent);text-decoration:none}
@@ -491,7 +493,11 @@
                     }, 0);
                     return `<div class="inline-demo" id="${uid}"><div class="inline-demo-label">🧪 Interactive Demo: ${demoName}</div></div>`;
                 });
-                return withDemos;
+                // Convert plain URLs into clickable links (skip URLs already inside HTML attributes)
+                const withLinks = withDemos.replace(/(^|[^"'=])(https?:\/\/[^\s<)]+)/g, (m, pre, url) => {
+                    return `${pre}<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+                });
+                return withLinks;
             }
 
             function filterPosts(q){

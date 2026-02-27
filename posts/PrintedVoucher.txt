@@ -1,0 +1,10 @@
+Designed and 3D-Printed a small Voucher to spice up a Present.
+Intial Approach of using a generated SVG failed in Blender when the conversion to mesh was to complicated for me.
+Resorted to bambulab inbuild Text-object
+
+Solved leetcode Problem 3634(https://leetcode.com/problems/minimum-removals-to-balance-array/description) Key Insight:
+Instead of calculating which Numbers to remove, simply order them (since number not on the outsides of the orded array are never removed),
+and then slide a vector over it that test every Vector of Size = X (size of Vector. If not possible, reduce x by one)
+
+Added HyperLinks to Blog.
+
