@@ -1,0 +1,26 @@
+In order to judge AI Coding Quality Independently, I created a small personal Benchmark:
+
+The Goal is to programm a Grid-based Mech-Design game:
+Advantages:
+Such a Game currently doesnt exist.
+Playing it quickly gives an Impression of the Design Capabilities of the AI.
+
+Benchmark:
+https://github.com/vincps2000-ux/MechGameBenchmark
+
+I plan on adding higher Fidelity Versions of the Benchmark later, for better comparisons.
+
+Ran the benchmark with GithubCopilot(Claude Opus 4.6), Results:
+$ClaudeMech1.png$
+$ClaudeMech2.png$
+$ClaudeMech3.png$
+
+Take Aways: 
+Good Technical Execution, strong at crating functional Art without access to Art Generator.
+Poor Difficulty/Playability Tuning. 
+    A shared Upgrade Money Pool/ Contract Pool leads to quick Softlocks.
+    A Basic mech with no Modules Succeds most Contracts fully.
+    No Tool Tips.
+Low creativity:
+    every Component presented was very vanilla, example given Light/Medium/Heavy Torso.
+    Every Effect was only a simple add subtract of Stats. Both a Railgun and a Sword just give Firepower.
