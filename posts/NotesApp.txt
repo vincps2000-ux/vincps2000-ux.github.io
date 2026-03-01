@@ -1,0 +1,4 @@
+Vibe-Coded Basic Notes App for my Android Phone. 
+Hardest part was installing Android Studio and waiting for the install.
+
+The .apk was installed using USB-Debugging.
