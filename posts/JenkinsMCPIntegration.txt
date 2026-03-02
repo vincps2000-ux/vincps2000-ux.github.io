@@ -1,0 +1,8 @@
+Created MCP Server that allows the jenkins Pipeline to be started by Github Copilot.
+three Tools are provided:
+get_build_console
+ gets the last Output Log of the Pipeline.
+get_build_status
+ gets the Result of the last Pipeline attempt.
+trigger_blog_pipelin:
+ Triggers the Blog Pipeline.
