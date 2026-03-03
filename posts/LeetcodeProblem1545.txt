@@ -1,0 +1,13 @@
+Solved Leetcode 1545
+
+Key Insight:
+Just build function that does excactly this:
+S1 = "0"
+Si = Si - 1 + "1" + reverse(invert(Si - 1)) for i > 1
+
+Small detail: 
+Reading the kth bit is means starting at 1 and not 0. so string[k-1] is required.
+
+Optimisations possible:
+Early Termination at K.
+Lucky Termination if K is at Half of the Array. [K=1]
