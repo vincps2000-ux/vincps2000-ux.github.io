@@ -1,0 +1,36 @@
+Watched this talk:
+https://www.youtube.com/watch?v=RUHDSokGhLE
+
+
+Notes:
+
+App Atestation:
+    Ensures App is genuine
+    Detectes Rooted device
+    Calls Google API(JWT https://developer.android.com/google/play/integrity/classic?hl=de#request)
+Key Attestation: 
+    A Key is generated for App in secure hardware(Can not be removed from Phone.)
+    App backend can use this to verify Users.
+
+Android Secure Storage Types:
+    - TEE: Virtual Processor, sperated OS, serspace, etc.
+    - SE: Physically Seperate Chip
+
+Key creation:
+    Google creates key pair for manufacturer.
+    Manufacturer injects Key pair (in secure storage) when building phone.
+
+Leaf Certificate:
+    Certifcate at end of chain, can not sign new Certifications.
+
+X.509:
+    Common Certificate-Format(https://www.ssl.com/faqs/what-is-an-x-509-certificate/)
+
+hard-Coded Certificate:
+    - Android Key Atestation was rolled out slowly, so some Manufacturers used Keys hard-coded in the Phone.
+    - Still works sometimes, because devlopers use hardcoded keys for Intefration testing across device Types.
+
+Interesting:
+    - Andoid Key Attestaion - old Version Library does not prevent Leaf Extension attacks (https://github.com/google/android-key-attestation?tab=readme-ov-file, now Depreciated)
+    - Update was not done with CVE. no central Content / version managemenbt except Github.
+    - Assumes Leaf-first, some Implementations of the Library assume Root first/take ordering from user.
