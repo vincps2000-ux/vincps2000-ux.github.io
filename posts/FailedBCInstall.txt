@@ -1,0 +1,4 @@
+Failed to Install Business Central version 27 for two hours.
+Reasons:
+Docker missing permissions like Hyper-V, Docker not having wsl module, etc.
+Will try again tommorrow
