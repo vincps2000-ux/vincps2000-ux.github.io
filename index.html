@@ -4,6 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Vincent Untiedt Tech Experimentation Blog</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script>
             /* Apply theme ASAP to avoid flash */
             (function(){
@@ -269,6 +271,36 @@
             .inline-demo-label{
                 font-size:.75rem;color:var(--muted);margin-bottom:.5rem;
                 display:flex;align-items:center;gap:.35rem;
+            }
+
+            /* ---- RunTarget demo ---- */
+            .runtarget-widget{
+                display:flex;flex-direction:column;gap:.75rem;
+            }
+            .runtarget-inputs{
+                display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;
+            }
+            .runtarget-inputs label{
+                font-size:.85rem;font-weight:600;color:var(--muted);
+            }
+            .runtarget-inputs input[type=number]{
+                width:80px;padding:.4rem .5rem;border-radius:6px;
+                border:1px solid var(--border);background:var(--input-bg);
+                color:var(--text);font-size:.9rem;
+            }
+            .runtarget-btn{
+                padding:.5rem 1.1rem;border-radius:6px;border:1px solid var(--border);
+                background:var(--accent);color:#fff;font-weight:600;cursor:pointer;
+                font-size:.9rem;transition:opacity .2s;
+            }
+            .runtarget-btn:hover{opacity:.85}
+            .runtarget-btn:disabled{opacity:.5;cursor:not-allowed}
+            .runtarget-info{
+                font-size:.85rem;color:var(--muted);min-height:1.2em;
+            }
+            .runtarget-map{
+                width:100%;height:350px;border-radius:8px;
+                border:1px solid var(--border);z-index:0;
             }
 
             @media (max-width:520px){
@@ -935,13 +967,181 @@
                 updateDisplay();
             };
 
+            // ---- RunTarget demo ----
+            DEMOS['runtarget'] = function(container){
+                const widget = document.createElement('div');
+                widget.className = 'runtarget-widget';
+
+                // Inputs row
+                const inputs = document.createElement('div');
+                inputs.className = 'runtarget-inputs';
+                inputs.innerHTML = `
+                    <label>Min (km):</label>
+                    <input type="number" id="" class="rt-min" value="1" min="0.1" step="0.1">
+                    <label>Max (km):</label>
+                    <input type="number" id="" class="rt-max" value="5" min="0.2" step="0.1">
+                    <button class="runtarget-btn rt-go">🎯 Pick Target</button>
+                `;
+                widget.appendChild(inputs);
+
+                // Info line
+                const info = document.createElement('div');
+                info.className = 'runtarget-info';
+                info.textContent = 'Allow location access, set a range, and hit Pick Target.';
+                widget.appendChild(info);
+
+                // Map container
+                const mapDiv = document.createElement('div');
+                mapDiv.className = 'runtarget-map';
+                widget.appendChild(mapDiv);
+
+                container.appendChild(widget);
+
+                // Init Leaflet map after element is in DOM
+                setTimeout(() => {
+                    const map = L.map(mapDiv).setView([51.505, -0.09], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        maxZoom: 19
+                    }).addTo(map);
+
+                    let userMarker = null;
+                    let targetMarker = null;
+                    let circle = null;
+                    let routeLine = null;
+                    let userPos = null;
+
+                    const minInput = inputs.querySelector('.rt-min');
+                    const maxInput = inputs.querySelector('.rt-max');
+                    const goBtn   = inputs.querySelector('.rt-go');
+
+                    // Try to get user location
+                    function locateUser(){
+                        if(!navigator.geolocation){
+                            info.textContent = '⚠ Geolocation not supported by this browser.';
+                            return;
+                        }
+                        info.textContent = '📍 Locating you...';
+                        navigator.geolocation.getCurrentPosition(pos => {
+                            userPos = [pos.coords.latitude, pos.coords.longitude];
+                            map.setView(userPos, 14);
+                            if(userMarker) map.removeLayer(userMarker);
+                            userMarker = L.marker(userPos, {
+                                icon: L.divIcon({
+                                    html: '<div style="background:#2b6cb0;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 6px rgba(0,0,0,.3)"></div>',
+                                    iconSize: [20,20],
+                                    iconAnchor: [10,10],
+                                    className: ''
+                                })
+                            }).addTo(map).bindPopup('You are here');
+                            info.textContent = '✅ Location found! Set range and pick a target.';
+                        }, err => {
+                            info.textContent = '⚠ Location denied: ' + err.message;
+                        }, { enableHighAccuracy: true, timeout: 10000 });
+                    }
+
+                    locateUser();
+
+                    // Generate a random point at a random distance & bearing from origin
+                    function randomPoint(lat, lng, minKm, maxKm){
+                        const R = 6371; // Earth radius km
+                        const dist = minKm + Math.random() * (maxKm - minKm);
+                        const bearing = Math.random() * 2 * Math.PI;
+                        const lat1 = lat * Math.PI / 180;
+                        const lng1 = lng * Math.PI / 180;
+                        const lat2 = Math.asin(
+                            Math.sin(lat1) * Math.cos(dist / R) +
+                            Math.cos(lat1) * Math.sin(dist / R) * Math.cos(bearing)
+                        );
+                        const lng2 = lng1 + Math.atan2(
+                            Math.sin(bearing) * Math.sin(dist / R) * Math.cos(lat1),
+                            Math.cos(dist / R) - Math.sin(lat1) * Math.sin(lat2)
+                        );
+                        return {
+                            lat: lat2 * 180 / Math.PI,
+                            lng: lng2 * 180 / Math.PI,
+                            distKm: dist
+                        };
+                    }
+
+                    goBtn.addEventListener('click', () => {
+                        if(!userPos){
+                            info.textContent = '⚠ Still waiting for your location...';
+                            locateUser();
+                            return;
+                        }
+                        const minKm = parseFloat(minInput.value) || 0.5;
+                        const maxKm = parseFloat(maxInput.value) || 5;
+                        if(minKm >= maxKm){
+                            info.textContent = '⚠ Min must be less than Max.';
+                            return;
+                        }
+                        if(minKm < 0 || maxKm <= 0){
+                            info.textContent = '⚠ Ranges must be positive.';
+                            return;
+                        }
+
+                        const pt = randomPoint(userPos[0], userPos[1], minKm, maxKm);
+
+                        // Clear previous target layers
+                        if(targetMarker) map.removeLayer(targetMarker);
+                        if(circle) map.removeLayer(circle);
+                        if(routeLine) map.removeLayer(routeLine);
+
+                        // Draw range ring (donut visualized as outer circle)
+                        circle = L.circle(userPos, {
+                            radius: maxKm * 1000,
+                            color: 'var(--accent)',
+                            weight: 2,
+                            opacity: 0.4,
+                            fillColor: '#2b6cb0',
+                            fillOpacity: 0.06
+                        }).addTo(map);
+
+                        // Place target marker
+                        targetMarker = L.marker([pt.lat, pt.lng], {
+                            icon: L.divIcon({
+                                html: '<div style="font-size:28px;text-shadow:0 2px 4px rgba(0,0,0,.3)">🎯</div>',
+                                iconSize: [28,28],
+                                iconAnchor: [14,14],
+                                className: ''
+                            })
+                        }).addTo(map).bindPopup(
+                            `<b>Run Target</b><br>${pt.distKm.toFixed(2)} km away`
+                        ).openPopup();
+
+                        // Draw dashed line from user to target
+                        routeLine = L.polyline([userPos, [pt.lat, pt.lng]], {
+                            color: '#e53e3e',
+                            weight: 2,
+                            dashArray: '8, 6',
+                            opacity: 0.7
+                        }).addTo(map);
+
+                        // Fit map to show both points
+                        const bounds = L.latLngBounds([userPos, [pt.lat, pt.lng]]).pad(0.15);
+                        map.fitBounds(bounds);
+
+                        const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userPos[0]},${userPos[1]}&destination=${pt.lat},${pt.lng}&travelmode=walking`;
+                        info.innerHTML = `🏃 Target placed ${pt.distKm.toFixed(2)} km away — <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600">Open route in Google Maps ↗</a>`;
+                    });
+
+                    // Fix Leaflet rendering in hidden containers
+                    const observer = new MutationObserver(() => {
+                        if(mapDiv.offsetParent !== null) map.invalidateSize();
+                    });
+                    observer.observe(document.body, { attributes: true, subtree: true });
+                }, 50);
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
                 if(!grid) return;
                 grid.innerHTML = '';
                 const demoList = [
-                    { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' }
+                    { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
+                    { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');

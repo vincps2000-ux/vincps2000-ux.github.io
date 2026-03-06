@@ -1,0 +1,11 @@
+Tryed Bc-Install again, failed by download timing out.
+Giving up on this Machine, after looking into RAM requirements on my already struggling machine.
+
+Built a small html component instead, that get given a min&max range, and then generates a running target in that distance.
+It is displayed using OpenStreet(https://www.openstreetmap.org/#map=0/0/0)
+in Combination with JS library Leaflet. 
+
+Generates a MapsLink after the target is generated.
+
+Demo:
+#runtarget#
