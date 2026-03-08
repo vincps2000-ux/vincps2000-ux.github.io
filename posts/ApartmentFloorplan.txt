@@ -1,0 +1,4 @@
+Build simple Floorplan for my Apartment using Webapp Floorplancrator (https://floorplancreator.net/)
+Limiting Factors:
+    -Measuring only with bad measuring tape.
+    - unable to correctly model doors. (Surely User Error on my Part?)
