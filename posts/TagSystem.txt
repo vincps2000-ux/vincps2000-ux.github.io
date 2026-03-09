@@ -1,0 +1,2 @@
+§UI§§Stats§
+Added a Simple Tag System, and Integrated it into Statistics.

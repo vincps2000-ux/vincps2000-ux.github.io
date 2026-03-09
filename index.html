@@ -303,6 +303,23 @@
                 border:1px solid var(--border);z-index:0;
             }
 
+            /* ---- Tag badges ---- */
+            .tag-badge{
+                display:inline-flex;align-items:center;gap:.25rem;
+                font-size:.72rem;font-weight:600;padding:.15rem .5rem;
+                border-radius:999px;line-height:1.3;white-space:nowrap;
+                vertical-align:middle;
+            }
+            .tags-row{
+                display:inline-flex;gap:.35rem;flex-wrap:wrap;margin-left:.5rem;
+            }
+            /* ---- Tag bar chart ---- */
+            .tag-chart-container{
+                background:var(--card);border-radius:8px;padding:1rem;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
+                margin-top:1rem;position:relative;height:300px;
+            }
+
             @media (max-width:520px){
                 body{padding:1rem}
             }
@@ -355,6 +372,9 @@
                         <canvas id="stats-chart"></canvas>
                     </div>
                     <div class="stats-summary" id="stats-summary"></div>
+                    <div class="tag-chart-container" id="tag-chart-container">
+                        <canvas id="tag-chart"></canvas>
+                    </div>
                 </div>
                 <div id="demo-panel" class="tab-panel">
                     <div class="demo-grid" id="demo-grid"></div>
@@ -372,6 +392,44 @@
             const postsEl = document.getElementById('posts');
             const searchEl = document.getElementById('search');
             const sortEl = document.getElementById('sort');
+
+            // ---- Tag definitions (loaded from Tags.json) ----
+            let tagDefs = {};      // { TagName: { color, emoji } }
+            let postTagsMap = {};  // { filename: [tagName, ...] }
+
+            async function loadTagDefs(){
+                try{
+                    const r = await fetch('Tags.json', {cache:'no-store'});
+                    if(r.ok) tagDefs = await r.json();
+                }catch(e){ console.warn('Tags.json not loaded', e); }
+            }
+
+            // Parse §Tag§ markers from the first line and return { tags:[], cleanText }
+            function extractTags(txt){
+                const tagPattern = /§([^§]+)§/g;
+                const lines = txt.split('\n');
+                const firstLine = lines[0] || '';
+                const tags = [];
+                let m;
+                while((m = tagPattern.exec(firstLine)) !== null){
+                    tags.push(m[1]);
+                }
+                // If any tags were found, strip the entire tag markers from the first line
+                if(tags.length){
+                    lines[0] = firstLine.replace(/§[^§]+§/g, '').trim();
+                    // Remove the first line entirely if it's now empty
+                    if(!lines[0]) lines.shift();
+                }
+                return { tags, cleanText: lines.join('\n') };
+            }
+
+            function buildTagBadges(tags){
+                if(!tags || !tags.length) return '';
+                return tags.map(tag => {
+                    const def = tagDefs[tag] || { color: '#6b7280', emoji: '🏷️' };
+                    return `<span class="tag-badge" style="background:${def.color}22;color:${def.color};border:1px solid ${def.color}44">${def.emoji} ${tag}</span>`;
+                }).join('');
+            }
 
             function normalizeEntry(entry){
                 if(typeof entry === 'string'){
@@ -480,13 +538,22 @@
                         return;
                     }
                     const txt = await r.text();
-                    const lines = txt.split('\n');
+                    const { tags, cleanText } = extractTags(txt);
+                    postTagsMap[filename] = tags;
+                    const lines = cleanText.split('\n');
                     const firstLine = lines.find(l=>l.trim().length>0) || '';
                     const dateLabel = entry.date ? `Date: ${entry.date}` : '';
                     const preview = firstLine ? firstLine.slice(0,120) : 'Text file';
                     d.querySelector('.meta').textContent = dateLabel ? `${dateLabel} • ${preview}` : preview;
+                    // Render tag badges in header
+                    if(tags.length){
+                        const header = d.querySelector('.post-header');
+                        let tagsRow = header.querySelector('.tags-row');
+                        if(!tagsRow){ tagsRow = document.createElement('span'); tagsRow.className = 'tags-row'; header.appendChild(tagsRow); }
+                        tagsRow.innerHTML = buildTagBadges(tags);
+                    }
                     // Parse $imagename$ patterns and convert to <img> tags
-                    const htmlContent = renderContent(txt);
+                    const htmlContent = renderContent(cleanText);
                     d.querySelector('.post-content').innerHTML = htmlContent;
                 }catch(err){
                     console.error(err);
@@ -854,11 +921,75 @@
                 }
             }
 
-            // Re-render chart when theme changes so colors update
+            // ---- Tag bar chart ----
+            let tagChart = null;
+
+            function renderTagChart(){
+                // Count tags across all loaded posts
+                const counts = {};
+                for(const [file, tags] of Object.entries(postTagsMap)){
+                    for(const tag of tags){
+                        counts[tag] = (counts[tag] || 0) + 1;
+                    }
+                }
+                const tagNames = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+                if(!tagNames.length){
+                    document.getElementById('tag-chart-container').innerHTML = '<div class="stats-empty">No tags found yet. Add §TagName§ to the first line of post files.</div>';
+                    return;
+                }
+                const colors = getChartColors();
+                const bgColors = tagNames.map(t => {
+                    const def = tagDefs[t];
+                    return def ? def.color : colors.accent;
+                });
+                const labels = tagNames.map(t => {
+                    const def = tagDefs[t];
+                    return def ? `${def.emoji} ${t}` : t;
+                });
+                if(tagChart) tagChart.destroy();
+                tagChart = new Chart(document.getElementById('tag-chart'), {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'Posts with tag',
+                            data: tagNames.map(t => counts[t]),
+                            backgroundColor: bgColors.map(c => c + '88'),
+                            borderColor: bgColors,
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'Tag Distribution', color: colors.text, font: { size: 14, weight: 'bold' } }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: colors.muted, stepSize: 1 },
+                                grid: { color: colors.border + '44' },
+                                beginAtZero: true,
+                                title: { display: true, text: 'Number of Posts', color: colors.muted }
+                            },
+                            y: {
+                                ticks: { color: colors.text, font: { size: 13 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Re-render charts when theme changes so colors update
             const origThemeClick = themeBtn.onclick;
             themeBtn.addEventListener('click', () => {
                 setTimeout(() => {
                     if(statsChart && metricSelect.value) renderStatsChart(metricSelect.value);
+                    renderTagChart();
                 }, 50);
             });
 
@@ -1161,7 +1292,12 @@
             }
 
             // Kick off
-            loadList();
+            loadTagDefs().then(() => {
+                loadList().then(() => {
+                    // Render tag chart once all posts are loaded
+                    setTimeout(renderTagChart, 1500);
+                });
+            });
             loadCalendarData();
             loadStats();
             buildDemoPanel();

@@ -1,0 +1,34 @@
+{
+    "UI": {
+        "color": "#8b5cf6",
+        "emoji": "🎨"
+    },
+    "Stats": {
+        "color": "#10b981",
+        "emoji": "📊"
+    },
+    "API": {
+        "color": "#f59e0b",
+        "emoji": "🔌"
+    },
+    "DevOps": {
+        "color": "#ef4444",
+        "emoji": "⚙️"
+    },
+    "LeetCode": {
+        "color": "#3b82f6",
+        "emoji": "🧩"
+    },
+    "Security": {
+        "color": "#ec4899",
+        "emoji": "🔒"
+    },
+    "Fun": {
+        "color": "#06b6d4",
+        "emoji": "🎮"
+    },
+    "Tools": {
+        "color": "#f97316",
+        "emoji": "🛠️"
+    }
+}
