@@ -1,0 +1,26 @@
+§Lecture§
+
+Watched Spacial Programming Lecture(https://www.youtube.com/watch?v=eQgxFuw8f1U)
+
+
+Spacial Programming:
+Behaviour is defined by Position of Elements in Space, and its neighbors.
+Example: Conways Game of Life?
+Bad, because large amount of rules is needed for every dimension used.
+To cukmircumwent this, normal Programming is used to supplement.
+
+Cellpod:
+Spacial programming with powerful tools:
+Allows applying rules to multiple sides using mirroring
+Conservation(Retaining State within the Rule)
+Information Storage in Colour Channel.
+Grid can be split by rule into smaller cubes, increasing storage.
+
+based on 4 operations:
+check
+recolour
+split 
+merge
+
+Important:
+Understand where in High Level vs Low Level (Closeness to smallest possible Instruction) you are writing!
