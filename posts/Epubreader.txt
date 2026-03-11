@@ -1,3 +1,4 @@
+§Application§
 Build simple Epubreader that allows reading as a continous text in WebBrowser instead of flipping through the pages.
 Epub format description:
 https://www.w3.org/AudioVideo/ebook/
