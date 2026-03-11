@@ -1,0 +1,12 @@
+Build simple Epubreader that allows reading as a continous text in WebBrowser instead of flipping through the pages.
+Epub format description:
+https://www.w3.org/AudioVideo/ebook/
+https://en.wikipedia.org/wiki/EPUB
+
+Experiomenting with it:
+-Simply Rename File .Zip (.epub is just a simple .zip)
+-Browse Content
+- Cotains folders which Contain Resources, like images, css styling , text as html, etc.
+- Contains OPF File, which is just a Renamed XML. Contains metadata like cover, chapter listing, etc.
+- Contains a toc(table of contents).ncx file. 
+-->Holds Information for backwards Compatibility with(https://en.wikipedia.org/wiki/Digital_Accessible_Information_System)

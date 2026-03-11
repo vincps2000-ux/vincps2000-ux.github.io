@@ -34,5 +34,9 @@
     "Lecture": {
         "color": "#803705",
         "emoji": "🎓"
+    },
+    "Application": {
+        "color": "#31cc4d",
+        "emoji": "📱"
     }
 }
