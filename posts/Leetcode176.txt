@@ -1,0 +1,11 @@
+§LeetCode§
+Solved Leetcode 176.
+Key Concepts:
+build subselect counting only bigger records for every Record.
+parent select has where = 2 around it.
+
+since no 2nd Salary results in 0, not null, because where 2= Substring returns 0 found,
+Answer needs to be wrapped in simple SELECT () AS .
+
+Null/0 Logic in SQL is quite bad, see here:  https://en.wikipedia.org/wiki/Null_(SQL)
+Essentially only remebering which Commands result in what helps.
