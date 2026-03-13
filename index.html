@@ -303,6 +303,36 @@
                 border:1px solid var(--border);z-index:0;
             }
 
+            /* ---- Element Extractor demo ---- */
+            .extractor-widget{
+                display:flex;flex-direction:column;gap:.75rem;
+            }
+            .extractor-inputs{
+                display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;
+            }
+            .extractor-inputs label{
+                font-size:.85rem;font-weight:600;color:var(--muted);
+            }
+            .extractor-inputs input[type=text]{
+                flex:1;min-width:140px;padding:.4rem .5rem;border-radius:6px;
+                border:1px solid var(--border);background:var(--input-bg);
+                color:var(--text);font-size:.9rem;
+            }
+            .extractor-btn{
+                padding:.5rem 1.1rem;border-radius:6px;border:1px solid var(--border);
+                background:var(--accent);color:#fff;font-weight:600;cursor:pointer;
+                font-size:.9rem;transition:opacity .2s;
+            }
+            .extractor-btn:hover{opacity:.85}
+            .extractor-btn:disabled{opacity:.5;cursor:not-allowed}
+            .extractor-info{
+                font-size:.85rem;color:var(--muted);min-height:1.2em;
+            }
+            .extractor-output iframe{
+                width:100%;min-height:300px;border:1px solid var(--border);
+                border-radius:8px;background:#fff;
+            }
+
             /* ---- Tag badges ---- */
             .tag-badge{
                 display:inline-flex;align-items:center;gap:.25rem;
@@ -1265,6 +1295,115 @@
                 }, 50);
             };
 
+            // ---- Element Extractor demo ----
+            DEMOS['element-extractor'] = function(container){
+                const widget = document.createElement('div');
+                widget.className = 'extractor-widget';
+
+                // Inputs row
+                const inputs = document.createElement('div');
+                inputs.className = 'extractor-inputs';
+                inputs.innerHTML = `
+                    <label>URL:</label>
+                    <input type="text" class="ext-url" placeholder="https://example.com">
+                    <label>Element:</label>
+                    <input type="text" class="ext-selector" placeholder="h1, .class, #id">
+                    <button class="extractor-btn ext-go">🔍 Fetch Element</button>
+                `;
+                widget.appendChild(inputs);
+
+                // Info line
+                const info = document.createElement('div');
+                info.className = 'extractor-info';
+                info.textContent = 'Enter a URL and a CSS selector, then click Fetch.';
+                widget.appendChild(info);
+
+                // Output container
+                const output = document.createElement('div');
+                output.className = 'extractor-output';
+                widget.appendChild(output);
+
+                container.appendChild(widget);
+
+                const urlInput = inputs.querySelector('.ext-url');
+                const selInput = inputs.querySelector('.ext-selector');
+                const goBtn    = inputs.querySelector('.ext-go');
+
+                goBtn.addEventListener('click', async () => {
+                    const url = urlInput.value.trim();
+                    const selector = selInput.value.trim();
+
+                    if(!url){
+                        info.textContent = '⚠ Please enter a URL.';
+                        return;
+                    }
+                    if(!selector){
+                        info.textContent = '⚠ Please enter a CSS selector.';
+                        return;
+                    }
+
+                    // Validate selector syntax
+                    try { document.createElement('div').querySelector(selector); }
+                    catch(e){
+                        info.textContent = '⚠ Invalid CSS selector: ' + e.message;
+                        return;
+                    }
+
+                    info.textContent = '⏳ Fetching page…';
+                    goBtn.disabled = true;
+                    output.innerHTML = '';
+
+                    try {
+                        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                        const resp = await fetch(proxyUrl);
+                        if(!resp.ok) throw new Error('HTTP ' + resp.status);
+                        const html = await resp.text();
+
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const el = doc.querySelector(selector);
+
+                        if(!el){
+                            info.textContent = '⚠ No element matched "' + selector + '" on that page.';
+                            goBtn.disabled = false;
+                            return;
+                        }
+
+                        // Collect <style> and <link rel="stylesheet"> from the fetched page
+                        const styles = Array.from(doc.querySelectorAll('style, link[rel="stylesheet"]'))
+                            .map(n => n.outerHTML).join('\n');
+
+                        // Build srcdoc with <base> so relative resources resolve
+                        const base = url.replace(/\/[^\/]*$/, '/');
+                        const srcdoc = `<!DOCTYPE html><html><head><base href="${base}"><meta charset="utf-8">${styles}<style>body{margin:0;font-family:system-ui,sans-serif}</style></head><body>${el.outerHTML}</body></html>`;
+
+                        const iframe = document.createElement('iframe');
+                        iframe.sandbox = 'allow-same-origin';
+                        iframe.srcdoc = srcdoc;
+                        iframe.style.width = '100%';
+                        iframe.style.minHeight = '300px';
+                        iframe.style.border = '1px solid var(--border)';
+                        iframe.style.borderRadius = '8px';
+                        iframe.style.background = '#fff';
+                        output.appendChild(iframe);
+
+                        // Auto-resize iframe height to content
+                        iframe.addEventListener('load', () => {
+                            try {
+                                const h = iframe.contentDocument.documentElement.scrollHeight;
+                                iframe.style.height = Math.min(Math.max(h + 20, 100), 800) + 'px';
+                            } catch(e){/* cross-origin */}
+                        });
+
+                        info.innerHTML = '✅ Extracted <code>' + selector + '</code> from <a href="' + url + '" target="_blank" style="color:var(--accent)">' + url + '</a>';
+                    } catch(err){
+                        info.textContent = '❌ Fetch failed: ' + err.message;
+                    } finally {
+                        goBtn.disabled = false;
+                    }
+                });
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -1272,7 +1411,8 @@
                 grid.innerHTML = '';
                 const demoList = [
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
-                    { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' }
+                    { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
+                    { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');

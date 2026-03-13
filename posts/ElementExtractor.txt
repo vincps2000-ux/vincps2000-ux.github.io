@@ -1,0 +1,14 @@
+§Tools§
+Built an Element Extractor — a small  tool that grabs any visible element from an external website.
+
+How it works:
+1. Enter a URL (e.g. https://www.oekotest.de/)
+2. Enter a CSS selector pointing at the element you want (e.g. body, h1, .hero, #content)
+3. Hit Fetch Element
+
+Under the hood the tool fetches the page HTML through a public CORS proxy(proxy that handles cross site stuff on a server away from client machine, circumwenting Cross site scipting restrictions https://corsfix.com/blog/cors-proxy) (allorigins.win(API that provides content of any side per api)), parses the response with DOMParser(writes html into dom), runs querySelector with your selector,
+ and renders the matched element inside a sandboxed iframe using srcdoc. A <base> tag pointing at the source URL ensures relative images and stylesheets still resolve. The iframe sandbox attribute blocks script execution for safety while still allowing the original page styles to apply.
+
+Try it out:
+
+#element-extractor#
