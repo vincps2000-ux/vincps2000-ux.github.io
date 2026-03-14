@@ -38,5 +38,9 @@
     "Application": {
         "color": "#31cc4d",
         "emoji": "📱"
+    },
+    "fail": {
+        "color": "#fa0000",
+        "emoji": "❌"
     }
 }

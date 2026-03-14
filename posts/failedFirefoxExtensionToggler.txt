@@ -1,0 +1,7 @@
+§fail§
+Tried to build small Firefox extension that toggles other firefox extension according to specific rules.
+UI, extension uuid reading and displaying as list, rules implementation were easy, but the function
+management.setEnabled() which manages when Extensions are enabled, required permissions i was not able to give the extension.
+Possible solutions: 
+Enterprise Policy: https://addons.mozilla.org/en-US/firefox/addon/enterprise-policy-generator/
+
