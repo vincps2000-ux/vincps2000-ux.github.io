@@ -1,0 +1,5 @@
+§Tools§
+Agent access via Mobile was done through GitHub Mobile.
+This blog entry was also written via GitHub Mobile.
+
+During the authentication step, a reinstall of GitHub Mobile was required because the authentication was restarted for a password reset, which caused the Authorize button to be greyed out.
