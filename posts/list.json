@@ -166,5 +166,9 @@
     {
         "file": "failedFirefoxExtensionToggler.txt",
         "date": "2026-03-14"
+    },
+    {
+        "file": "GitHubMobileAgent.txt",
+        "date": "2026-03-15"
     }
 ]
