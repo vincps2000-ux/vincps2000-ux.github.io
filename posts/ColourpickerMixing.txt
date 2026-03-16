@@ -1,0 +1,16 @@
+§Demo§Colour Mixer – RYB pigment mixing theory demo.
+
+#color-mixer#
+
+Added a colour-picker to the Demo tab that works like real paint mixing.
+
+The model uses a trilinear interpolation over the RYB (Red–Yellow–Blue) colour cube – the same model artists use on a traditional colour wheel. Each corner of the cube maps a pure RYB value to its screen RGB equivalent:
+
+  Red    + Yellow = Orange
+  Yellow + Blue   = Green
+  Red    + Blue   = Violet
+  All three        = Dark brown
+
+Drag (or click) any of the 8 base-colour circles into the cauldron. The cauldron fills with the mixed colour and the hex code updates in real-time. Use the 📋 Copy button to grab the hex value, ↩ Undo to remove the last colour, or 🗑️ Reset to empty the cauldron.
+
+The bubbles are purely cosmetic but satisfying.
