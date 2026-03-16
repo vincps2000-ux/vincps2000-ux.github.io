@@ -353,6 +353,105 @@
             @media (max-width:520px){
                 body{padding:1rem}
             }
+
+            /* ---- Color Mixer demo ---- */
+            .color-mixer-widget{
+                display:flex;flex-direction:column;align-items:center;gap:1rem;
+            }
+            .cm-palette{
+                display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;
+            }
+            .cm-swatch-wrap{
+                display:flex;flex-direction:column;align-items:center;gap:.25rem;
+            }
+            .cm-swatch{
+                width:44px;height:44px;border-radius:50%;cursor:grab;
+                border:3px solid rgba(255,255,255,0.55);
+                box-shadow:0 2px 8px rgba(0,0,0,0.28);
+                transition:transform .15s,box-shadow .15s;
+                flex-shrink:0;
+            }
+            .cm-swatch:hover{transform:scale(1.18);box-shadow:0 4px 16px rgba(0,0,0,0.38)}
+            .cm-swatch:active{cursor:grabbing;transform:scale(0.93)}
+            .cm-swatch-label{font-size:.65rem;color:var(--muted);white-space:nowrap}
+            .cm-cauldron-area{
+                display:flex;flex-direction:column;align-items:center;gap:.65rem;
+            }
+            .cm-cauldron{display:flex;flex-direction:column;align-items:center}
+            .cm-rim{
+                width:160px;height:22px;background:#444;border-radius:50%;
+                border:3px solid #666;z-index:1;position:relative;
+                box-shadow:0 2px 6px rgba(0,0,0,0.35);
+            }
+            .cm-pot{
+                width:140px;height:120px;background:#2a2a2a;
+                border-radius:8px 8px 70px 70px / 8px 8px 65px 65px;
+                overflow:hidden;border:4px solid #444;border-top:none;
+                margin-top:-3px;position:relative;cursor:copy;
+                box-shadow:inset 0 -8px 16px rgba(0,0,0,0.45),0 4px 14px rgba(0,0,0,0.3);
+                transition:border-color .2s,box-shadow .2s;
+            }
+            .cm-pot.cm-drag-over{
+                border-color:var(--accent);
+                box-shadow:inset 0 -8px 16px rgba(0,0,0,0.45),0 0 0 3px var(--accent),0 4px 14px rgba(0,0,0,0.3);
+            }
+            .cm-fill{
+                position:absolute;bottom:0;left:0;right:0;height:72%;
+                transition:background-color 0.7s ease;
+                border-radius:0 0 66px 66px / 0 0 60px 60px;
+            }
+            .cm-drop-hint{
+                position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+                font-size:.72rem;color:rgba(255,255,255,0.5);pointer-events:none;white-space:nowrap;
+            }
+            @keyframes cmBubbleRise{
+                0%{transform:translateY(0) scale(1);opacity:.75}
+                100%{transform:translateY(-28px) scale(0.4);opacity:0}
+            }
+            .cm-bubble{
+                position:absolute;border-radius:50%;
+                background:rgba(255,255,255,0.35);pointer-events:none;
+                animation:cmBubbleRise 0.9s ease-in forwards;
+            }
+            .cm-hex-display{
+                display:flex;align-items:center;gap:.5rem;
+                padding:.5rem .9rem;background:var(--card);
+                border:1px solid var(--border);border-radius:8px;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
+            }
+            .cm-hex-swatch{
+                width:26px;height:26px;border-radius:4px;
+                border:1px solid var(--border);flex-shrink:0;
+            }
+            .cm-hex-code{
+                font-family:monospace;font-size:1.05rem;font-weight:700;
+                color:var(--text);min-width:6em;letter-spacing:.05em;
+            }
+            .cm-copy-btn{
+                background:var(--input-bg);border:1px solid var(--border);
+                border-radius:6px;padding:.3rem .65rem;cursor:pointer;
+                font-size:.8rem;color:var(--text);transition:border-color .2s,background .2s;
+            }
+            .cm-copy-btn:hover{border-color:var(--accent)}
+            .cm-ingredients{
+                display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;
+                min-height:1.5rem;max-width:300px;
+            }
+            .cm-ingredient-dot{
+                width:16px;height:16px;border-radius:50%;
+                border:2px solid rgba(255,255,255,0.4);
+                box-shadow:0 1px 3px rgba(0,0,0,0.22);
+            }
+            .cm-actions{display:flex;gap:.5rem;align-items:center}
+            .cm-reset-btn,.cm-undo-btn{
+                padding:.4rem .9rem;border-radius:6px;border:1px solid var(--border);
+                background:var(--input-bg);color:var(--text);font-weight:600;
+                cursor:pointer;font-size:.85rem;
+                transition:border-color .2s,background .2s,color .2s;
+            }
+            .cm-reset-btn:hover:not(:disabled){border-color:#e53e3e;background:#e53e3e;color:#fff}
+            .cm-undo-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent);color:#fff}
+            .cm-reset-btn:disabled,.cm-undo-btn:disabled{opacity:.45;cursor:default}
         </style>
     </head>
     <body>
@@ -1404,6 +1503,254 @@
                 });
             };
 
+            // ---- Color Mixer demo ----
+            DEMOS['color-mixer'] = function(container){
+                // RYB trilinear cube corners – maps (R,Y,B) ∈ [0,1]³ to RGB ∈ [0,1]³
+                // This is the Itten/artist RYB model so mixing behaves like pigments.
+                const C = {
+                    '000': [1,      1,     1    ], // white
+                    '100': [1,      0,     0    ], // red
+                    '010': [1,      1,     0    ], // yellow
+                    '110': [1,      0.5,   0    ], // orange
+                    '001': [0.163,  0.373, 0.6  ], // blue
+                    '101': [0.5,    0,     0.5  ], // violet
+                    '011': [0,      0.66,  0.2  ], // green
+                    '111': [0.2,    0.094, 0    ]  // dark brown (all three primaries)
+                };
+
+                function rybToRgb(r, y, b){
+                    return [0, 1, 2].map(i => {
+                        const c00 = C['000'][i] + r*(C['100'][i]-C['000'][i]);
+                        const c01 = C['001'][i] + r*(C['101'][i]-C['001'][i]);
+                        const c10 = C['010'][i] + r*(C['110'][i]-C['010'][i]);
+                        const c11 = C['011'][i] + r*(C['111'][i]-C['011'][i]);
+                        const c0  = c00 + y*(c10-c00);
+                        const c1  = c01 + y*(c11-c01);
+                        return Math.max(0, Math.min(1, c0 + b*(c1-c0)));
+                    });
+                }
+
+                function mixRyb(rybList){
+                    if(!rybList.length) return [1,1,1];
+                    const n = rybList.length;
+                    const avg = rybList.reduce((s,c)=>[s[0]+c[0],s[1]+c[1],s[2]+c[2]], [0,0,0])
+                                      .map(v => v/n);
+                    return rybToRgb(avg[0], avg[1], avg[2]);
+                }
+
+                function rgbToHex(rgb){
+                    return '#' + rgb.map(v => Math.round(v*255).toString(16).padStart(2,'0')).join('');
+                }
+
+                // Base-color swatches: hex is the display colour, ryb is the RYB mixing coordinate
+                const swatches = [
+                    { name:'Red',    hex:'#DC143C', ryb:[1,    0,    0   ] },
+                    { name:'Orange', hex:'#FF6600', ryb:[0.7,  0.7,  0   ] },
+                    { name:'Yellow', hex:'#FFD700', ryb:[0,    1,    0   ] },
+                    { name:'Green',  hex:'#228B22', ryb:[0,    0.45, 0.55] },
+                    { name:'Blue',   hex:'#2255BB', ryb:[0,    0,    1   ] },
+                    { name:'Violet', hex:'#6600CC', ryb:[0.5,  0,    0.5 ] },
+                    { name:'White',  hex:'#F0F0F0', ryb:[0,    0,    0   ] },
+                    { name:'Black',  hex:'#1A1A1A', ryb:[1,    1,    1   ] }
+                ];
+
+                const cauldronContent = []; // { hex, ryb }
+
+                // ---- build DOM ----
+                const widget = document.createElement('div');
+                widget.className = 'color-mixer-widget';
+
+                // Instructions
+                const hint = document.createElement('div');
+                hint.style.cssText = 'font-size:.82rem;color:var(--muted);text-align:center;max-width:340px';
+                hint.textContent = 'Drag or click a colour to add it to the cauldron. Mix colours to discover new hues!';
+                widget.appendChild(hint);
+
+                // Palette
+                const palette = document.createElement('div');
+                palette.className = 'cm-palette';
+                widget.appendChild(palette);
+
+                swatches.forEach(sw => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'cm-swatch-wrap';
+
+                    const swatch = document.createElement('div');
+                    swatch.className = 'cm-swatch';
+                    swatch.style.background = sw.hex;
+                    swatch.title = 'Add ' + sw.name;
+                    swatch.setAttribute('draggable', 'true');
+
+                    swatch.addEventListener('dragstart', e => {
+                        e.dataTransfer.setData('text/plain', sw.name);
+                        e.dataTransfer.effectAllowed = 'copy';
+                    });
+                    swatch.addEventListener('click', () => addToCauldron(sw));
+
+                    const lbl = document.createElement('div');
+                    lbl.className = 'cm-swatch-label';
+                    lbl.textContent = sw.name;
+
+                    wrap.appendChild(swatch);
+                    wrap.appendChild(lbl);
+                    palette.appendChild(wrap);
+                });
+
+                // Cauldron area
+                const cauldronArea = document.createElement('div');
+                cauldronArea.className = 'cm-cauldron-area';
+                widget.appendChild(cauldronArea);
+
+                const cauldronEl = document.createElement('div');
+                cauldronEl.className = 'cm-cauldron';
+                cauldronArea.appendChild(cauldronEl);
+
+                const rim = document.createElement('div');
+                rim.className = 'cm-rim';
+                cauldronEl.appendChild(rim);
+
+                const pot = document.createElement('div');
+                pot.className = 'cm-pot';
+                cauldronEl.appendChild(pot);
+
+                const fill = document.createElement('div');
+                fill.className = 'cm-fill';
+                fill.style.background = '#f0f0f0';
+                pot.appendChild(fill);
+
+                const dropHint = document.createElement('div');
+                dropHint.className = 'cm-drop-hint';
+                dropHint.textContent = '🫙 Drop here';
+                pot.appendChild(dropHint);
+
+                // Drag-and-drop on the pot
+                pot.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'copy';
+                    pot.classList.add('cm-drag-over');
+                });
+                pot.addEventListener('dragleave', () => pot.classList.remove('cm-drag-over'));
+                pot.addEventListener('drop', e => {
+                    e.preventDefault();
+                    pot.classList.remove('cm-drag-over');
+                    const name = e.dataTransfer.getData('text/plain');
+                    const sw = swatches.find(s => s.name === name);
+                    if(sw) addToCauldron(sw);
+                });
+
+                // Hex display
+                const hexDisplay = document.createElement('div');
+                hexDisplay.className = 'cm-hex-display';
+                cauldronArea.appendChild(hexDisplay);
+
+                const hexSwatch = document.createElement('div');
+                hexSwatch.className = 'cm-hex-swatch';
+                hexSwatch.style.background = '#f0f0f0';
+
+                const hexCode = document.createElement('span');
+                hexCode.className = 'cm-hex-code';
+                hexCode.textContent = '#F0F0F0';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'cm-copy-btn';
+                copyBtn.textContent = '📋 Copy';
+                copyBtn.addEventListener('click', () => {
+                    const val = hexCode.textContent;
+                    if(navigator.clipboard){
+                        navigator.clipboard.writeText(val).then(() => flash());
+                    } else {
+                        const ta = document.createElement('textarea');
+                        ta.value = val;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        flash();
+                    }
+                    function flash(){
+                        copyBtn.textContent = '✅ Copied!';
+                        setTimeout(() => copyBtn.textContent = '📋 Copy', 1500);
+                    }
+                });
+
+                hexDisplay.appendChild(hexSwatch);
+                hexDisplay.appendChild(hexCode);
+                hexDisplay.appendChild(copyBtn);
+
+                // Ingredient dots
+                const ingredientsRow = document.createElement('div');
+                ingredientsRow.className = 'cm-ingredients';
+                cauldronArea.appendChild(ingredientsRow);
+
+                // Undo / Reset buttons
+                const actions = document.createElement('div');
+                actions.className = 'cm-actions';
+                cauldronArea.appendChild(actions);
+
+                const undoBtn = document.createElement('button');
+                undoBtn.className = 'cm-undo-btn';
+                undoBtn.textContent = '↩ Undo';
+                undoBtn.disabled = true;
+                undoBtn.addEventListener('click', () => {
+                    if(cauldronContent.length) { cauldronContent.pop(); updateCauldron(); }
+                });
+                actions.appendChild(undoBtn);
+
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'cm-reset-btn';
+                resetBtn.textContent = '🗑️ Reset';
+                resetBtn.disabled = true;
+                resetBtn.addEventListener('click', () => {
+                    cauldronContent.length = 0;
+                    updateCauldron();
+                });
+                actions.appendChild(resetBtn);
+
+                container.appendChild(widget);
+
+                // ---- logic ----
+                function addToCauldron(sw){
+                    cauldronContent.push({ hex: sw.hex, ryb: sw.ryb });
+                    updateCauldron();
+                    // Bubbles
+                    for(let i = 0; i < 4; i++){
+                        setTimeout(() => {
+                            const b = document.createElement('div');
+                            b.className = 'cm-bubble';
+                            const size = 6 + Math.random() * 8;
+                            b.style.cssText = `width:${size}px;height:${size}px;left:${10+Math.random()*80}%;bottom:${5+Math.random()*20}%`;
+                            pot.appendChild(b);
+                            b.addEventListener('animationend', () => b.remove());
+                        }, i * 140);
+                    }
+                }
+
+                function updateCauldron(){
+                    const mixed = mixRyb(cauldronContent.map(c => c.ryb));
+                    const hex   = rgbToHex(mixed).toUpperCase();
+
+                    fill.style.background = hex;
+                    hexSwatch.style.background = hex;
+                    hexCode.textContent = hex;
+
+                    dropHint.style.display = cauldronContent.length ? 'none' : 'block';
+
+                    ingredientsRow.innerHTML = '';
+                    cauldronContent.forEach(c => {
+                        const dot = document.createElement('div');
+                        dot.className = 'cm-ingredient-dot';
+                        dot.style.background = c.hex;
+                        dot.title = (swatches.find(s => s.hex === c.hex) || {}).name || '';
+                        ingredientsRow.appendChild(dot);
+                    });
+
+                    undoBtn.disabled  = cauldronContent.length === 0;
+                    resetBtn.disabled = cauldronContent.length === 0;
+                }
+
+                updateCauldron();
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -1412,7 +1759,8 @@
                 const demoList = [
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
-                    { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' }
+                    { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
+                    { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');
