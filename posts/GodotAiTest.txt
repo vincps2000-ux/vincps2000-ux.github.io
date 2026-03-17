@@ -1,0 +1,7 @@
+§Application§
+Vibecoded Small Mech 2D Game(see https://github.com/vincps2000-ux/MechBenchmark)
+Features: 
+    Choose between 3 Movement methods
+    Independent Mech torso Movement from Mech Legs.
+    Gun Placement correctly on Mech torso. 
+$Godotmechgame.png$
