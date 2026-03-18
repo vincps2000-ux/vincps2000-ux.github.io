@@ -1,0 +1,5 @@
+§Application§
+Reworked Godot architecture,
+added Flamethrower Weapon,
+Made Laser Continuos,
+Reworked Workspace Scene
