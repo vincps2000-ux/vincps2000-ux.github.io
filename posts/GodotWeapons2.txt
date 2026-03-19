@@ -1,0 +1,6 @@
+§Application§
+Reworked Godot MEch selection Preview,
+added charging Railgun with bobbing effect while charging,
+added Autocannon with Explosion on impact.
+changed flamethrower effect with randomized geometry effects.
+Reworked Workspace Scene
