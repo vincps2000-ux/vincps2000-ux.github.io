@@ -1,0 +1,16 @@
+§LeetCode§
+Solved Leetcode 1886.
+Key Concepts "Correct" Solution:
+
+https://leetcode.com/problems/determine-whether-matrix-can-be-obtained-by-rotation/solutions/7679234/transpose-reverse-rows-beats-100-by-jaya-tdq3/?envType=daily-question&envId=2026-03-22
+
+First Step: Transpose(Swapping Row and Colummn) Matrix. 
+This needs to happen since a 90 Degree Turn turns every horizontal Row into a vertical Columnn. 
+Second Step: Reverse each row.  This puts the columnns in the correct Order.
+
+Key Concepts Coordinate Transformation:
+The Formula for the next point (i,j) in a square matrix size n is: (i, j) → (j, n - 1 - i)
+Apply this to every point in the matrix.
+
+The Calculation  n - 1 - i calculates the mirrored Number of i, when the mirror center is n/2.
+The Dimension-Switching of J ensures a row or coloumn always contains the numbers in the same order.
