@@ -1,0 +1,17 @@
+§Tools§
+Installing RAMMAP, to gain some insight into my RAMUsage.
+ https://learn.microsoft.com/en-us/sysinternals/downloads/rammap
+
+Usage by Category:
+
+Process Private (Largest): Only a single Process can acess it.
+Mapped File: Essenstialy just a pointer map towards the actually used files: https://www.geeksforgeeks.org/operating-systems/memory-mapped-files-in-os/
+Shareable: Memory multiple Process can acess.
+paged pool: Kernel meory that can be moved out RAM
+nonpaged pool: Kernel meory that can not be moved out RAM
+System PTE: Page table Entries. Map virtual adresses to RAM (paged Pools mapping? )
+Metafile: System - Metadata
+Driver Locked: Memory locked by a driver, for example a Virtual Machine.
+AWE: Allwos 32 bit applications to access over 4 GB space.
+Kernel stack: Memory used for basic Kernel functionality, (function calls, variables, etc.)
+Session Private: Memory Lockes for a specific Usert/session (Useful on RDS-Servers)
