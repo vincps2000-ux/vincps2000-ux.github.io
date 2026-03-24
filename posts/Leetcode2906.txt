@@ -1,0 +1,16 @@
+§LeetCode§
+1. Approach: get Product of whole matrix, divide by current Cell.
+Does not work, because: Negative Numbers, max int. 
+
+2. Approach: 
+a forward pass over the matrix, calculating every product "before" the item.
+a backward pass over the matrix, calculating every product "after" the item.
+then: forward pass value * backward pass value modulo 12345.
+
+Interesting: The int overflows on some testcases. 
+Soloution: modulo can be applied multiple times, and order doesnt matter with multiplication operations:
+(a⋅b)modm=((amodm)⋅(bmodm))modm
+und 
+(amodm)modm=amodm
+So applying modulo after every operation reduces overflow risk 
+from the product of every matrix item to the product of the highest item * 12345. 

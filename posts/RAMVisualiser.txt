@@ -7,8 +7,8 @@ Usage by Category:
 Process Private (Largest): Only a single Process can acess it.
 Mapped File: Essenstialy just a pointer map towards the actually used files: https://www.geeksforgeeks.org/operating-systems/memory-mapped-files-in-os/
 Shareable: Memory multiple Process can acess.
-paged pool: Kernel meory that can be moved out RAM
-nonpaged pool: Kernel meory that can not be moved out RAM
+paged pool: Kernel meomory that can be moved out RAM
+nonpaged pool: Kernel memory that can not be moved out RAM
 System PTE: Page table Entries. Map virtual adresses to RAM (paged Pools mapping? )
 Metafile: System - Metadata
 Driver Locked: Memory locked by a driver, for example a Virtual Machine.
