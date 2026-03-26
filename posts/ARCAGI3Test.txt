@@ -1,0 +1,26 @@
+§Fun§
+Tested some Public ARC AGI 3 Tests.
+
+r11l(https://arcprize.org/tasks/r11l):
+simulating circles attached to ropes, moving the circles by changing rope attachment point.
+difficulty factors:
+-- more circles 
+-- tighter levels 
+--more colour in cirlcles
+-- colourable circles
+
+
+s5i5(https://arcprize.org/tasks/s5i5)
+hitting buttons extends bars, goal: getting bar into red cross.
+difficulty factors:
+-- bars can push each other
+-- obstacles move with bar
+-- multiple bars of same type, controls reverse.
+-- rotation button
+-- controls in diffrent locations
+-- area continues off-screen.
+
+Conclusion:
+very doable for default person.
+Eerily similar to default puzzle games. (Puzzle games as benchmark?)
+Why are models not beating the first Levels?
