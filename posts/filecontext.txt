@@ -1,0 +1,11 @@
+§Tools§
+Created a file specific Context menue action for .epub files.
+
+How to do this:
+Locate Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Classes\SystemFileAssociations
+Find or create Key for FileType and shell:
+.epub\shell
+Create Action name and command Key: 
+\Readepub2\command
+Fill command key default value with executed command (%1 is placeholder ):
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& python 'C:\Users\vince\projects\Epubreader\epubreader.py' '%1'"
