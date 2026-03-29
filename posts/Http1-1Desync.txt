@@ -1,0 +1,43 @@
+§Lecture§
+blackhat 2025: HTTP/1.1 Must Die!
+https://www.youtube.com/watch?v=FJbuAyxTTWc
+Http 1.1 Failures:
+No definite way to tell where one Request finsihes, and a new one starts.
+
+Fix:
+Use http 2 for backend to frontend communication. --> Problem: Http2 mostly used for User/Front-end interaction, then downgraded to 1.1 to talk to backend.
+
+ 
+ Classic desync attack:
+ send 2 requests at same time. --> Blocked by regex-Detector today.
+
+Front-end save, backend not.
+Cloudflare - Example:
+ Http2 poisoned--> leads to random users of other websites getting posoned content. 
+ worked by not using cloudflare cache busting, leading to internal desync. 
+
+Duplicated Host-Header. 
+ALB(Amazon Load balancer) into Windows IIS --> Amazon misses space-added host, IIS does not. 
+Protected by AWS http desync guardian, now configurable to drop invalid headers.
+
+Escaping connection deadlock:
+Removing Content-lnegth of a http-Message sometimes not possible, because the Server times out waiting for full request.
+Soloution: Trying to get files not allowed in windows e.g. /con /com 1  forces early termination,
+or other "Early-Request Gadget".
+
+double-Desync attack:
+    First request chops header of of secon request, which posons header of targeted request:
+    -Problem : length given in second - Header needs to be accurate, backends will add content to requests.
+    Desync added by firewall.
+
+Expect-Desync:
+    Expect breaks http-Requests into multiple requests. 
+    can be obfuscated as well Expect: y 100-continues
+
+Techniques:
+    Http-request Smuggler -->Detection automation for Http vulnerabilities. https://portswigger.net/bappstore/aaaa60ef945341e8a450217a54a11646
+
+ Cache-busting:
+ https://www.keycdn.com/support/what-is-cache-busting
+ technique to ensure a users cache does not display old versions of a website.
+ Works by changing url reguilarly with a version number.
