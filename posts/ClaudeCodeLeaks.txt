@@ -1,0 +1,33 @@
+§Fun§
+Looking through claude code Front-End Source code
+
+has a ripgrep file for multiple architectures (regex Search tool):
+https://ripgrep.org/
+
+sdk folder:
+    contains libraries
+    contains CHANGELOG file
+    _shim(Intercepts API calls and redirects/changes Parameters. Used to support older apis )
+
+src folder:
+    tool Folder:contains tool calls, for various integrations, e.g. Filesystem access via FileReadTool
+    command folder: for various actions that change the State of the Application(Login/logout,etc.)
+    component folder: for various React component
+    constant folder: for Constants, like a claude icon pixelart, or interestingly a black point, that switches to a diffrent char on macos.
+    entrypoint: Ways to interact with aplication contains mcp and cli boundarys
+    hooks: Code that is executed at certain points in the Application
+
+Fun Comment in Query.ts(Object that gets send to the ai in the Anthropic cloud):
+/**
+ * The rules of thinking are lengthy and fortuitous. They require plenty of thinking
+ * of most long duration and deep meditation for a wizard to wrap one's noggin around.
+ *
+ * The rules follow:
+ * 1. A message that contains a thinking or redacted_thinking block must be part of a query whose max_thinking_length > 0
+ * 2. A thinking block may not be the last message in a block
+ * 3. Thinking blocks must be preserved for the duration of an assistant trajectory (a single turn, or if that turn includes a tool_use block then also its subsequent tool_result and the following assistant message)
+ *
+ * Heed these rules well, young wizard. For they are the rules of thinking, and
+ * the rules of thinking are the rules of the universe. If ye does not heed these
+ * rules, ye will be punished with an entire day of debugging and hair pulling.
+ */
