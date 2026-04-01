@@ -1,0 +1,11 @@
+§Application§
+
+Vibecoded Armor system into game.
+
+Tried adding system with single Opus Prompt.
+
+
+Ran long enough for a decent session of keyboard pratice.
+
+There were problems with the test Suite, since it crashed VSC, preventing feedback to github copilot.
+A Clear pointer towards using a cli tool.
