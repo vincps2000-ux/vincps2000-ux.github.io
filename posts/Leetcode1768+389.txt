@@ -1,0 +1,18 @@
+§LeetCode§
+Solved Problem 1768.
+Simple, Key Insight:
+Use String Builder instead of String. 
+In a loop, checking for escape every turn is worse than escaping on minimal length and handeling it.
+
+Also Solved Problem 389.
+Key insight: 
+Simple, clean soultion is to run through string a , removing ever char found in string b.
+Fancy Soloution is applying a XOR operation through every char. 
+
+Why does this work?
+a XOR a
+would be : 1000001 XOR 1000001 = 0
+a XOR b XOR a
+would be : 1000001 XOR 1000010 XOR 1000001 = 1000010
+you are essentially "stacking" on each bit, and removing them again when the same char comes back around,
+thus only leaving bits without a partner.
