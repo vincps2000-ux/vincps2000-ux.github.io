@@ -238,5 +238,9 @@
     {
         "file": "GodotMultiWeapons.txt",
         "date": "2026-04-03"
+    },
+    {
+        "file": "GodotWorkshopRework.txt",
+        "date": "2026-04-04"
     }
 ]
