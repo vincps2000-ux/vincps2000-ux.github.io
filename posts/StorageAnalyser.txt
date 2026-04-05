@@ -1,0 +1,12 @@
+§Tool§
+
+Installed windirstat(Storage Visualisation tool) (https://windirstat.net/download.html)
+Reason for Install was dwindiling Storage.
+
+The Visualisation as a Box helps immensly with finding dead space:
+$Storagemanager.png$
+
+Found a forgotten .iso file for my Ubuntu install, 
+and realized that my XCOM 2 Install had balloned in Size due to installed mods.
+
+There is a large pagefile.sys, which might be because of Small RAM available on Machine.
