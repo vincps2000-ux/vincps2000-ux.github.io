@@ -1,0 +1,7 @@
+§UI§
+Installed ScreenTogif(https://www.screentogif.com/) to record .gif files.
+Added LazyLoading(Resource is only Loaded when Requested) to every image, so a animated .gif does not blow up site:
+
+Added Modification System to game.
+Added Autocannon Ammo types:
+$Animation.gif$
