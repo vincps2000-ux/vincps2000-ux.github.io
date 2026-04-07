@@ -1,0 +1,16 @@
+§Fun§
+Investigated Windows-Hostfile.
+interesting: 
+Fitgirl - Modification (IyKyK)
+
+Also Interesting:
+127.0.0.1 kubernetes.docker.internal
+To allow Docker to Mock local host?
+
+Direction is:
+<New Target> <Old Target>
+
+tried to add: 159.69.22.11 www.bild.de, but sadly it only blocks, because the Certificate does not match.
+
+Other, better ways:
+nginx?
