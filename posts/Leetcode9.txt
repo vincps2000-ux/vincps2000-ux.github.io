@@ -1,0 +1,8 @@
+§LeetCode§
+Solved leetcode Problem 9. (Easy Problem, because today i am lazy)
+Key Insight:
+By using /10 and modulo 10, each "position" in the int can be manipulated seperately.
+
+Interesting: 
+there is a overflow using this, because a reversed number might be higher than a none-reversed number.
+Adding a try/catch that exits false is a smart fix, because a palindrome would retain its value.
