@@ -1,0 +1,12 @@
+§Tool§
+Installed github copilot cli(https://github.com/features/copilot/cli).
+Interesting:
+github cli is a diffrent product(https://cli.github.com/) (Microsoft Naming ... ), for managing github actions, prs, etc...
+the remaining request percentage is diffrent from the one being shown in VSC.
+
+Why is this not a seperate Application?
+It has a Intro-Animation, it is not a simple cli command, its just a diffrent UI for a Chat window.
+
+No advantage over just choosing "Background" in VSC Chat Window.
+
+Biggest Feature is calling non-interactive mode with -p argument, for automated Processes.
