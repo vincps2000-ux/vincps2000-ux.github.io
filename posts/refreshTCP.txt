@@ -1,0 +1,22 @@
+§Lecture§
+
+Refreshed on TCP/IP (https://datatracker.ietf.org/doc/html/rfc1122#section-4.2)
+Important:
+Connection-based. Needs to sync with target first.
+    Allows Ordering/error checking.
+
+Starts with three-way handshake:
+Sync --> Sync ACK --> ACK
+Ends with Same handshake.
+Each paket needs to be acknowledged by target.
+
+TCP Header holds:
+Port destination & Source
+Sequence Number for Ordering
+Acknowledgment number
+Offset
+Flag-bits Sync, ACK, etc.
+Windows-Size (To prevent variable Length problems)
+Checksum(Error Handling)
+Urgent pointer(Marks data window as prioritized over other Data)
+Options/padding(Space for Data used by Protocol adjustments (Security,etc.))
