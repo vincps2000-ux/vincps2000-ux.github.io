@@ -1,0 +1,10 @@
+§Tool§
+Installed Gittea(https://about.gitea.com/products/gitea/) as a private Repository. 
+Interesting:
+Authenticating with Github Credential manager is possible.
+
+Install was extremly fast, taking 10 minutes fromn 0 Knowledge.
+I am surprised Companies pay for DevOps($6 per user per month), just to host some Repos.
+A Company of 35 users pays 180$ per Month. Calculating 40 Dollars per hour, this means putting in at max 4,5 Hours per Month is break even point.
+If build up from the beginning, this should be a money saver, while developing Know-how, maintaining spare capacity and Data Security.
+
