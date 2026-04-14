@@ -1,0 +1,3 @@
+§UI§
+Added a Report Section to the UI, to show longer running works of text. 
+Integrated into Calendar.
