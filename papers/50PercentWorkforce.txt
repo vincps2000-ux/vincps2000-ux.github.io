@@ -2,6 +2,57 @@ The Theory:
 Forcing Everybody to be "dual-employed", meaning spending 50% of a month at one employer,
 and 50% at another, when fully employed, would have positive Effects on the Economy.
 
+Reasons why this might Work:
+
+1.
+People working at two companies at the same time massivly increases Information throughput.
+For this to work, a employer must have very limited recourse over who a Employee works for as well.
+Enforced by either making it illegal to even Know/Ask who the " Employer 2" currently is, and when it is more 
+normalized reducing it, so only making decisions based on it is illegal. 
+The Goal is for every Employee to be a kind of Corporate Spy,
+who may work for the competition. 
+
+Things to prove:
+    - high Information Economies are advantageous.
+    - Ensuring Employers stick to the system is feasible.
+
+2.
+People working two slightly differing Jobs increase their Experience faster.
+Cross-Domain Knowledge would increase massivly.
+"Super-Combinations" are possible,where a person job 1 highly synergizes with job 2
+e.g. where a person who works at Microsoft, and with a Company integrating Microsoft products.
+
+Things to prove:
+    - Experience gained in differing Enviroments is higher value.
+    - Conflicts of Interest are kept in check.
+
+3.
+Employee-Employer Relations would shift in Favor of Employee. 
+The threat of firing is much lower, a employee can play both employers against each other.
+The Employer has more reason to keep Employees happy, since Employee Effort will not be spend evenly.
+
+Things to prove:
+    - Investing in Employees is still worth it.
+    
+4.
+A lower "Standard Unit" of 0.5 Employee instead of 1 Employee leads to higher Utilisations:
+
+Things to prove:
+    - This is not possible Today
+
+5. 
+Increased Risk protection on Employee-Level.
+
+Things to prove:
+    2 "0.5"-Jobs are less risky than a full job.
+
+Other:
+    - Find Edge cases.
+    - Additional Overhead
+
 
 --- 2026-04-14 — Setup ---
 Added Tomorrows Blog Subject as preview and test of Report System.
+
+--- 2026-04-15 — Structure ---
+Expanded on Pro-Reasons, layed out Structure of argument.
