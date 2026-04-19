@@ -1,0 +1,22 @@
+§LeetCode§
+Solved Leetcode 181.
+
+First Solution: 
+select name as "Employee" from Employee As testedEmployee
+where testedEmployee.salary > (SELECT max(Employee.salary) FROM Employee where testedEmployee.managerId = Employee.id 
+
+Simple Subquery for every entry. Obviously slow.
+
+Better:
+inner join can be used on two versions of the same Table: 
+from Employee e
+inner join Employee m
+on e.managerId = m.id 
+
+This means instead of Table-size number of Database operations, only 1 is needed.
+
+
+
+Interesting: 
+The question specifies "managers", suggesting the salary of a manager on a higher level should be compared as well.
+There are no testcases, for this however, and many posted soloutions wouldnt work.
