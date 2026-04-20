@@ -213,13 +213,13 @@
         "file": "ReportSection.txt",
         "date": "2026-04-14",
         "Keystrokes":  1609,
-        "Elapsed":  "00:27:40"
+        "timeElapsed":  "00:27:40"
     },
     {
         "file": "50PercentWorkforce.txt",
         "date": "2026-04-15",
         "Keystrokes":  3037,
-        "Elapsed":  "00:25:40"
+        "timeElapsed":  "00:25:40"
     },
     {
         "file": "LeetCode181.txt",

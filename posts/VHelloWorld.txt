@@ -1,0 +1,12 @@
+§Tool§
+Installed Programming language V(https://en.wikipedia.org/wiki/V_(programming_language)),
+Goal is to see a truly modern Programming language.
+
+Created Hello World as Test.
+
+Steps needed:
+Download: https://vlang.io/
+Extract, execute make.batch , symlink folder to "v"
+
+Run Programm:
+v run hello.v
