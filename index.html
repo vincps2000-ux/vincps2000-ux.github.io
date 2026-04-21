@@ -466,6 +466,43 @@
             .cm-undo-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent);color:#fff}
             .cm-reset-btn:disabled,.cm-undo-btn:disabled{opacity:.45;cursor:default}
 
+            /* ---- Language Wheel demo ---- */
+            .lang-wheel-widget{
+                display:flex;flex-direction:column;align-items:center;gap:.85rem;
+            }
+            .lang-wheel-wrap{
+                position:relative;display:inline-flex;
+                align-items:flex-start;justify-content:center;
+            }
+            .lang-wheel-pointer{
+                position:absolute;top:-4px;left:50%;
+                transform:translateX(-50%);
+                width:0;height:0;
+                border-left:11px solid transparent;
+                border-right:11px solid transparent;
+                border-top:22px solid #e53e3e;
+                filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));
+                z-index:2;
+            }
+            .lang-wheel-canvas{
+                display:block;max-width:100%;
+                border-radius:50%;
+                box-shadow:0 4px 24px rgba(0,0,0,.22);
+            }
+            .lang-wheel-btn{
+                padding:.55rem 2.2rem;border-radius:8px;border:none;
+                background:var(--accent);color:#fff;font-weight:700;
+                font-size:1.05rem;cursor:pointer;
+                transition:opacity .15s,transform .1s;
+            }
+            .lang-wheel-btn:hover:not(:disabled){opacity:.85;transform:scale(1.04)}
+            .lang-wheel-btn:active:not(:disabled){transform:scale(0.97)}
+            .lang-wheel-btn:disabled{opacity:.5;cursor:not-allowed}
+            .lang-wheel-result{
+                font-size:1.15rem;color:var(--text);
+                min-height:1.6em;text-align:center;font-weight:600;
+            }
+
             /* ---- Reports ---- */
             .reports{display:flex;flex-direction:column;gap:.75rem}
             details.report{
@@ -1868,6 +1905,153 @@
                 updateCauldron();
             };
 
+            // ---- Programming Language Wheel demo ----
+            DEMOS['lang-wheel'] = function(container){
+                const LANGS = [
+                    'Python','JavaScript','TypeScript','Java','C',
+                    'C++','C#','Rust','Go','Kotlin',
+                    'Swift','Ruby','PHP','Scala','Haskell',
+                    'Erlang','Clojure','Lua','R','Julia',
+                    'Dart','Elixir','Perl','COBOL','Fortran'
+                ];
+                const N = LANGS.length; // 25
+                const ARC = (2 * Math.PI) / N;
+                const SIZE = 300;
+                const CX = SIZE / 2, CY = SIZE / 2;
+                const R = SIZE / 2 - 8;   // outer radius
+                const HUB_R = 16;          // center hub radius
+
+                function segColor(i){
+                    const hue = Math.round(i * 360 / N);
+                    const lig = i % 2 === 0 ? 48 : 64;
+                    return `hsl(${hue},65%,${lig}%)`;
+                }
+
+                // ---- build DOM ----
+                const widget = document.createElement('div');
+                widget.className = 'lang-wheel-widget';
+
+                const wrap = document.createElement('div');
+                wrap.className = 'lang-wheel-wrap';
+
+                const pointer = document.createElement('div');
+                pointer.className = 'lang-wheel-pointer';
+
+                const canvas = document.createElement('canvas');
+                canvas.width  = SIZE;
+                canvas.height = SIZE;
+                canvas.className = 'lang-wheel-canvas';
+
+                wrap.appendChild(pointer);
+                wrap.appendChild(canvas);
+
+                const btn = document.createElement('button');
+                btn.className = 'lang-wheel-btn';
+                btn.textContent = '🎰 Spin!';
+
+                const resultEl = document.createElement('div');
+                resultEl.className = 'lang-wheel-result';
+
+                widget.appendChild(wrap);
+                widget.appendChild(btn);
+                widget.appendChild(resultEl);
+                container.appendChild(widget);
+
+                // ---- draw ----
+                let wheelAngle = 0;
+                let spinning   = false;
+
+                function draw(a){
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, SIZE, SIZE);
+
+                    for(let i = 0; i < N; i++){
+                        const start = a + i * ARC - Math.PI / 2;
+                        const end   = start + ARC;
+                        const mid   = start + ARC / 2;
+
+                        // Segment fill
+                        ctx.beginPath();
+                        ctx.moveTo(CX, CY);
+                        ctx.arc(CX, CY, R, start, end);
+                        ctx.closePath();
+                        ctx.fillStyle = segColor(i);
+                        ctx.fill();
+                        ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+
+                        // Radial text label (reads from hub toward rim)
+                        ctx.save();
+                        ctx.translate(CX, CY);
+                        ctx.rotate(mid);
+                        ctx.shadowColor = 'rgba(0,0,0,0.55)';
+                        ctx.shadowBlur  = 2;
+                        ctx.fillStyle   = 'rgba(255,255,255,0.93)';
+                        ctx.font        = 'bold 9px system-ui,sans-serif';
+                        ctx.textBaseline = 'middle';
+                        ctx.textAlign   = 'left';
+                        ctx.fillText(LANGS[i], HUB_R + 5, 0);
+                        ctx.shadowBlur = 0;
+                        ctx.restore();
+                    }
+
+                    // Center hub
+                    ctx.beginPath();
+                    ctx.arc(CX, CY, HUB_R, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#fff';
+                    ctx.fill();
+                    ctx.strokeStyle = '#ccc';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+
+                draw(wheelAngle);
+
+                // The pointer is fixed at the top (canvas angle -PI/2).
+                // Segment i starts at: a + i*ARC - PI/2
+                // Pointer at -PI/2 → find i where a + i*ARC - PI/2 <= -PI/2 < a + (i+1)*ARC - PI/2
+                //                   → i = floor(-a / ARC) mod N
+                function getWinner(a){
+                    const offset = ((-a % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+                    return LANGS[Math.floor(offset / ARC) % N];
+                }
+
+                function easeOut(t){ return 1 - Math.pow(1 - t, 4); }
+
+                btn.addEventListener('click', () => {
+                    if(spinning) return;
+                    spinning = true;
+                    btn.disabled = true;
+                    resultEl.textContent = '';
+
+                    // 4-8 full rotations + random offset
+                    const delta    = (4 + Math.random() * 4) * 2 * Math.PI + Math.random() * 2 * Math.PI;
+                    const duration = 3500 + Math.random() * 1000; // 3.5–4.5 s
+                    const startA   = wheelAngle;
+                    const targetA  = startA + delta;
+                    const t0       = performance.now();
+
+                    function frame(now){
+                        const t = Math.min((now - t0) / duration, 1);
+                        wheelAngle = startA + (targetA - startA) * easeOut(t);
+                        draw(wheelAngle);
+                        if(t < 1){
+                            requestAnimationFrame(frame);
+                        } else {
+                            wheelAngle = targetA;
+                            draw(wheelAngle);
+                            spinning = false;
+                            btn.disabled = false;
+                            const winner = getWinner(wheelAngle);
+                            resultEl.innerHTML = `🎉 Result: <strong>${winner}</strong>`;
+                        }
+                    }
+
+                    requestAnimationFrame(frame);
+                });
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -1877,7 +2061,8 @@
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
-                    { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' }
+                    { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' },
+                    { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');
