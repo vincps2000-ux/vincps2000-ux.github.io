@@ -1,0 +1,7 @@
+§Application§
+
+Added Polish on Gameflow, like having Part categories collapsible, a Level end returning to workshop,
+basic enemy pathfinding (when their paht leads into a obstacle in a short distance, they will move left or right, until no obstacle is seen)
+
+Added 2nd Level, where the Player needs to reach the other side of a screen, while fighting through enemies.
+Also features slow-down mud Pits.
