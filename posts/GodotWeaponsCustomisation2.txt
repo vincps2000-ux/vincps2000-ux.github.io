@@ -1,0 +1,6 @@
+§Application§
+
+Added Mines to Level 2,
+Barrel length customisation,
+Missile Customisation like in neboulous,
+Flamethrower is now Chemical Thrower with cryogenic, Fuel and Acid Option.
