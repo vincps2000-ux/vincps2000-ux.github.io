@@ -1,0 +1,6 @@
+§Application§
+
+Added 3rd Level, the first mech duel,
+added Tank enemy with directional weapon,
+added landship leg type, with capacity for two torsos,
+and a deadspot mechanic for each torso.
