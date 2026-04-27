@@ -1,0 +1,28 @@
+§Lecture§
+Came across a PATCH - Call today, which is so rare, it was blocked by the proxy.
+
+Current Knowledge:
+Post: Content given --> Receiver processes it.
+Put:  Exact new resource given --> Receiver creates overwrites Resource excatly.
+
+
+PATCH: partial resource given --> Receiver partialy updates resource.
+
+Its just a simple Update?
+Added in 2010 to Http:
+(https://datatracker.ietf.org/doc/html/rfc5789)
+
+Used JSONPlaceholder-Mock API(https://jsonplaceholder.typicode.com/) to test PATCH:
+
+
+ curl -X PATCH https://jsonplaceholder.typicode.com/posts/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated title via PATCH"
+  }'
+{
+  "userId": 1,
+  "id": 1,
+  "title": "Updated title via PATCH",
+  "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+}
