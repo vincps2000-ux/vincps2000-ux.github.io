@@ -1,0 +1,16 @@
+§Fun§
+
+Thought about a simple Phone App that could be used to use a computer use agent on any system.
+Idea:
+
+Mock HDI Mouse and keyboard, as well as a 2nd monitor on the Android(mocking a usb-hub?)
+
+Pros: Works with every computer, no install required.
+Cons: Agent only has acess to user inputs, no integrated tools.
+
+All parts are there:
+https://superdisplay.app/
+
+https://code.google.com/archive/p/androhid/
+
+Might need rooted Android
