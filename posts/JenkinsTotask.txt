@@ -1,0 +1,4 @@
+§Tool§
+
+Replaced Jenkins Release CI/CD pipeline with 
+VSC-task, since there is 0 out of Project Automation needed.
