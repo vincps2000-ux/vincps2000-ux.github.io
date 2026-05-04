@@ -1,0 +1,57 @@
+§Lecture§
+
+Reading through this:
+https://www.w3schools.com/xml/xml_whatis.asp
+
+- Markup Language
+- similar to JSON
+- data Transfer only
+
+MAny industry Standards:
+ -New industries (https://www.iptc.org/std/NITF/3.6/documentation/nitf-3-6.html)
+ - Weather industry
+
+Tree structure only
+enconding and version at start or Prolog of XML
+
+categorys of elements
+text -- just plain text
+attributes -- example: category="web"
+Other elements -- just another event
+
+namespaces url tag is weird, here a small demo:
+<library xmlns:bk="http://example.com/books"
+         xmlns:mv="http://example.com/movies">
+
+  <bk:title>Harry Potter (Book)</bk:title>
+  <mv:title>Harry Potter (Movie)</mv:title>
+</library>
+
+url does not have to be real, just unique. ensures collisen resistence.
+
+XML viewable in Browser, bad error display in firefox
+Most frameworks/displaying programms have a XML-parser
+
+DTD(Document Type Definition):
+Defines what is must be in a XML, to ensure completion.
+Same for XML Schema
+
+XML can be distritbuted same way as HTMl. 
+
+Programming Lessions:
+- Same naming Problematic when mixing xmls from application, utilize prefix
+- Process dynamically, never assume completness of Tags (Tree-Level too? use ID-attribute if present)
+- case Sensitivity is forced
+- entity reference required for chars:
+<,>,&,',"
+-Comments like this:  <!-- This is a comment -->
+- no Carriage return!
+- filter for self closing element <element />
+- use Xpath to navigate locally in XML (Regex for XML) example /bookstore/book[last()]
+- use XLST when displaying XML in Html
+- use XQuery when querying XMLs (SQL for XML)
+- use Xlink to embed link in elements
+- no Errors allowed in XML!!!! Use Validator fopr error resistence.
+
+Open Questions:
+    -multiple root elements? Yes
