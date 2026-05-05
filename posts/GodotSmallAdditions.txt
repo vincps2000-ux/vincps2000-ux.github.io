@@ -1,0 +1,4 @@
+§Application§
+Improved performance by cleaning up assets after a level.
+allow player mech to run over small enemies.
+
