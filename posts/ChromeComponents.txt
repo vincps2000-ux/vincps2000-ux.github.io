@@ -1,0 +1,24 @@
+Because of recent Chrome Controversies, looked through chrome://components/ functions
+
+WASM TTS Engine - not found. (Text to Spech)
+PKI Metadata - Something to do with public keys? 
+Subresource Filter Rules - Filters Content on pred defined Rules
+Crowd Deny - blocks permissions when entering wensite with bad reputation?
+Certificate Error Assistant - Helps with generating SSL certs
+Related Website Sets - allows multiple sites to act as a set, share things like cookies? (https://developer.mozilla.org/en-US/docs/Web/API/Storage_Access_API/Related_website_sets)
+Amount Extraction Heuristic Regexes
+CRLSet - List of revoked certs
+Chrome Improved Recovery - tracks and repairs botched installations
+Hyphenation - ensure correct breaking of words in small containers
+Safety Tips - alerts user of things like spoofed domains
+File Type Policies -- Does what it says, how browseer handles files.
+Trust Token Key Commitments 
+MEI Preload - Preloads Media content, like videos
+Origin Trials - Allows testing with browser
+Optimization Hints - Implementation say: Component for receiving Chrome Optimization Hints.
+Privacy Sandbox Attestations - Supposed to be a promise to not identify user via API if enrolled? Or way to get parts of userdata, but not others? Unsure.
+Actor Safety Lists - Maybe a Safe Browsing list, tracking sites that are evil?
+OnDeviceHeadSuggest - unclear, suspected of improving omnibox suggestions
+Widevine Content Decryption Module - plays DRM-Media (netflix, etc.)(what is the point?)
+Zxcvbn Data Dictionaries - Passwort strength
+Captcha Providers - Propably allows implementation of a Captcha 
