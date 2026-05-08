@@ -1,0 +1,4 @@
+§Application§
+Added Module Screen where a Resident Evil like inventory Screen allows adding modules of differing sizes.
+Added 2x2 Reactor and a 1x1 Reactor
+Reworked Energy System so there is no default energy Generation.
