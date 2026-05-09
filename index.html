@@ -2111,7 +2111,7 @@
 
                 const title = document.createElement('div');
                 title.className = 'rps-title';
-                title.textContent = 'Schere Stein Papier Helfer';
+                title.textContent = 'Schere-Stein-Papier Helfer';
                 widget.appendChild(title);
 
                 const subtitle = document.createElement('div');
@@ -2205,12 +2205,12 @@
 
                 startBtn.addEventListener('click', async () => {
                     try{
-                        const target = widget.closest('.demo-card') || widget;
+                        const target = widget.closest('.demo-card') || document.documentElement;
                         if(document.fullscreenElement !== target && target.requestFullscreen){
                             await target.requestFullscreen();
                         }
                     }catch(e){
-                        // Fullscreen can fail without user activation or browser support; continue anyway.
+                        // Fullscreen can fail without user activation or browser support. Continue anyway.
                     }
                     startRound();
                 });
