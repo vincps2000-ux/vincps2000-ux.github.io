@@ -2206,7 +2206,7 @@
                 startBtn.addEventListener('click', async () => {
                     try{
                         const target = widget.closest('.demo-card') || document.documentElement;
-                        if(document.fullscreenElement !== target && target.requestFullscreen){
+                        if(!document.fullscreenElement && target.requestFullscreen){
                             await target.requestFullscreen();
                         }
                     }catch(e){
