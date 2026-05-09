@@ -2116,7 +2116,7 @@
 
                 const subtitle = document.createElement('div');
                 subtitle.className = 'rps-subtitle';
-                subtitle.textContent = 'Start klicken, Vollbild öffnen und nacheinander wählen.';
+                subtitle.textContent = 'Starte das Spiel im Vollbild. Spieler 1 wählt zuerst, dann Spieler 2.';
                 widget.appendChild(subtitle);
 
                 const startBtn = document.createElement('button');
@@ -2126,7 +2126,7 @@
 
                 const status = document.createElement('div');
                 status.className = 'rps-status';
-                status.textContent = 'Bereit.';
+                status.textContent = 'Bereit';
                 widget.appendChild(status);
 
                 const choices = document.createElement('div');
@@ -2231,7 +2231,7 @@
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
                     { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' },
                     { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
-                    { id: 'rps-helper', title: '✂️ Schere Stein Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend zeigt die Winner-Ansicht den Sieger.' }
+                    { id: 'rps-helper', title: '✂️ Schere Stein Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend zeigt die Sieger-Ansicht den Sieger.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');
