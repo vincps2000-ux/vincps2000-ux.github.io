@@ -503,6 +503,49 @@
                 min-height:1.6em;text-align:center;font-weight:600;
             }
 
+            /* ---- Rock Paper Scissors Helper demo ---- */
+            .rps-widget{
+                display:flex;flex-direction:column;align-items:center;gap:.85rem;
+            }
+            .rps-title{
+                font-size:1rem;font-weight:700;color:var(--accent);text-align:center;
+            }
+            .rps-subtitle{
+                font-size:.85rem;color:var(--muted);text-align:center;
+            }
+            .rps-start{
+                padding:.55rem 1.1rem;border-radius:8px;border:none;
+                background:var(--accent);color:#fff;font-weight:700;cursor:pointer;
+                font-size:.95rem;transition:opacity .15s,transform .1s;
+            }
+            .rps-start:hover{opacity:.85;transform:scale(1.03)}
+            .rps-start:active{transform:scale(0.98)}
+            .rps-choices{
+                display:flex;gap:.55rem;flex-wrap:wrap;justify-content:center;
+            }
+            .rps-choice{
+                min-width:86px;padding:.55rem .7rem;border-radius:8px;border:1px solid var(--border);
+                background:var(--input-bg);color:var(--text);font-weight:700;cursor:pointer;
+                font-size:.9rem;transition:border-color .15s,background .15s,color .15s;
+            }
+            .rps-choice:hover{border-color:var(--accent)}
+            .rps-choice:disabled{opacity:.55;cursor:not-allowed}
+            .rps-status{
+                font-size:.92rem;font-weight:600;color:var(--text);text-align:center;
+                min-height:1.3em;
+            }
+            .rps-result{
+                width:100%;padding:.75rem .9rem;border-radius:8px;
+                border:1px solid var(--border);background:var(--input-bg);
+                font-size:.9rem;color:var(--text-secondary);text-align:center;
+            }
+            .rps-reset{
+                padding:.45rem .9rem;border-radius:6px;border:1px solid var(--border);
+                background:var(--input-bg);color:var(--text);font-weight:600;cursor:pointer;
+                font-size:.85rem;transition:border-color .15s,background .15s,color .15s;
+            }
+            .rps-reset:hover{border-color:var(--accent)}
+
             /* ---- Reports ---- */
             .reports{display:flex;flex-direction:column;gap:.75rem}
             details.report{
@@ -2052,6 +2095,131 @@
                 });
             };
 
+            // ---- Rock Paper Scissors Helper demo ----
+            DEMOS['rps-helper'] = function(container){
+                const options = [
+                    { key: 'rock', label: '🪨 Stein' },
+                    { key: 'paper', label: '📄 Papier' },
+                    { key: 'scissors', label: '✂️ Schere' }
+                ];
+                let p1Choice = '';
+                let p2Choice = '';
+                let stage = 'start';
+
+                const widget = document.createElement('div');
+                widget.className = 'rps-widget';
+
+                const title = document.createElement('div');
+                title.className = 'rps-title';
+                title.textContent = 'Schere-Stein-Papier Helfer';
+                widget.appendChild(title);
+
+                const subtitle = document.createElement('div');
+                subtitle.className = 'rps-subtitle';
+                subtitle.textContent = 'Starte das Spiel im Vollbild. Spieler 1 wählt zuerst, dann Spieler 2.';
+                widget.appendChild(subtitle);
+
+                const startBtn = document.createElement('button');
+                startBtn.className = 'rps-start';
+                startBtn.textContent = '▶️ Start (Vollbild)';
+                widget.appendChild(startBtn);
+
+                const status = document.createElement('div');
+                status.className = 'rps-status';
+                status.textContent = 'Bereit';
+                widget.appendChild(status);
+
+                const choices = document.createElement('div');
+                choices.className = 'rps-choices';
+                choices.style.display = 'none';
+                widget.appendChild(choices);
+
+                const result = document.createElement('div');
+                result.className = 'rps-result';
+                result.style.display = 'none';
+                widget.appendChild(result);
+
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'rps-reset';
+                resetBtn.textContent = '🔁 Neue Runde';
+                resetBtn.style.display = 'none';
+                widget.appendChild(resetBtn);
+
+                function getWinner(a, b){
+                    if(a === b) return 0;
+                    if(
+                        (a === 'rock' && b === 'scissors') ||
+                        (a === 'paper' && b === 'rock') ||
+                        (a === 'scissors' && b === 'paper')
+                    ) return 1;
+                    return 2;
+                }
+
+                function labelFor(key){
+                    const found = options.find(o => o.key === key);
+                    return found ? found.label : key;
+                }
+
+                function startRound(){
+                    p1Choice = '';
+                    p2Choice = '';
+                    stage = 'p1';
+                    choices.style.display = '';
+                    result.style.display = 'none';
+                    resetBtn.style.display = 'none';
+                    status.textContent = 'Spieler 1: Bitte wählen';
+                    for(const btn of choices.querySelectorAll('button')) btn.disabled = false;
+                }
+
+                function choose(opt){
+                    if(stage === 'p1'){
+                        p1Choice = opt;
+                        stage = 'p2';
+                        status.textContent = 'Spieler 2: Bitte wählen';
+                        return;
+                    }
+                    if(stage !== 'p2') return;
+                    p2Choice = opt;
+                    stage = 'done';
+                    for(const btn of choices.querySelectorAll('button')) btn.disabled = true;
+
+                    const winner = getWinner(p1Choice, p2Choice);
+                    const winnerText = winner === 0 ? 'Unentschieden' : winner === 1 ? 'Spieler 1 gewinnt' : 'Spieler 2 gewinnt';
+                    status.textContent = 'Ergebnis';
+                    result.style.display = '';
+                    result.innerHTML = `
+                        <strong>${winnerText}</strong><br>
+                        Spieler 1: ${labelFor(p1Choice)}<br>
+                        Spieler 2: ${labelFor(p2Choice)}
+                    `;
+                    resetBtn.style.display = '';
+                }
+
+                for(const option of options){
+                    const btn = document.createElement('button');
+                    btn.className = 'rps-choice';
+                    btn.textContent = option.label;
+                    btn.addEventListener('click', () => choose(option.key));
+                    choices.appendChild(btn);
+                }
+
+                startBtn.addEventListener('click', async () => {
+                    try{
+                        const target = widget.closest('.demo-card') || document.documentElement;
+                        if(!document.fullscreenElement && target.requestFullscreen){
+                            await target.requestFullscreen();
+                        }
+                    }catch(e){
+                        // Fullscreen can fail without user activation or browser support. Continue anyway.
+                    }
+                    startRound();
+                });
+
+                resetBtn.addEventListener('click', () => startRound());
+
+                container.appendChild(widget);
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -2062,7 +2230,8 @@
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
                     { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' },
-                    { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' }
+                    { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
+                    { id: 'rps-helper', title: '✂️ Schere-Stein-Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend wird der Sieger angezeigt.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');
