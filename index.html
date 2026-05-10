@@ -503,6 +503,32 @@
                 min-height:1.6em;text-align:center;font-weight:600;
             }
 
+            /* ---- Schere Stein Papier demo ---- */
+            .ssp-widget{
+                display:flex;flex-direction:column;align-items:center;gap:.8rem;
+            }
+            .ssp-row{
+                display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;
+            }
+            .ssp-btn{
+                padding:.5rem .85rem;border-radius:8px;border:1px solid var(--border);
+                background:var(--input-bg);color:var(--text);font-weight:600;
+                cursor:pointer;transition:border-color .2s,transform .08s,background .2s;
+            }
+            .ssp-btn:hover{border-color:var(--accent)}
+            .ssp-btn:active{transform:scale(.97)}
+            .ssp-score{
+                display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;
+                font-size:.85rem;color:var(--muted);
+            }
+            .ssp-pill{
+                background:var(--input-bg);border:1px solid var(--border);
+                padding:.2rem .5rem;border-radius:999px;
+            }
+            .ssp-result{
+                min-height:2.2em;text-align:center;font-size:.92rem;color:var(--text-secondary);
+            }
+
             /* ---- Reports ---- */
             .reports{display:flex;flex-direction:column;gap:.75rem}
             details.report{
@@ -2052,6 +2078,97 @@
                 });
             };
 
+            // ---- Schere Stein Papier demo ----
+            DEMOS['schere-stein-papier'] = function(container){
+                const choices = [
+                    { id: 'schere', label: '✂️ Schere' },
+                    { id: 'stein', label: '🪨 Stein' },
+                    { id: 'papier', label: '📄 Papier' }
+                ];
+
+                const beats = {
+                    schere: 'papier',
+                    stein: 'schere',
+                    papier: 'stein'
+                };
+
+                const widget = document.createElement('div');
+                widget.className = 'ssp-widget';
+
+                const row = document.createElement('div');
+                row.className = 'ssp-row';
+
+                const score = document.createElement('div');
+                score.className = 'ssp-score';
+
+                const result = document.createElement('div');
+                result.className = 'ssp-result';
+                result.textContent = 'Wahle Schere, Stein oder Papier.';
+
+                const reset = document.createElement('button');
+                reset.className = 'ssp-btn';
+                reset.textContent = 'Reset';
+
+                widget.appendChild(row);
+                widget.appendChild(score);
+                widget.appendChild(result);
+                widget.appendChild(reset);
+                container.appendChild(widget);
+
+                const state = { win: 0, lose: 0, draw: 0, rounds: 0 };
+
+                function choiceLabel(id){
+                    const c = choices.find(x => x.id === id);
+                    return c ? c.label : id;
+                }
+
+                function renderScore(){
+                    score.innerHTML = `
+                        <span class="ssp-pill">Runden: ${state.rounds}</span>
+                        <span class="ssp-pill">Siege: ${state.win}</span>
+                        <span class="ssp-pill">Niederlagen: ${state.lose}</span>
+                        <span class="ssp-pill">Unentschieden: ${state.draw}</span>
+                    `;
+                }
+
+                function play(player){
+                    const cpu = choices[Math.floor(Math.random() * choices.length)].id;
+                    state.rounds++;
+
+                    if(player === cpu){
+                        state.draw++;
+                        result.textContent = `Du: ${choiceLabel(player)} | CPU: ${choiceLabel(cpu)} -> Unentschieden`;
+                    } else if(beats[player] === cpu){
+                        state.win++;
+                        result.textContent = `Du: ${choiceLabel(player)} | CPU: ${choiceLabel(cpu)} -> Sieg`;
+                    } else {
+                        state.lose++;
+                        result.textContent = `Du: ${choiceLabel(player)} | CPU: ${choiceLabel(cpu)} -> Niederlage`;
+                    }
+
+                    renderScore();
+                }
+
+                for(const choice of choices){
+                    const btn = document.createElement('button');
+                    btn.className = 'ssp-btn';
+                    btn.textContent = choice.label;
+                    btn.addEventListener('click', () => play(choice.id));
+                    row.appendChild(btn);
+                }
+
+                reset.addEventListener('click', () => {
+                    state.win = 0;
+                    state.lose = 0;
+                    state.draw = 0;
+                    state.rounds = 0;
+                    result.textContent = 'Wahle Schere, Stein oder Papier.';
+                    renderScore();
+                });
+
+                renderScore();
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -2062,7 +2179,8 @@
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
                     { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' },
-                    { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' }
+                    { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
+                    { id: 'schere-stein-papier', title: '✂️ Schere Stein Papier', desc: 'Classic Schere Stein Papier game against a random CPU choice. Tracks rounds, wins, losses, and draws with instant feedback.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');

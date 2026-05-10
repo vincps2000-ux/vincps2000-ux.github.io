@@ -1,0 +1,12 @@
+§Fun§
+Built a Schere Stein Papier demo for the blog.
+
+It supports player vs computer rounds, tracks wins/losses/draws, and gives immediate round feedback.
+
+Inline demo:
+#schere-stein-papier#
+
+Notes:
+- Uses weighted random choice for the computer (equal chance for now)
+- Keeps a local score counter in the current page session
+- Designed to work both in the Demo tab and as embedded content in this post

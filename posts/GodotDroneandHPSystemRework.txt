@@ -1,0 +1,3 @@
+§Application§
+Reworked Hp System, so enemies and player use same system, allowing weapon and systems reuse.
+Added new Drone system, allowing for drone to be customized same as missile
