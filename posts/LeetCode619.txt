@@ -1,0 +1,6 @@
+§LeetCode§
+Solved Leet Code Problem 619:https://leetcode.com/problems/biggest-single-number/description/?envType=problem-list-v2&envId=database
+
+Core Insight:
+Simple suquery, doable by derived table of all results HAVING count < 2.
+https://www.wiseowl.co.uk/sql/guides/ctes-derived-tables/sql-derived-tables/
