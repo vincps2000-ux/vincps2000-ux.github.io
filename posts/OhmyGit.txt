@@ -1,0 +1,19 @@
+§Fun§
+Evaluating "Oh my Git"(https://blinry.itch.io/oh-my-git) as a git teaching tool.
+Programmed in Godot.
+cli is linux style
+
+Not everything tought is directly appliable when using git with a GUI, like is standard.
+
+The game seems to be better at expalining the technical side of Git, 
+however i fear someone actually wanting to use Git, will be mislead.
+
+Reasons:
+Only tehnical explanations, no explanations of actual usage.
+Solution and visualisation will be vastly diffrent in Project.
+Advanced and niche commands that are abstracted everywhere explained deeply: example git reset hard not needed by beginner
+No windowed mode for side by side usage with real Git
+Solution is gained by interpreting story.
+
+Conclusion:
+- Good for teechnical knowledge, initial workflow-knowledge should be build by using in a greenfield Project.
