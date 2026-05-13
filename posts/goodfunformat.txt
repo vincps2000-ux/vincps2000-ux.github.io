@@ -1,0 +1,12 @@
+§Fun§
+Created the .goodfun FileFormat.
+
+How does a Fileformat in Windows work?
+Any file can be named with any ending.
+Clicking the file executes a configurable executable.
+In this case a .ps1 file.
+
+Registry Key is:
+"HKCU:\Software\Classes\.goodfun" 
+
+ps1 script just opens a random website url from the .goodfun file
