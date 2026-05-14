@@ -1,0 +1,23 @@
+§Tools§
+WebAssembly is a prgramming Language. used Turtorial to gain Overview: https://www.tutorialspoint.com/webassembly
+Goal is to allow programms written in Low Level Languages like  C, c++ or Rust to be able to run in browser.
+
+Programm(c++, etc.) --> Wat --> Wasm
+
+Here is a good Site to test the Compiler: https://godbolt.org
+
+Wat example:
+(module
+   (func $add (param $a i32) (param $b i32) (result i32) 
+      get_local $a 
+      get_local $b 
+      i32.add
+   )
+   (export "add" (func $add))
+)
+
+In Javascript, 
+fetch("example.wasm") can be used to load the .wasm
+WebAssembly.compile() can be used to create a compiled webassembly module
+new WebAssembly.Instance(compiled module) can be used to create a executable Instance of the module 
+instance.exports.square(15) for example uses a created instance, module exports, function square with parameter 15

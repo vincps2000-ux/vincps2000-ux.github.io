@@ -366,5 +366,9 @@
     {
         "file":  "goodfunformat.txt",
         "date":  "2026-05-13"
+    },
+    {
+        "file":  "wasm.txt",
+        "date":  "2026-05-14"
     }
 ]
