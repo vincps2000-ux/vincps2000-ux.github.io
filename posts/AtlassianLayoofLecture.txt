@@ -1,0 +1,39 @@
+§Lecture§
+Laid off Atlassian Employee talks about his stuff(https://www.youtube.com/watch?v=55pTFVoclvE):
+Presentation TooL: 
+ExcaliDraw
+
+Interview:
+Coding Quiz hackerank
+gave WHite Paper, asked about it.
+Troubleshoot application Problem by promptiong for Information.
+
+
+Built OpenServiceBroker-version(APi to allow binding Resources to diffrent Cloud Services):
+Example(https://www.openservicebrokerapi.org/)
+Resource Binding done by Configuration File.
+
+Used python Library Connection first --> Flask--> fast API
+
+Application Flow Open Service Broker:
+Client requests Provisiong via FastAPi
+A SQS(Amazon Simple Queue Service, Basically a Buffer Cloud by Amazon) is created,
+and the Worker handles the Provisiong Task. afterwards saves data in a DynamoDB.
+
+Replacing Load Balancers with Open Source Version( Envoy Proxy(https://www.envoyproxy.io/))
+
+Envoys(Unclear) were created using AWS CloudFormation Templates.
+AMI Templates were created by SaltStack Configuration and AWS EC2 provisioner on an EC2 Instance
+
+Biggest Part after this was rewriting all MicroServices to use this.
+
+
+Dealing with Concerns in Cloud before backend Service is good for mone, infrastructure and speed/friction.
+Allows more async.
+
+These are handled in "SideCars"(Modules not needed for Service, but added for Convenience)
+DDOS Protection done by Cloudfront.
+Logging done by using envoy Feature
+Other Teams took over Sidecar creation 
+
+Most Changed area of Code are worst. "Churn" builds up here.
