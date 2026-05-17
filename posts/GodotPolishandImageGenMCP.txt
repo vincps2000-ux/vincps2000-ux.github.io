@@ -1,0 +1,8 @@
+§Application§
+Added Flamethrower/Laser/battery Customisation Modals.
+Added sensible Keybind defaults
+Added a MCP to GH Copilot, so it can utilize huggingface for image gen (0.10 Dollars free Inference per Month).
+Current Model is black-forest-labs/FLUX.1-schnell(https://en.wikipedia.org/wiki/Flux_(text-to-image_model)).
+Cost is roughly $0.0003 per low res(512x512) image (inferred from Reddit post by company, compared to other providers, who do provide cost),
+meaning roughly 300 images per month.(If this doesnt match, i will document it.)
+The pricing documentation is terrible.

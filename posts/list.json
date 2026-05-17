@@ -374,5 +374,13 @@
     {
         "file":  "AtlassianLayoofLecture.txt",
         "date":  "2026-05-15"
+    },
+    {
+        "file":  "GodotModules.txt",
+        "date":  "2026-05-17"
+    },
+    {
+        "file":  "GodotPolishandImageGenMCP.txt",
+        "date":  "2026-05-17"
     }
 ]
