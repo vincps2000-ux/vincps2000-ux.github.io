@@ -2274,6 +2274,8 @@
 
                 let selectedFile = null;
 
+                function toTxtName(name){ return name.replace(/\.pptx$/i, '.txt'); }
+
                 function handleFile(file){
                     if(!file) return;
                     if(!file.name.toLowerCase().endsWith('.pptx')){
@@ -2283,7 +2285,7 @@
                         return;
                     }
                     selectedFile = file;
-                    const txtName = file.name.slice(0, -5) + '.txt';
+                    const txtName = toTxtName(file.name);
                     status.textContent = `✅ Gewählt: ${file.name}  →  ${txtName}`;
                     downloadBtn.style.display = '';
                     dropzone.textContent = `📄 ${file.name}`;
@@ -2307,7 +2309,7 @@
 
                 downloadBtn.addEventListener('click', () => {
                     if(!selectedFile) return;
-                    const txtName = selectedFile.name.slice(0, -5) + '.txt';
+                    const txtName = toTxtName(selectedFile.name);
                     const url = URL.createObjectURL(selectedFile);
                     const a = document.createElement('a');
                     a.href = url;
@@ -2315,6 +2317,7 @@
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
+                    // Revoke the blob URL after the browser has had time to start the download
                     setTimeout(() => URL.revokeObjectURL(url), 10000);
                     status.textContent = `⬇️ Download gestartet: ${txtName}`;
                 });
