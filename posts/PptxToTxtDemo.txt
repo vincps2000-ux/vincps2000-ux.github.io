@@ -1,0 +1,12 @@
+§Tools§
+Built a client-side demo: .pptx-Datei auswählen → als .txt herunterladen (nur die Dateiendung ändert sich).
+
+Kein Server, kein Upload – alles passiert direkt im Browser über die File API und einen Blob-URL-Download.
+
+Inline demo:
+#pptx-to-txt#
+
+Notes:
+- Funktioniert auf dem Smartphone genauso wie am Desktop
+- Drag-and-drop wird ebenfalls unterstützt
+- Die Dateiendung wird von .pptx auf .txt geändert, der Inhalt bleibt unverändert
