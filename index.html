@@ -2223,6 +2223,111 @@
             // Alias for inline demo reference
             DEMOS['schere-stein-papier'] = DEMOS['rps-helper'];
 
+            // ---- PPTX → TXT (extension rename) demo ----
+            DEMOS['pptx-to-txt'] = function(container){
+                const widget = document.createElement('div');
+                widget.className = 'pptxtotxt-widget';
+                widget.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:1rem;padding:1.2rem;';
+
+                const label = document.createElement('label');
+                label.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:.5rem;cursor:pointer;width:100%;';
+
+                const dropzone = document.createElement('div');
+                dropzone.style.cssText = [
+                    'border:2px dashed var(--accent)',
+                    'border-radius:.75rem',
+                    'padding:2rem 1.5rem',
+                    'text-align:center',
+                    'width:100%',
+                    'box-sizing:border-box',
+                    'background:var(--input-bg)',
+                    'color:var(--muted)',
+                    'font-size:1rem',
+                    'transition:background .2s',
+                    'user-select:none'
+                ].join(';');
+                dropzone.textContent = '📂 .pptx-Datei auswählen oder hierher ziehen';
+
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation';
+                input.style.display = 'none';
+
+                label.appendChild(dropzone);
+                label.appendChild(input);
+
+                const status = document.createElement('div');
+                status.style.cssText = 'font-size:.9rem;color:var(--muted);min-height:1.2em;text-align:center;';
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = '⬇️ Als .txt herunterladen';
+                downloadBtn.style.cssText = [
+                    'display:none',
+                    'padding:.6rem 1.4rem',
+                    'border-radius:.5rem',
+                    'border:none',
+                    'background:var(--accent)',
+                    'color:#fff',
+                    'font-size:1rem',
+                    'cursor:pointer'
+                ].join(';');
+
+                let selectedFile = null;
+
+                function toTxtName(name){ return name.replace(/\.pptx$/i, '.txt'); }
+
+                function handleFile(file){
+                    if(!file) return;
+                    if(!file.name.toLowerCase().endsWith('.pptx')){
+                        status.textContent = '⚠️ Bitte nur .pptx-Dateien auswählen.';
+                        downloadBtn.style.display = 'none';
+                        selectedFile = null;
+                        return;
+                    }
+                    selectedFile = file;
+                    const txtName = toTxtName(file.name);
+                    status.textContent = `✅ Gewählt: ${file.name}  →  ${txtName}`;
+                    downloadBtn.style.display = '';
+                    dropzone.textContent = `📄 ${file.name}`;
+                }
+
+                input.addEventListener('change', () => handleFile(input.files[0]));
+
+                // Drag-and-drop support
+                dropzone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    dropzone.style.background = 'var(--bg-end)';
+                });
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.style.background = 'var(--input-bg)';
+                });
+                dropzone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    dropzone.style.background = 'var(--input-bg)';
+                    handleFile(e.dataTransfer.files[0]);
+                });
+
+                downloadBtn.addEventListener('click', () => {
+                    if(!selectedFile) return;
+                    const txtName = toTxtName(selectedFile.name);
+                    const url = URL.createObjectURL(selectedFile);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = txtName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    // Revoke the blob URL after the browser has had time to start the download
+                    setTimeout(() => URL.revokeObjectURL(url), 10000);
+                    status.textContent = `⬇️ Download gestartet: ${txtName}`;
+                });
+
+                widget.appendChild(label);
+                widget.appendChild(status);
+                widget.appendChild(downloadBtn);
+                container.appendChild(widget);
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -2234,7 +2339,8 @@
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
                     { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' },
                     { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
-                    { id: 'rps-helper', title: '✂️ Schere-Stein-Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend wird der Sieger angezeigt.' }
+                    { id: 'rps-helper', title: '✂️ Schere-Stein-Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend wird der Sieger angezeigt.' },
+                    { id: 'pptx-to-txt', title: '📑 PPTX → TXT Konverter', desc: '.pptx-Datei auswählen und mit geänderter Dateiendung (.txt) herunterladen. Rein client-seitig, kein Upload.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');
