@@ -12,8 +12,23 @@ normalized reducing it, so only making decisions based on it is illegal.
 The Goal is for every Employee to be a kind of Corporate Spy,
 who may work for the competition. 
 
-Things to prove:
-    - high Information Economies are advantageous.
+    Assumption:
+        - high Information Economies are advantageous:
+            Lets look at various Examples, in order to compare between high and Low Information.
+            Game - Theory:
+                In a Game, where Cooperation is the Goal, a higher Infromation Speed leads to better performance of coperating Parties.
+                Example with Prisoners Dilemma:
+                &DillemaP&
+                The higher the Information Lag, the more unforgiving and "Always defect" get an advantage over "forgiving cooperate".
+                Reestablishing after Informnation error gets harder.
+
+            Market Examples:
+                This is a famous Example of Information Acess driving better market outcomes:
+                https://www.sfu.ca/~allen/Ackerlof.pdf
+
+
+
+    Things to prove:
     - Ensuring Employers stick to the system is feasible.
 
 2.
@@ -56,3 +71,6 @@ Added Tomorrows Blog Subject as preview and test of Report System.
 
 --- 2026-04-15 — Structure ---
 Expanded on Pro-Reasons, layed out Structure of argument.
+
+--- 2026-05-20 — Information Economy ---
+Laid out reasons why high information economy is better.

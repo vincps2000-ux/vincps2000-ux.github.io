@@ -546,6 +546,75 @@
             }
             .rps-reset:hover{border-color:var(--accent)}
 
+            /* ---- Prisoner's Dilemma demo ---- */
+            .pd-widget{
+                display:flex;flex-direction:column;gap:.85rem;
+            }
+            .pd-controls{
+                display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+                gap:.6rem;align-items:end;
+            }
+            .pd-controls label{
+                display:flex;flex-direction:column;gap:.3rem;
+                font-size:.8rem;font-weight:600;color:var(--muted);
+            }
+            .pd-controls select,
+            .pd-controls input[type=range]{
+                width:100%;padding:.4rem .5rem;border-radius:6px;
+                border:1px solid var(--border);background:var(--input-bg);
+                color:var(--text);font-size:.9rem;
+            }
+            .pd-run-btn{
+                padding:.55rem .9rem;border-radius:8px;border:none;
+                background:var(--accent);color:#fff;font-weight:700;cursor:pointer;
+                font-size:.9rem;transition:opacity .15s;
+            }
+            .pd-run-btn:hover{opacity:.86}
+            .pd-meta{
+                font-size:.82rem;color:var(--muted);
+            }
+            .pd-score{
+                display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));
+                gap:.5rem;
+            }
+            .pd-score-card{
+                background:var(--input-bg);border:1px solid var(--border);border-radius:8px;
+                padding:.55rem .7rem;
+            }
+            .pd-score-card strong{
+                display:block;font-size:.75rem;color:var(--muted);margin-bottom:.15rem;
+            }
+            .pd-score-card span{
+                font-size:1rem;font-weight:700;color:var(--text);
+            }
+            .pd-timeline{
+                display:grid;grid-template-columns:repeat(50,minmax(8px,1fr));
+                gap:2px;background:var(--border);padding:2px;border-radius:8px;
+                overflow-x:auto;
+            }
+            .pd-turn{
+                display:grid;grid-template-rows:1fr 1fr;gap:2px;
+                min-width:10px;
+            }
+            .pd-cell{
+                height:12px;border-radius:2px;
+            }
+            .pd-c{background:#22c55e}
+            .pd-d{background:#ef4444}
+            .pd-rows{
+                max-height:220px;overflow:auto;border:1px solid var(--border);
+                border-radius:8px;background:var(--input-bg);
+            }
+            .pd-table{
+                width:100%;border-collapse:collapse;font-size:.78rem;
+            }
+            .pd-table th,
+            .pd-table td{
+                padding:.35rem .4rem;border-bottom:1px solid var(--border);text-align:left;
+                font-variant-numeric:tabular-nums;
+            }
+            .pd-table th{position:sticky;top:0;background:var(--card);z-index:1}
+
             /* ---- Reports ---- */
             .reports{display:flex;flex-direction:column;gap:.75rem}
             details.report{
@@ -870,8 +939,21 @@
                     }, 0);
                     return `<div class="inline-demo" id="${uid}"><div class="inline-demo-label">🧪 Interactive Demo: ${demoName}</div></div>`;
                 });
+                // Legacy report syntax: &demoname&
+                const withLegacyDemos = withDemos.replace(/&amp;([a-zA-Z0-9_\-]+)&amp;/g, (match, demoName) => {
+                    if(!DEMOS[demoName]) return match;
+                    const uid = 'inline-demo-' + demoName + '-' + Math.random().toString(36).slice(2,8);
+                    setTimeout(() => {
+                        const container = document.getElementById(uid);
+                        if(container && !container.dataset.init){
+                            container.dataset.init = '1';
+                            DEMOS[demoName](container);
+                        }
+                    }, 0);
+                    return `<div class="inline-demo" id="${uid}"><div class="inline-demo-label">🧪 Interactive Demo: ${demoName}</div></div>`;
+                });
                 // Convert plain URLs into clickable links (skip URLs already inside HTML attributes)
-                const withLinks = withDemos.replace(/(^|[^"'=])(https?:\/\/[^\s<)]+)/g, (m, pre, url) => {
+                const withLinks = withLegacyDemos.replace(/(^|[^"'=])(https?:\/\/[^\s<)]+)/g, (m, pre, url) => {
                     return `${pre}<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
                 });
                 return withLinks;
@@ -2223,6 +2305,232 @@
             // Alias for inline demo reference
             DEMOS['schere-stein-papier'] = DEMOS['rps-helper'];
 
+            // ---- 50-turn Prisoner's Dilemma demo ----
+            DEMOS['DillemaP'] = function(container){
+                const TURN_COUNT = 50;
+                const PAYOFF = {
+                    CC: [3,3],
+                    CD: [0,5],
+                    DC: [5,0],
+                    DD: [1,1]
+                };
+
+                const widget = document.createElement('div');
+                widget.className = 'pd-widget';
+
+                const controls = document.createElement('div');
+                controls.className = 'pd-controls';
+                controls.innerHTML = `
+                    <label>
+                        Bot A strategy
+                        <select class="pd-strat-a">
+                            <option value="cooperate-unforgiving">Cooperate unforgiving</option>
+                            <option value="defect-100">Defect 100</option>
+                            <option value="cooperate-forgiving">Cooperate forgiving</option>
+                        </select>
+                    </label>
+                    <label>
+                        Bot B strategy
+                        <select class="pd-strat-b">
+                            <option value="cooperate-unforgiving">Cooperate unforgiving</option>
+                            <option value="defect-100" selected>Defect 100</option>
+                            <option value="cooperate-forgiving">Cooperate forgiving</option>
+                        </select>
+                    </label>
+                    <label>
+                        Information lag: <span class="pd-lag-label">0</span>
+                        <input class="pd-lag" type="range" min="0" max="20" value="0">
+                    </label>
+                    <label>
+                        Forgiving chance (%): <span class="pd-forgive-label">12</span>
+                        <input class="pd-forgive" type="range" min="0" max="100" value="12">
+                    </label>
+                    <label>
+                        Communication error (%): <span class="pd-error-label">0</span>
+                        <input class="pd-error" type="range" min="0" max="100" value="0">
+                    </label>
+                    <button class="pd-run-btn">Run 50 turns</button>
+                `;
+
+                const meta = document.createElement('div');
+                meta.className = 'pd-meta';
+
+                const score = document.createElement('div');
+                score.className = 'pd-score';
+
+                const timeline = document.createElement('div');
+                timeline.className = 'pd-timeline';
+
+                const rowsWrap = document.createElement('div');
+                rowsWrap.className = 'pd-rows';
+                const table = document.createElement('table');
+                table.className = 'pd-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Turn</th>
+                            <th>A</th>
+                            <th>B</th>
+                            <th>A pts</th>
+                            <th>B pts</th>
+                            <th>A total</th>
+                            <th>B total</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+                rowsWrap.appendChild(table);
+
+                widget.appendChild(controls);
+                widget.appendChild(meta);
+                widget.appendChild(score);
+                widget.appendChild(timeline);
+                widget.appendChild(rowsWrap);
+                container.appendChild(widget);
+
+                const stratAEl = controls.querySelector('.pd-strat-a');
+                const stratBEl = controls.querySelector('.pd-strat-b');
+                const lagEl = controls.querySelector('.pd-lag');
+                const lagLabelEl = controls.querySelector('.pd-lag-label');
+                const forgiveEl = controls.querySelector('.pd-forgive');
+                const forgiveLabelEl = controls.querySelector('.pd-forgive-label');
+                const errorEl = controls.querySelector('.pd-error');
+                const errorLabelEl = controls.querySelector('.pd-error-label');
+                const runBtn = controls.querySelector('.pd-run-btn');
+                const tbody = table.querySelector('tbody');
+
+                lagEl.addEventListener('input', () => {
+                    lagLabelEl.textContent = lagEl.value;
+                });
+                forgiveEl.addEventListener('input', () => {
+                    forgiveLabelEl.textContent = forgiveEl.value;
+                });
+                errorEl.addEventListener('input', () => {
+                    errorLabelEl.textContent = errorEl.value;
+                });
+
+                function pickMove(strategy, visibleOppMoves, state, forgivingChance){
+                    if(strategy === 'defect-100') return 'D';
+
+                    if(strategy === 'cooperate-unforgiving'){
+                        if(!state.triggered && visibleOppMoves.includes('D')) state.triggered = true;
+                        return state.triggered ? 'D' : 'C';
+                    }
+
+                    // cooperate-forgiving
+                    const n = visibleOppMoves.length;
+                    const lastTwoDefect = n >= 2 && visibleOppMoves[n - 1] === 'D' && visibleOppMoves[n - 2] === 'D';
+                    if(lastTwoDefect){
+                        // Chance to attempt re-establishing trust by cooperating.
+                        return Math.random() * 100 < forgivingChance ? 'C' : 'D';
+                    }
+                    return 'C';
+                }
+
+                function applyCommunicationError(move, errorChance){
+                    if(Math.random() * 100 < errorChance){
+                        return move === 'C' ? 'D' : 'C';
+                    }
+                    return move;
+                }
+
+                function simulate(stratA, stratB, lag, forgivingChance, errorChance){
+                    const aMoves = [];
+                    const bMoves = [];
+                    const rounds = [];
+                    const aState = { triggered: false };
+                    const bState = { triggered: false };
+                    let aTotal = 0;
+                    let bTotal = 0;
+
+                    for(let turn = 0; turn < TURN_COUNT; turn++){
+                        const visibleCount = Math.max(0, turn - lag);
+                        const visibleBToA = bMoves.slice(0, visibleCount);
+                        const visibleAToB = aMoves.slice(0, visibleCount);
+
+                        const aIntended = pickMove(stratA, visibleBToA, aState, forgivingChance);
+                        const bIntended = pickMove(stratB, visibleAToB, bState, forgivingChance);
+                        const aMove = applyCommunicationError(aIntended, errorChance);
+                        const bMove = applyCommunicationError(bIntended, errorChance);
+                        const aFlipped = aMove !== aIntended;
+                        const bFlipped = bMove !== bIntended;
+
+                        const key = aMove + bMove;
+                        const [aPts, bPts] = PAYOFF[key];
+                        aTotal += aPts;
+                        bTotal += bPts;
+
+                        aMoves.push(aMove);
+                        bMoves.push(bMove);
+                        rounds.push({ turn: turn + 1, aMove, bMove, aIntended, bIntended, aFlipped, bFlipped, aPts, bPts, aTotal, bTotal });
+                    }
+
+                    return rounds;
+                }
+
+                function render(rounds, lag, forgivingChance, errorChance){
+                    const last = rounds[rounds.length - 1];
+                    const aCoop = rounds.filter(r => r.aMove === 'C').length;
+                    const bCoop = rounds.filter(r => r.bMove === 'C').length;
+                    const flipCount = rounds.filter(r => r.aFlipped || r.bFlipped).length;
+
+                    meta.textContent = `Payoff matrix: CC=3/3, CD=0/5, DC=5/0, DD=1/1. Lag ${lag} turn(s). Forgiving chance ${forgivingChance}%. Communication error ${errorChance}% (flipped on ${flipCount}/${TURN_COUNT} turns).`;
+
+                    score.innerHTML = `
+                        <div class="pd-score-card"><strong>Bot A total</strong><span>${last.aTotal} points (${aCoop}/${TURN_COUNT} cooperate)</span></div>
+                        <div class="pd-score-card"><strong>Bot B total</strong><span>${last.bTotal} points (${bCoop}/${TURN_COUNT} cooperate)</span></div>
+                    `;
+
+                    timeline.innerHTML = '';
+                    for(const r of rounds){
+                        const col = document.createElement('div');
+                        col.className = 'pd-turn';
+                        col.title = `Turn ${r.turn}: A ${r.aMove}${r.aFlipped ? ' (flipped)' : ''} / B ${r.bMove}${r.bFlipped ? ' (flipped)' : ''} -> ${r.aPts}:${r.bPts}`;
+
+                        const top = document.createElement('div');
+                        top.className = 'pd-cell ' + (r.aMove === 'C' ? 'pd-c' : 'pd-d');
+                        const bottom = document.createElement('div');
+                        bottom.className = 'pd-cell ' + (r.bMove === 'C' ? 'pd-c' : 'pd-d');
+
+                        col.appendChild(top);
+                        col.appendChild(bottom);
+                        timeline.appendChild(col);
+                    }
+
+                    tbody.innerHTML = '';
+                    for(const r of rounds){
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${r.turn}</td>
+                            <td>${r.aMove}</td>
+                            <td>${r.bMove}</td>
+                            <td>${r.aPts}</td>
+                            <td>${r.bPts}</td>
+                            <td>${r.aTotal}</td>
+                            <td>${r.bTotal}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                }
+
+                runBtn.addEventListener('click', () => {
+                    const lag = parseInt(lagEl.value, 10) || 0;
+                    const forgivingChance = parseInt(forgiveEl.value, 10) || 0;
+                    const errorChance = parseInt(errorEl.value, 10) || 0;
+                    const rounds = simulate(stratAEl.value, stratBEl.value, lag, forgivingChance, errorChance);
+                    render(rounds, lag, forgivingChance, errorChance);
+                });
+
+                const initialLag = parseInt(lagEl.value, 10) || 0;
+                const initialForgiving = parseInt(forgiveEl.value, 10) || 0;
+                const initialError = parseInt(errorEl.value, 10) || 0;
+                const initialRounds = simulate(stratAEl.value, stratBEl.value, initialLag, initialForgiving, initialError);
+                render(initialRounds, initialLag, initialForgiving, initialError);
+            };
+
+            // Alias for clearer #demo# references
+            DEMOS['prisoners-dilemma-50'] = DEMOS['DillemaP'];
+
             // ---- PPTX → TXT (extension rename) demo ----
             DEMOS['pptx-to-txt'] = function(container){
                 const widget = document.createElement('div');
@@ -2340,6 +2648,7 @@
                     { id: 'color-mixer', title: '🎨 Colour Mixer', desc: 'Drag or click base colours into the cauldron to mix them using RYB pigment theory (the artist\'s colour wheel). Get the hex code of the result!' },
                     { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
                     { id: 'rps-helper', title: '✂️ Schere-Stein-Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend wird der Sieger angezeigt.' },
+                    { id: 'DillemaP', title: '🤝 50-Turn Prisoner\'s Dilemma', desc: 'Simulate 50 turns between two strategies (Cooperate unforgiving, Defect 100, Cooperate forgiving) with configurable information lag.' },
                     { id: 'pptx-to-txt', title: '📑 PPTX → TXT Konverter', desc: '.pptx-Datei auswählen und mit geänderter Dateiendung (.txt) herunterladen. Rein client-seitig, kein Upload.' }
                 ];
                 for(const demo of demoList){
