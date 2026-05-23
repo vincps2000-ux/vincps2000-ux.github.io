@@ -1,0 +1,13 @@
+§Tools§
+WMIC (Windows Management Instrumentation CLI) can be used as a Cmdlet to find out Information about the System.
+For example wmic cpu get  /format:list gets much Information about the CPU in this dataformat (https://learn.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor):
+
+Interesting ones:
+Asset tag: ID hardcoded by the mabufacturer, currently no longer set in CPUs, therefore none
+Availability: Physical Status Code for CPu, Running/all good is 3
+CPU Status: Another Status Code but for Software side, things like disabled by bios. All good is 1. 
+Characteristics: bitmask which is essentrialy just a row of booleans for diffrent capabilities of the Processor, like multi core or Execute Protection.
+ExtClock: Baseline Clock provided by the Motherboard. CPU runs on a multiplier of Motherboard speed.
+Family: Signifies the product line.
+Apparently the Manufacturer attribute is often used for Jokes. Mine is "Manufacturer=GenuineIntel", and apperently "AMDisbetter!" was also real.
+UpgradeMethod: Ways the Processor can be upgraded (why is this information here?)
