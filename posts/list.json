@@ -390,5 +390,9 @@
     {
         "file":  "WMICCPUInfo.txt",
         "date":  "2026-05-23"
+    },
+    {
+        "file":  "GITrefsStructure.txt",
+        "date":  "2026-05-24"
     }
 ]

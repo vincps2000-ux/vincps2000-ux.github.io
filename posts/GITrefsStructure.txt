@@ -1,0 +1,14 @@
+§Tools§
+
+Git Refs (References) are found in the .git Folder of every Git-Repo,
+under the refs Folder.
+It contains three Folders:
+\heads
+    Has the hash of the commit that is last of its branch
+\remotes
+    The Refs structure of the Remote Gits. contains Ref to every Branch.
+
+\tags
+    contains a File for each Tag. File is named after tag, and contains hash of commit tag is applied to.
+    Command for applying tag to commit:
+    git tag {TagName} {CommitID (e.g. HEAD)}
