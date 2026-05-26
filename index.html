@@ -119,6 +119,21 @@
                 display:flex;align-items:center;justify-content:center;
             }
             .theme-toggle:hover{border-color:var(--accent)}
+            .home-btn{
+                background:var(--input-bg);border:1px solid var(--border);border-radius:6px;
+                padding:.45rem .8rem;cursor:pointer;font-size:.9rem;line-height:1;
+                color:var(--text);transition:background .2s,border-color .2s;
+            }
+            .home-btn:hover{border-color:var(--accent)}
+
+            .single-post-mode .tabs{display:none}
+            .single-post-mode #search,
+            .single-post-mode #sort{display:none}
+            .single-post-mode #reports-panel,
+            .single-post-mode #calendar-panel,
+            .single-post-mode #stats-panel,
+            .single-post-mode #demo-panel{display:none !important}
+            .single-post-mode #posts-panel{display:block}
 
             /* ---- Tabs ---- */
             .tabs{
@@ -670,6 +685,7 @@
                     <div class="subtitle">A very simple Blog where I post my daily after-work Experimentation. Effort is usually between 15-30 minutes. Goal is a Post per day, Life permitting.</div>
                 </div>
                 <div class="controls">
+                    <button id="home-btn" class="home-btn" hidden>Home</button>
                     <input id="search" class="search" placeholder="Filter posts by name or text..." />
                     <select id="sort" class="select" aria-label="Sort by date">
                         <option value="date-desc">Date: Newest first</option>
@@ -735,6 +751,39 @@
             const postsEl = document.getElementById('posts');
             const searchEl = document.getElementById('search');
             const sortEl = document.getElementById('sort');
+            const homeBtn = document.getElementById('home-btn');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const singleBlogRaw = (urlParams.get('blogname') || '').trim();
+            const isSingleBlogMode = singleBlogRaw.length > 0;
+
+            function normalizeBlogKey(value){
+                return String(value || '')
+                    .trim()
+                    .replace(/\.txt$/i, '')
+                    .toLowerCase()
+                    .replace(/[\s_\-]+/g, '');
+            }
+
+            const singleBlogKey = normalizeBlogKey(singleBlogRaw);
+
+            function matchesSingleBlogEntry(entry){
+                if(!isSingleBlogMode) return true;
+                const fileKey = normalizeBlogKey(entry.file);
+                const titleKey = normalizeBlogKey(getDisplayTitle(entry.file, entry.title));
+                return fileKey === singleBlogKey || titleKey === singleBlogKey;
+            }
+
+            if(isSingleBlogMode){
+                document.body.classList.add('single-post-mode');
+                homeBtn.hidden = false;
+                homeBtn.addEventListener('click', () => {
+                    const target = new URL(window.location.href);
+                    target.searchParams.delete('blogname');
+                    const query = target.searchParams.toString();
+                    window.location.href = target.pathname + (query ? ('?' + query) : '') + target.hash;
+                });
+            }
 
             // ---- Tag definitions (loaded from Tags.json) ----
             let tagDefs = {};      // { TagName: { color, emoji } }
@@ -818,7 +867,13 @@
                     }
                     postsEl.innerHTML = '';
                     const entries = list.map(normalizeEntry).filter(e=>typeof e.file === 'string' && e.file.trim().length>0);
-                    const sorted = sortEntries(entries, sortEl.value);
+                    const filtered = entries.filter(matchesSingleBlogEntry);
+                    if(isSingleBlogMode && filtered.length === 0){
+                        const searched = singleBlogRaw.replace(/\.txt$/i, '');
+                        postsEl.innerHTML = `<div class="empty">No post found for blogname=${searched}</div>`;
+                        return;
+                    }
+                    const sorted = sortEntries(filtered, sortEl.value);
                     for(const entry of sorted){
                         renderPostPlaceholder(entry);
                         fetchAndFill(entry);
@@ -850,6 +905,7 @@
                 d.dataset.filename = filename;
                 d.dataset.title = getDisplayTitle(filename, entry.title);
                 d.dataset.date = entry.date || '';
+                if(isSingleBlogMode) d.open = true;
 
                 const s = document.createElement('summary');
                 s.className = 'post-header';
@@ -2811,10 +2867,12 @@
                     setTimeout(renderTagChart, 1500);
                 });
             });
-            loadCalendarData();
-            loadStats();
-            loadReports();
-            buildDemoPanel();
+            if(!isSingleBlogMode){
+                loadCalendarData();
+                loadStats();
+                loadReports();
+                buildDemoPanel();
+            }
         </script>
     </body>
 </html>

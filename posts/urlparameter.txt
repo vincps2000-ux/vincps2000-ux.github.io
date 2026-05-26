@@ -1,0 +1,13 @@
+§Tools§
+
+Added Url parameter blogpost (e.g. ?blogname=GITrefsStructure) which allows linking to single posts.
+
+How do These work?
+
+(https://developer.mozilla.org/en-US/docs/Web/API/URL/searchParams)
+
+Get search params from window.location.search
+Window.location gets the full url.
+.search gets only the Search parameters
+turn this using new URLSearchParams() to utilize Utility Functions(https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)
+after URLSearchParams.get(), its simple String and DOM Manipulation.
