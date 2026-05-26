@@ -99,6 +99,24 @@
                 font-weight:600;color:var(--accent);
             }
             summary.post-header::-webkit-details-marker{display:none}
+            .post-header-main{
+                display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+                min-width:0;
+            }
+            .copy-link-btn{
+                margin-left:auto;
+                background:var(--input-bg);
+                border:1px solid var(--border);
+                border-radius:6px;
+                padding:.25rem .55rem;
+                font-size:.78rem;
+                font-weight:600;
+                color:var(--text);
+                cursor:pointer;
+                transition:border-color .2s, background .2s;
+                white-space:nowrap;
+            }
+            .copy-link-btn:hover{border-color:var(--accent)}
 
             .meta{color:var(--muted);font-weight:400;font-size:.9rem}
             .post-content{padding:.5rem 0 0 .25rem;color:var(--text-secondary);white-space:pre-wrap;font-family: "Segoe UI", Roboto, Arial, sans-serif}
@@ -850,6 +868,29 @@
                 return base || file;
             }
 
+            function buildSingleBlogUrl(filename){
+                const url = new URL(window.location.href);
+                url.search = '';
+                url.searchParams.set('blogname', filename.replace(/\.txt$/i, ''));
+                return url.toString();
+            }
+
+            async function copyTextToClipboard(text){
+                if(navigator.clipboard && typeof navigator.clipboard.writeText === 'function'){
+                    await navigator.clipboard.writeText(text);
+                    return;
+                }
+                const area = document.createElement('textarea');
+                area.value = text;
+                area.setAttribute('readonly', '');
+                area.style.position = 'fixed';
+                area.style.left = '-9999px';
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                document.body.removeChild(area);
+            }
+
             function parseDateValue(dateStr){
                 if(!dateStr) return NaN;
                 const t = Date.parse(dateStr);
@@ -909,7 +950,32 @@
 
                 const s = document.createElement('summary');
                 s.className = 'post-header';
-                s.textContent = d.dataset.title;
+
+                const headerMain = document.createElement('span');
+                headerMain.className = 'post-header-main';
+                headerMain.textContent = d.dataset.title;
+
+                const copyBtn = document.createElement('button');
+                copyBtn.type = 'button';
+                copyBtn.className = 'copy-link-btn';
+                copyBtn.textContent = 'Copy URL';
+                copyBtn.title = 'Copy direct URL to this post';
+                copyBtn.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const original = copyBtn.textContent;
+                    try{
+                        await copyTextToClipboard(buildSingleBlogUrl(filename));
+                        copyBtn.textContent = 'Copied';
+                    }catch(e){
+                        console.warn('Clipboard copy failed', e);
+                        copyBtn.textContent = 'Failed';
+                    }
+                    setTimeout(() => { copyBtn.textContent = original; }, 1200);
+                });
+
+                s.appendChild(headerMain);
+                s.appendChild(copyBtn);
 
                 const meta = document.createElement('div');
                 meta.className = 'meta';
@@ -947,8 +1013,9 @@
                     // Render tag badges in header
                     if(tags.length){
                         const header = d.querySelector('.post-header');
+                        const headerMain = header.querySelector('.post-header-main') || header;
                         let tagsRow = header.querySelector('.tags-row');
-                        if(!tagsRow){ tagsRow = document.createElement('span'); tagsRow.className = 'tags-row'; header.appendChild(tagsRow); }
+                        if(!tagsRow){ tagsRow = document.createElement('span'); tagsRow.className = 'tags-row'; headerMain.appendChild(tagsRow); }
                         tagsRow.innerHTML = buildTagBadges(tags);
                     }
                     // Parse $imagename$ patterns and convert to <img> tags
