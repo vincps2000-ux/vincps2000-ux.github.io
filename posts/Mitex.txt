@@ -1,0 +1,20 @@
+§Tools§
+Looked at Latex in VSC.
+
+Distribution used: (https://miktex.org/)
+
+Minus: No easy single click Version for VSC use(However, VSC is not meant as a document editor).
+Plus: .tex format focuses more on Information contained in Document, instead of Presentation.
+
+Latex is more like a html Resource than a fully defined Document like word. 
+
+Some Examples:
+
+\title \date \author serves as so called preamble data.
+
+\begin{document}
+\end{document}
+    used as bounding marker for whole document.
+
+\pagenumbering{arabic|roman|gobble(no numbers)}
+    sets the way pagenumbers are displayed
