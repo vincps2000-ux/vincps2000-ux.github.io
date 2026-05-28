@@ -1,0 +1,9 @@
+§LeetCode§
+Solved Problem 1114. Print in Order (https://leetcode.com/problems/print-in-order/description/)
+
+First Plan was to intercept the first thread, lock it, mark it and then executed as a single thread.
+This misses the spirit of the Problem but would be cleanest for something simple like this. And Funny.
+Sadly, there is a reason the input for each function is function<void()> printFirst. so the passed function can be validated against later.
+
+Key pattern for coorect soloution:
+cv[condition variable].wait[pauses function until boolean is true](lock[mutex that wait checks against], [&][Lambda function that must return true, otherwise wait continues] { return stage >= 1; });

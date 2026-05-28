@@ -402,5 +402,9 @@
     {
         "file":  "Mitex.txt",
         "date":  "2026-05-27"
+    },
+    {
+        "file":  "LeetCode1114.txt",
+        "date":  "2026-05-28"
     }
 ]
