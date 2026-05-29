@@ -1,0 +1,6 @@
+§LeetCode§
+
+Solved leetcode 3300(https://leetcode.com/problems/minimum-element-after-replacement-with-digit-sum/description/):
+
+pretty default, you sum the digits either by type manipulation or using the %10 trick used in aprevious problem.
+then its a simple case of rember the smallest.
