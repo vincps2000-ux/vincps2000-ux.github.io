@@ -1,0 +1,15 @@
+§Fun§
+
+What is MMC.exe?
+
+Universal Windows UI Framework for use in various Admin Functionalitys:
+
+when called raw:
+$MMCRaw.png$
+
+Example Services using UI:
+lusrmgr.msc(User management)
+eventvwr.msc(Systemlogs)
+
+It is possible to build your own MMC-Snap In:
+https://learn.microsoft.com/en-us/previous-versions/windows/desktop/mmc/mmc-3.0/ms692759(v=vs.85)
