@@ -648,6 +648,67 @@
             }
             .pd-table th{position:sticky;top:0;background:var(--card);z-index:1}
 
+            /* ---- REM White Noise M4A demo ---- */
+            .remmix-widget{
+                display:flex;flex-direction:column;gap:.85rem;
+            }
+            .remmix-grid{
+                display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+                gap:.55rem;
+            }
+            .remmix-field{
+                display:flex;flex-direction:column;gap:.25rem;
+                font-size:.78rem;font-weight:600;color:var(--muted);
+            }
+            .remmix-field input,
+            .remmix-field select{
+                width:100%;padding:.42rem .5rem;border-radius:6px;
+                border:1px solid var(--border);background:var(--input-bg);
+                color:var(--text);font-size:.9rem;
+            }
+            .remmix-drop{
+                display:flex;align-items:center;justify-content:center;
+                min-height:74px;border:2px dashed var(--accent);border-radius:8px;
+                padding:.8rem;text-align:center;background:var(--input-bg);
+                color:var(--muted);cursor:pointer;
+            }
+            .remmix-drop strong{color:var(--text)}
+            .remmix-estimate{
+                padding:.55rem .7rem;border:1px solid var(--border);border-radius:8px;
+                background:var(--input-bg);font-size:.84rem;color:var(--text-secondary);
+            }
+            .remmix-actions{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap}
+            .remmix-build,
+            .remmix-download{
+                padding:.52rem .95rem;border-radius:7px;border:1px solid var(--border);
+                font-weight:700;cursor:pointer;font-size:.86rem;
+            }
+            .remmix-build{background:var(--accent);color:#fff;border-color:var(--accent)}
+            .remmix-build:disabled{opacity:.5;cursor:not-allowed}
+            .remmix-download{background:var(--input-bg);color:var(--text);text-decoration:none}
+            .remmix-downloads{
+                display:flex;flex-wrap:wrap;gap:.55rem;
+            }
+            .remmix-status{
+                min-height:1.1em;font-size:.82rem;color:var(--muted);
+            }
+            .remmix-progress{
+                width:100%;height:12px;appearance:none;
+            }
+            .remmix-progress::-webkit-progress-bar{
+                background:var(--input-bg);border-radius:999px;border:1px solid var(--border);
+            }
+            .remmix-progress::-webkit-progress-value{
+                background:linear-gradient(90deg,var(--accent),#22c55e);border-radius:999px;
+            }
+            .remmix-progress::-moz-progress-bar{
+                background:linear-gradient(90deg,var(--accent),#22c55e);border-radius:999px;
+            }
+            .remmix-progress-meta{
+                font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;gap:.5rem;
+            }
+            .remmix-preview{width:100%}
+
             /* ---- Reports ---- */
             .reports{display:flex;flex-direction:column;gap:.75rem}
             details.report{
@@ -2759,6 +2820,578 @@
                 container.appendChild(widget);
             };
 
+            // ---- REM timing + white noise + M4A export demo ----
+            let remMixFfmpegContext = null;
+            let remMixFfmpegLoading = null;
+            let remMixScriptLoading = null;
+
+            function loadScriptOnce(src, globalName){
+                if(window[globalName]) return Promise.resolve(window[globalName]);
+                if(remMixScriptLoading && remMixScriptLoading[src]) return remMixScriptLoading[src];
+                remMixScriptLoading = remMixScriptLoading || {};
+                remMixScriptLoading[src] = new Promise((resolve, reject) => {
+                    const existing = Array.from(document.scripts).find(script => script.src === src);
+                    if(existing){
+                        existing.addEventListener('load', () => resolve(window[globalName]), { once: true });
+                        existing.addEventListener('error', reject, { once: true });
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    script.addEventListener('load', () => resolve(window[globalName]), { once: true });
+                    script.addEventListener('error', () => reject(new Error('Failed to load ' + src)), { once: true });
+                    document.head.appendChild(script);
+                });
+                return remMixScriptLoading[src];
+            }
+
+            async function getRemMixFfmpegContext(onDownloadProgress){
+                if(remMixFfmpegContext) return remMixFfmpegContext;
+                if(remMixFfmpegLoading) return remMixFfmpegLoading;
+
+                remMixFfmpegLoading = (async () => {
+                    await Promise.all([
+                        loadScriptOnce('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js', 'FFmpegWASM'),
+                        loadScriptOnce('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js', 'FFmpegUtil')
+                    ]);
+
+                    const FFmpegApi = window.FFmpegWASM;
+                    const utilApi = window.FFmpegUtil;
+                    if(!FFmpegApi || !utilApi) throw new Error('FFmpeg runtime did not initialize.');
+
+                    const baseUrl = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
+                    const ffmpeg = new FFmpegApi.FFmpeg();
+
+                    const updateDownloadProgress = typeof onDownloadProgress === 'function'
+                        ? onDownloadProgress
+                        : () => {};
+
+                    const toBlobWithProgress = async (url, mimeType, stageLabel) => {
+                        const response = await fetch(url);
+                        if(!response.ok) throw new Error('Failed to download ' + url + ' (' + response.status + ')');
+
+                        const total = parseInt(response.headers.get('Content-Length') || '-1', 10);
+                        const reader = response.body && response.body.getReader ? response.body.getReader() : null;
+
+                        if(!reader){
+                            const data = await response.arrayBuffer();
+                            updateDownloadProgress(stageLabel, 1, data.byteLength, data.byteLength);
+                            return URL.createObjectURL(new Blob([data], { type: mimeType }));
+                        }
+
+                        const chunks = [];
+                        let received = 0;
+
+                        for(;;){
+                            const { done, value } = await reader.read();
+                            if(done) break;
+                            if(value){
+                                chunks.push(value);
+                                received += value.length;
+                                const ratio = total > 0 ? received / total : 0;
+                                updateDownloadProgress(stageLabel, ratio, received, total);
+                            }
+                        }
+
+                        const blob = new Blob(chunks, { type: mimeType });
+                        updateDownloadProgress(stageLabel, 1, received, total > 0 ? total : received);
+                        return URL.createObjectURL(blob);
+                    };
+
+                    const classWorkerURL = await toBlobWithProgress(
+                        'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js',
+                        'text/javascript',
+                        'Loading worker'
+                    );
+                    const coreURL = await toBlobWithProgress(baseUrl + '/ffmpeg-core.js', 'text/javascript', 'Loading core');
+                    const wasmURL = await toBlobWithProgress(baseUrl + '/ffmpeg-core.wasm', 'application/wasm', 'Loading wasm');
+
+                    await ffmpeg.load({ classWorkerURL, coreURL, wasmURL });
+
+                    remMixFfmpegContext = { ffmpeg, fetchFile: utilApi.fetchFile };
+                    remMixFfmpegLoading = null;
+                    return remMixFfmpegContext;
+                })().catch(err => {
+                    remMixFfmpegLoading = null;
+                    throw err;
+                });
+
+                return remMixFfmpegLoading;
+            }
+
+            DEMOS['rem-white-noise-m4a'] = function(container){
+                const widget = document.createElement('div');
+                widget.className = 'remmix-widget';
+
+                const formGrid = document.createElement('div');
+                formGrid.className = 'remmix-grid';
+                formGrid.innerHTML = `
+                    <label class="remmix-field">Bed time
+                        <input class="rm-bedtime" type="time" value="23:00">
+                    </label>
+                    <label class="remmix-field">Sleep onset (min)
+                        <input class="rm-onset" type="number" min="0" max="180" step="1" value="15">
+                    </label>
+                    <label class="remmix-field">Cycle length (min)
+                        <input class="rm-cycle" type="number" min="60" max="120" step="1" value="90">
+                    </label>
+                    <label class="remmix-field">Target REM cycle
+                        <select class="rm-rem-cycle">
+                            <option value="2">Cycle 2</option>
+                            <option value="3">Cycle 3</option>
+                            <option value="4" selected>Cycle 4</option>
+                            <option value="5">Cycle 5</option>
+                            <option value="6">Cycle 6</option>
+                        </select>
+                    </label>
+                    <label class="remmix-field">REM start in cycle (min)
+                        <input class="rm-rem-offset" type="number" min="20" max="90" step="1" value="55">
+                    </label>
+                    <label class="remmix-field">White noise level
+                        <input class="rm-noise" type="number" min="0.01" max="0.25" step="0.01" value="0.05">
+                    </label>
+                    <label class="remmix-field">Fast test mode
+                        <select class="rm-test-mode">
+                            <option value="off" selected>Off</option>
+                            <option value="on">On: 12 second lead</option>
+                        </select>
+                    </label>
+                `;
+
+                const fileWrap = document.createElement('label');
+                fileWrap.className = 'remmix-drop';
+                fileWrap.innerHTML = '<strong>Choose an M4A file</strong><br><span class="rm-file-label">No file selected</span>';
+
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.m4a,audio/mp4,audio/*';
+                fileInput.style.display = 'none';
+                fileWrap.appendChild(fileInput);
+
+                const estimate = document.createElement('div');
+                estimate.className = 'remmix-estimate';
+
+                const actions = document.createElement('div');
+                actions.className = 'remmix-actions';
+
+                const buildBtn = document.createElement('button');
+                buildBtn.className = 'remmix-build';
+                buildBtn.textContent = 'Build playlist pack';
+
+                const testBtn = document.createElement('button');
+                testBtn.className = 'remmix-download';
+                testBtn.type = 'button';
+                testBtn.textContent = 'Use built-in test tone';
+
+                actions.appendChild(buildBtn);
+                actions.appendChild(testBtn);
+
+                const status = document.createElement('div');
+                status.className = 'remmix-status';
+                status.textContent = 'Set your timing, choose a file, then build a playlist pack.';
+
+                const downloads = document.createElement('div');
+                downloads.className = 'remmix-downloads';
+
+                const progress = document.createElement('progress');
+                progress.className = 'remmix-progress';
+                progress.max = 1;
+                progress.value = 0;
+
+                const progressMeta = document.createElement('div');
+                progressMeta.className = 'remmix-progress-meta';
+                progressMeta.innerHTML = '<span class="rm-progress-stage">Idle</span><span class="rm-progress-value">0%</span>';
+
+                const preview = document.createElement('audio');
+                preview.className = 'remmix-preview';
+                preview.controls = true;
+                preview.preload = 'metadata';
+
+                widget.appendChild(formGrid);
+                widget.appendChild(fileWrap);
+                widget.appendChild(estimate);
+                widget.appendChild(actions);
+                widget.appendChild(status);
+                widget.appendChild(downloads);
+                widget.appendChild(progress);
+                widget.appendChild(progressMeta);
+                widget.appendChild(preview);
+                container.appendChild(widget);
+
+                const bedtimeEl = formGrid.querySelector('.rm-bedtime');
+                const onsetEl = formGrid.querySelector('.rm-onset');
+                const cycleEl = formGrid.querySelector('.rm-cycle');
+                const remCycleEl = formGrid.querySelector('.rm-rem-cycle');
+                const remOffsetEl = formGrid.querySelector('.rm-rem-offset');
+                const noiseEl = formGrid.querySelector('.rm-noise');
+                const testModeEl = formGrid.querySelector('.rm-test-mode');
+                const fileLabel = fileWrap.querySelector('.rm-file-label');
+                const progressStageEl = progressMeta.querySelector('.rm-progress-stage');
+                const progressValueEl = progressMeta.querySelector('.rm-progress-value');
+
+                let selectedFile = null;
+                let currentOutputUrl = null;
+                let generatedDownloadEntries = [];
+                let activeExecProgressHandler = null;
+
+                function clearDownloadEntries(){
+                    for(const entry of generatedDownloadEntries){
+                        try{ URL.revokeObjectURL(entry.url); }catch(_e){}
+                    }
+                    generatedDownloadEntries = [];
+                    downloads.innerHTML = '';
+                }
+
+                function addDownloadEntry(label, fileName, blob){
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.className = 'remmix-download';
+                    link.href = url;
+                    link.download = fileName;
+                    link.textContent = label;
+                    downloads.appendChild(link);
+                    generatedDownloadEntries.push({ url, fileName });
+                    return url;
+                }
+
+                function setProgress(stage, ratio){
+                    const clamped = Math.min(1, Math.max(0, Number(ratio) || 0));
+                    progress.value = clamped;
+                    progressStageEl.textContent = stage;
+                    progressValueEl.textContent = Math.round(clamped * 100) + '%';
+                }
+
+                function setIdleProgress(label){
+                    progress.removeAttribute('value');
+                    progressStageEl.textContent = label;
+                    progressValueEl.textContent = '...';
+                }
+
+                function resetProgress(label){
+                    progress.value = 0;
+                    progressStageEl.textContent = label || 'Idle';
+                    progressValueEl.textContent = '0%';
+                }
+
+                function clamp(value, min, max, fallback){
+                    const n = Number(value);
+                    if(Number.isNaN(n)) return fallback;
+                    return Math.min(max, Math.max(min, n));
+                }
+
+                function parseBedtimeMinutes(){
+                    const raw = bedtimeEl.value || '23:00';
+                    const parts = raw.split(':');
+                    const h = clamp(parts[0], 0, 23, 23);
+                    const m = clamp(parts[1], 0, 59, 0);
+                    return (h * 60) + m;
+                }
+
+                function formatClock(totalMinutes){
+                    const wrapped = ((Math.round(totalMinutes) % 1440) + 1440) % 1440;
+                    const h = Math.floor(wrapped / 60);
+                    const m = wrapped % 60;
+                    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+                }
+
+                function computeDelayMinutes(){
+                    if(testModeEl.value === 'on') return 0.2;
+                    const onsetMin = clamp(onsetEl.value, 0, 180, 15);
+                    const cycleLen = clamp(cycleEl.value, 60, 120, 90);
+                    const remCycle = clamp(remCycleEl.value, 2, 6, 4);
+                    const remOffset = clamp(remOffsetEl.value, 20, 90, 55);
+                    return onsetMin + ((remCycle - 1) * cycleLen) + remOffset;
+                }
+
+                function updateEstimate(){
+                    const delayMin = computeDelayMinutes();
+                    const startAt = formatClock(parseBedtimeMinutes() + delayMin);
+                    const hours = Math.floor(delayMin / 60);
+                    const minutes = Math.round(delayMin % 60);
+                    const baseText = 'Estimated white noise lead: '
+                        + hours + 'h ' + String(minutes).padStart(2, '0') + 'm'
+                        + ' (MP4 starts near ' + startAt + ').';
+                    if(testModeEl.value === 'on'){
+                        estimate.textContent = baseText + ' Fast test mode keeps the playlist assets short for browser testing.';
+                        return;
+                    }
+                    if(delayMin > 45){
+                        estimate.textContent = baseText + ' Playlist pack mode avoids one huge export by repeating a reusable white-noise loop.';
+                        return;
+                    }
+                    estimate.textContent = baseText + ' Playlist pack mode keeps the source track separate.';
+                }
+
+                function setSelectedFile(file){
+                    selectedFile = file || null;
+                    fileLabel.textContent = selectedFile ? selectedFile.name : 'No file selected';
+                    clearDownloadEntries();
+                    if(currentOutputUrl){
+                        URL.revokeObjectURL(currentOutputUrl);
+                        currentOutputUrl = null;
+                    }
+                }
+
+                async function buildSampleInput(){
+                    setIdleProgress('Generating test tone');
+                    status.textContent = 'Creating a short built-in test tone...';
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const sampleRate = 44100;
+                    const durationSeconds = 8;
+                    const frameCount = sampleRate * durationSeconds;
+                    const audioBuffer = audioContext.createBuffer(1, frameCount, sampleRate);
+                    const channel = audioBuffer.getChannelData(0);
+                    for(let i = 0; i < frameCount; i++){
+                        const t = i / sampleRate;
+                        channel[i] = 0.22 * Math.sin(2 * Math.PI * 220 * t)
+                            + 0.12 * Math.sin(2 * Math.PI * 330 * t);
+                    }
+                    const wavBuffer = audioBufferToWav(audioBuffer);
+                    const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+                    setSelectedFile(new File([blob], 'rem-demo-tone.wav', { type: 'audio/wav' }));
+                    testModeEl.value = 'on';
+                    updateEstimate();
+                    status.textContent = 'Built-in test tone ready. Click Build playlist pack.';
+                    setProgress('Test input ready', 1);
+                    await audioContext.close();
+                }
+
+                function audioBufferToWav(buffer){
+                    const channels = buffer.numberOfChannels;
+                    const sampleRate = buffer.sampleRate;
+                    const format = 1;
+                    const bitDepth = 16;
+                    const samples = buffer.length;
+                    const blockAlign = channels * bitDepth / 8;
+                    const byteRate = sampleRate * blockAlign;
+                    const dataSize = samples * blockAlign;
+                    const output = new ArrayBuffer(44 + dataSize);
+                    const view = new DataView(output);
+                    let offset = 0;
+
+                    function writeString(text){
+                        for(let i = 0; i < text.length; i++){
+                            view.setUint8(offset++, text.charCodeAt(i));
+                        }
+                    }
+
+                    writeString('RIFF');
+                    view.setUint32(offset, 36 + dataSize, true); offset += 4;
+                    writeString('WAVE');
+                    writeString('fmt ');
+                    view.setUint32(offset, 16, true); offset += 4;
+                    view.setUint16(offset, format, true); offset += 2;
+                    view.setUint16(offset, channels, true); offset += 2;
+                    view.setUint32(offset, sampleRate, true); offset += 4;
+                    view.setUint32(offset, byteRate, true); offset += 4;
+                    view.setUint16(offset, blockAlign, true); offset += 2;
+                    view.setUint16(offset, bitDepth, true); offset += 2;
+                    writeString('data');
+                    view.setUint32(offset, dataSize, true); offset += 4;
+
+                    const channelData = [];
+                    for(let channelIndex = 0; channelIndex < channels; channelIndex++){
+                        channelData.push(buffer.getChannelData(channelIndex));
+                    }
+
+                    for(let sampleIndex = 0; sampleIndex < samples; sampleIndex++){
+                        for(let channelIndex = 0; channelIndex < channels; channelIndex++){
+                            const sample = Math.max(-1, Math.min(1, channelData[channelIndex][sampleIndex] || 0));
+                            view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                            offset += 2;
+                        }
+                    }
+
+                    return output;
+                }
+
+                fileInput.addEventListener('change', () => {
+                    setSelectedFile(fileInput.files[0]);
+                    resetProgress('File selected');
+                });
+
+                fileWrap.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                    fileWrap.style.background = 'var(--bg-end)';
+                });
+
+                fileWrap.addEventListener('dragleave', () => {
+                    fileWrap.style.background = 'var(--input-bg)';
+                });
+
+                fileWrap.addEventListener('drop', (event) => {
+                    event.preventDefault();
+                    fileWrap.style.background = 'var(--input-bg)';
+                    setSelectedFile(event.dataTransfer.files[0]);
+                    resetProgress('File selected');
+                });
+
+                testBtn.addEventListener('click', async () => {
+                    try{
+                        await buildSampleInput();
+                    }catch(err){
+                        console.error(err);
+                        status.textContent = 'Could not create test tone: ' + (err && err.message ? err.message : String(err));
+                        resetProgress('Test tone failed');
+                    }
+                });
+
+                [bedtimeEl, onsetEl, cycleEl, remCycleEl, remOffsetEl, testModeEl].forEach(el => {
+                    el.addEventListener('input', updateEstimate);
+                    el.addEventListener('change', updateEstimate);
+                });
+                updateEstimate();
+
+                buildBtn.addEventListener('click', async () => {
+                    if(!selectedFile){
+                        status.textContent = 'Select an M4A file first.';
+                        return;
+                    }
+
+                    const delayMinutes = computeDelayMinutes();
+                    const delaySeconds = Math.max(0, Math.round(delayMinutes * 60));
+                    const noiseLevel = clamp(noiseEl.value, 0.01, 0.25, 0.05);
+                    const inputName = 'input_source_audio';
+                    const loopName = 'white_noise_loop.m4a';
+                    const tailName = 'white_noise_tail.m4a';
+                    const chunkSeconds = testModeEl.value === 'on' ? Math.min(12, Math.max(1, delaySeconds)) : Math.min(300, Math.max(1, delaySeconds));
+                    const repeatCount = Math.floor(delaySeconds / chunkSeconds);
+                    const tailSeconds = delaySeconds - (repeatCount * chunkSeconds);
+
+                    buildBtn.disabled = true;
+                    testBtn.disabled = true;
+                    clearDownloadEntries();
+                    status.textContent = 'Loading FFmpeg core (first run can take a while)...';
+                    setProgress('Preparing runtime', 0.02);
+
+                    try{
+                        const ctx = await getRemMixFfmpegContext((stage, ratio) => {
+                            const stageWeights = {
+                                'Loading worker': [0.02, 0.2],
+                                'Loading core': [0.2, 0.42],
+                                'Loading wasm': [0.42, 0.7]
+                            };
+                            const weights = stageWeights[stage] || [0.02, 0.7];
+                            const mapped = weights[0] + ((weights[1] - weights[0]) * ratio);
+                            setProgress(stage, mapped);
+                        });
+                        const ffmpeg = ctx.ffmpeg;
+
+                        if(activeExecProgressHandler && ffmpeg.off){
+                            ffmpeg.off('progress', activeExecProgressHandler);
+                        }
+                        const execProgress = ({ progress: execRatio }) => {
+                            setProgress('Rendering output', 0.72 + (Math.max(0, Math.min(1, execRatio || 0)) * 0.25));
+                        };
+                        activeExecProgressHandler = execProgress;
+                        if(ffmpeg.on) ffmpeg.on('progress', execProgress);
+
+                        status.textContent = 'Preparing audio...';
+                        setProgress('Preparing audio', 0.72);
+                        await ffmpeg.writeFile(inputName, await ctx.fetchFile(selectedFile));
+
+                        async function renderNoiseFile(seconds, targetName){
+                            const effectiveSeconds = Math.max(1, Math.round(seconds));
+                            const noiseFilter = 'anoisesrc=color=white:amplitude=' + noiseLevel.toFixed(3)
+                                + ':sample_rate=44100';
+                            await ffmpeg.exec([
+                                '-f', 'lavfi',
+                                '-i', noiseFilter,
+                                '-t', String(effectiveSeconds),
+                                '-c:a', 'aac',
+                                '-b:a', '128k',
+                                targetName
+                            ]);
+                        }
+
+                        const sourceExtMatch = /\.[^.]+$/.exec(selectedFile.name || '');
+                        const sourceExt = sourceExtMatch ? sourceExtMatch[0] : '.m4a';
+                        const baseName = (selectedFile.name || 'sleep-audio').replace(/\.[^.]+$/i, '') || 'sleep-audio';
+                        const sourceCopyName = baseName + '-source' + sourceExt;
+                        const playlistName = baseName + '-rem-playlist.m3u';
+                        const loopFileName = baseName + '-white-noise-loop.m4a';
+                        const tailFileName = baseName + '-white-noise-tail.m4a';
+
+                        let loopBlob = null;
+                        let tailBlob = null;
+
+                        if(delaySeconds > 0){
+                            status.textContent = 'Rendering white-noise playlist assets...';
+                            setIdleProgress('Rendering white noise assets');
+                            if(repeatCount > 0){
+                                await renderNoiseFile(chunkSeconds, loopName);
+                                const loopData = await ffmpeg.readFile(loopName);
+                                const loopBytes = loopData instanceof Uint8Array ? loopData : new Uint8Array(loopData);
+                                loopBlob = new Blob([loopBytes], { type: 'audio/mp4' });
+                            }
+                            if(tailSeconds > 0 || !loopBlob){
+                                await renderNoiseFile(tailSeconds > 0 ? tailSeconds : chunkSeconds, tailName);
+                                const tailData = await ffmpeg.readFile(tailName);
+                                const tailBytes = tailData instanceof Uint8Array ? tailData : new Uint8Array(tailData);
+                                tailBlob = new Blob([tailBytes], { type: 'audio/mp4' });
+                            }
+                        }
+
+                        setProgress('Finalizing downloads', 0.98);
+
+                        const sourceBlob = new Blob([selectedFile], { type: selectedFile.type || 'application/octet-stream' });
+                        const playlistLines = [
+                            '#EXTM3U',
+                            '# REM white-noise playlist pack',
+                            '# Keep all downloaded files in the same folder.'
+                        ];
+
+                        if(loopBlob && repeatCount > 0){
+                            for(let index = 0; index < repeatCount; index++){
+                                playlistLines.push('#EXTINF:-1,White noise lead');
+                                playlistLines.push(loopFileName);
+                            }
+                        }
+                        if(tailBlob){
+                            playlistLines.push('#EXTINF:-1,White noise tail');
+                            playlistLines.push(loopBlob ? tailFileName : loopFileName);
+                        }
+                        playlistLines.push('#EXTINF:-1,Main track');
+                        playlistLines.push(sourceCopyName);
+
+                        const playlistBlob = new Blob([playlistLines.join('\r\n') + '\r\n'], { type: 'audio/x-mpegurl' });
+
+                        if(currentOutputUrl){
+                            URL.revokeObjectURL(currentOutputUrl);
+                        }
+                        currentOutputUrl = URL.createObjectURL(sourceBlob);
+                        preview.src = currentOutputUrl;
+
+                        if(loopBlob){
+                            addDownloadEntry('Download ' + loopFileName, loopFileName, loopBlob);
+                        }
+                        if(tailBlob){
+                            addDownloadEntry('Download ' + (loopBlob ? tailFileName : loopFileName), loopBlob ? tailFileName : loopFileName, tailBlob);
+                        }
+                        addDownloadEntry('Download ' + sourceCopyName, sourceCopyName, sourceBlob);
+                        addDownloadEntry('Download ' + playlistName, playlistName, playlistBlob);
+
+                        status.textContent = 'Done. Download the playlist and companion audio files, then keep them in the same folder.';
+                        setProgress('Completed', 1);
+
+                        // Cleanup files in ffmpeg FS between runs.
+                        try{ await ffmpeg.deleteFile(inputName); }catch(_e){}
+                        try{ await ffmpeg.deleteFile(loopName); }catch(_e){}
+                        try{ await ffmpeg.deleteFile(tailName); }catch(_e){}
+                        if(ffmpeg.off) ffmpeg.off('progress', execProgress);
+                        activeExecProgressHandler = null;
+                    }catch(err){
+                        console.error(err);
+                        status.textContent = 'Build failed: ' + (err && err.message ? err.message : String(err));
+                        resetProgress('Build failed');
+                    }finally{
+                        buildBtn.disabled = false;
+                        testBtn.disabled = false;
+                    }
+                });
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -2772,7 +3405,8 @@
                     { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
                     { id: 'rps-helper', title: '✂️ Schere-Stein-Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend wird der Sieger angezeigt.' },
                     { id: 'DillemaP', title: '🤝 50-Turn Prisoner\'s Dilemma', desc: 'Simulate 50 turns between two strategies (Cooperate unforgiving, Defect 100, Cooperate forgiving) with configurable information lag.' },
-                    { id: 'pptx-to-txt', title: '📑 PPTX → TXT Konverter', desc: '.pptx-Datei auswählen und mit geänderter Dateiendung (.txt) herunterladen. Rein client-seitig, kein Upload.' }
+                    { id: 'pptx-to-txt', title: '📑 PPTX → TXT Konverter', desc: '.pptx-Datei auswählen und mit geänderter Dateiendung (.txt) herunterladen. Rein client-seitig, kein Upload.' },
+                    { id: 'rem-white-noise-m4a', title: '😴 REM M4A Builder', desc: 'Estimate REM timing from bedtime settings, prepend generated white noise, and export a new M4A in-browser.' }
                 ];
                 for(const demo of demoList){
                     const card = document.createElement('div');

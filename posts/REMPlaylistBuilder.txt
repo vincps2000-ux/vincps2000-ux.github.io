@@ -1,0 +1,38 @@
+§Tools§
+
+REM Sleep Audio Playlist Builder
+
+Goal:
+Set bedtime + sleep onset/cycle values, then build a practical output that can start long white noise and continue with a target track around estimated REM timing.
+
+What I built:
+- Interactive demo in the Demo tab.
+- Inputs for bedtime, onset, cycle length, REM cycle target, REM offset, and noise level.
+- File picker + drag/drop for source audio.
+- Progress indicator with explicit stage labels.
+- Built-in test tone generation for quick verification.
+
+Main implementation changes:
+- Added FFmpeg.wasm loading in browser context.
+- Added Firefox-safe runtime download path and better error handling.
+- Added fast test mode (short lead) so testing does not hang for hours.
+- Switched from huge single-file rendering to playlist-pack output:
+  - white-noise loop m4a
+  - optional white-noise tail m4a
+  - source audio copy
+  - m3u playlist chaining all files
+
+Why playlist pack:
+Rendering one giant delayed m4a in-browser is too heavy for long delays (hours).
+Playlist output is much more realistic for static hosting and low-resource devices.
+
+Issues hit during build:
+- Cross-origin worker/security behavior in Firefox.
+- Core worker URL mismatch in ffmpeg asset versions.
+- Misleading progress behavior for concat-like jobs.
+
+Current status:
+Demo now produces downloadable playlist assets quickly in test mode and supports long-delay use with far less browser load.
+
+Usage note:
+Keep all downloaded files in the same folder and open the .m3u in a player that supports playlists/autoplay.
