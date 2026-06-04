@@ -1,0 +1,9 @@
+§Tools§
+
+Git Bundle vs ZIP Size Check
+
+I created two archive formats from this repository:
+ a Git bundle and a ZIP snapshot of HEAD.
+The Git bundle came out to 65,119,888 bytes (62.10 MiB), while the ZIP measured 65,034,456 bytes (62.02 MiB). In this run, the ZIP was slightly smaller by 85,432 bytes (83.43 KiB, about 0.13%).
+
+result: No real advantage except maintaining branches.
