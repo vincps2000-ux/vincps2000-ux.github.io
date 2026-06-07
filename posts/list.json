@@ -422,5 +422,13 @@
     {
         "file":  "GitBundleVsZip.txt",
         "date":  "2026-06-04"
+    },
+    {
+        "file":  "CustomCursor.txt",
+        "date":  "2026-06-07"
+    },
+    {
+        "file":  "LeetCode20.txt",
+        "date":  "2026-06-07"
     }
 ]

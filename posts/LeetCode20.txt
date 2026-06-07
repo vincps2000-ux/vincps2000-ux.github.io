@@ -1,0 +1,17 @@
+§LeetCode§
+Just an easy Leetcode problem today, because Time is tight.
+
+Solved Leetcode 20, a simple Problem of checking a String for correct Brackets open/closing.
+
+Idea pusued first:
+keep a tally of every Bracket type, remove/add based on loooped char.
+Keep an array, where the state of the last openend bracket is stored.
+
+The array idea, got the me the idea of a LIFO array, where each opening bracket is stored and a closing bracket removes the top one, erroring if its  wrong.
+This also allows easy adding of new Bracket Types.
+
+
+
+
+Also tried to make a aimated .ani crosshair-cursor  for Windows, that plays a little "bullet"animation 
+when clicking, failed, because windows provides no tools for a reactive Cursor.  
