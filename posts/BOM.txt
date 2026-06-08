@@ -1,0 +1,17 @@
+§Lecture§
+Informing about a Byte Order Mark (BOM) (Came across it at work).
+(https://en.wikipedia.org/wiki/Byte_order_mark)
+(https://www.unicode.org/faq/utf_bom.html#BOM)
+Unicode Char: U+FEFF ZERO WIDTH NO-BREAK SPACE
+
+Can intefere with UTF-8 in certain software, because UTF-8 is always the same endian, no BOM is needed
+
+Exists to be used as Signature between UTF-8,16,32 and little/big Endian:
+00 00 FE FF 	UTF-32, big-endian
+FF FE 00 00 	UTF-32, little-endian
+FE FF 	        UTF-16, big-endian
+FF FE 	        UTF-16, little-endian
+EF BB BF 	    UTF-8
+
+Certain Protocols with associated Type permitt no BOM: UTF-16BE, UTF-16LE, UTF-32BE or UTF-32LE
+BOM is part of Arabic Presentation Forms-B(https://en.wikipedia.org/wiki/Arabic_Presentation_Forms-B)
