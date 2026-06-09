@@ -1,0 +1,5 @@
+§Application§
+
+Added a large base Attack Level.
+Features Base in the Middle, with many enemies, and an area thst needs to be held by the player, 
+as well as roaming patrols.

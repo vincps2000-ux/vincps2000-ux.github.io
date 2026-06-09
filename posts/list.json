@@ -434,5 +434,9 @@
     {
         "file":  "BOM.txt",
         "date":  "2026-06-08"
+    },
+    {
+        "file":  "GodotbaseAttack.txt",
+        "date":  "2026-06-09"
     }
 ]
