@@ -1,0 +1,3 @@
+§Tools§
+Upped Subscription to use Fable 5. Result were Very good, allowed me to convert Game to be usable with WASM.
+Results are under Game. Next Day might be cleaning up some edge cases.
