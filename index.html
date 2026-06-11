@@ -308,6 +308,39 @@
                 animation:starBounce .6s ease;
             }
 
+            /* Game tab embed */
+            .game-embed{
+                background:var(--card);
+                border-radius:8px;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
+                overflow:hidden;
+            }
+            .game-launcher{
+                display:flex;flex-direction:column;align-items:center;justify-content:center;
+                gap:.75rem;text-align:center;padding:3rem 1.5rem;
+            }
+            .game-launcher h2{margin:0;color:var(--accent)}
+            .game-launcher p{margin:0;color:var(--text-secondary);max-width:34rem}
+            .game-hint{color:var(--muted);font-size:.85rem}
+            .game-play-btn{
+                padding:.75rem 2rem;border-radius:8px;border:1px solid var(--accent);
+                background:var(--accent);color:#fff;font-size:1.1rem;font-weight:700;
+                cursor:pointer;transition:filter .2s;
+            }
+            .game-play-btn:hover{filter:brightness(1.15)}
+            .game-toolbar{
+                display:flex;justify-content:flex-end;gap:.5rem;padding:.4rem .6rem;
+                border-bottom:1px solid var(--border);
+            }
+            .game-toolbar button{
+                background:var(--input-bg);border:1px solid var(--border);border-radius:6px;
+                padding:.25rem .6rem;font-size:.8rem;font-weight:600;color:var(--text);cursor:pointer;
+            }
+            .game-toolbar button:hover{border-color:var(--accent)}
+            .game-embed iframe{
+                display:block;width:100%;aspect-ratio:16/9;border:0;background:#000;
+            }
+
             /* Inline demo embed in posts */
             .inline-demo{
                 margin:.75rem 0;padding:1rem;background:var(--card);
@@ -780,6 +813,7 @@
                 <button class="tab-btn" data-tab="calendar-panel">📅 Calendar</button>
                 <button class="tab-btn" data-tab="stats-panel">📊 Stats</button>
                 <button class="tab-btn" data-tab="demo-panel">🧪 Demo</button>
+                <button class="tab-btn" data-tab="game-panel">🎮 Game</button>
             </div>
 
             <main>
@@ -816,6 +850,16 @@
                 </div>
                 <div id="demo-panel" class="tab-panel">
                     <div class="demo-grid" id="demo-grid"></div>
+                </div>
+                <div id="game-panel" class="tab-panel">
+                    <div class="game-embed" id="game-embed">
+                        <div class="game-launcher" id="game-launcher">
+                            <h2>MechSurvivors</h2>
+                            <p>A top-down survivors-like where you pilot a customizable mech. Runs directly in your browser (Godot 4, ~37 MB download on first start).</p>
+                            <button class="game-play-btn" id="game-play-btn">▶ Play Game</button>
+                            <p class="game-hint">Controls: WASD to move, mouse to aim &amp; fire.</p>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
@@ -1196,6 +1240,31 @@
                     document.getElementById(btn.dataset.tab).classList.add('active');
                 });
             });
+
+            // ---- Game tab (lazy-load MechSurvivors iframe) ----
+            const GAME_URL = 'https://vincps2000-ux.github.io/MechBenchmark/';
+            const gameEmbed = document.getElementById('game-embed');
+            const gameLauncherHtml = gameEmbed.innerHTML;
+            function wireGameLauncher(){
+                document.getElementById('game-play-btn').addEventListener('click', startGame);
+            }
+            function startGame(){
+                gameEmbed.innerHTML = `
+                    <div class="game-toolbar">
+                        <button id="game-fullscreen-btn" title="Fullscreen">⛶ Fullscreen</button>
+                        <button id="game-stop-btn" title="Stop game">✕ Stop</button>
+                    </div>
+                    <iframe id="game-frame" src="${GAME_URL}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+                document.getElementById('game-fullscreen-btn').addEventListener('click', ()=>{
+                    document.getElementById('game-frame').requestFullscreen();
+                });
+                document.getElementById('game-stop-btn').addEventListener('click', ()=>{
+                    gameEmbed.innerHTML = gameLauncherHtml; // removes iframe, frees the game
+                    wireGameLauncher();
+                });
+                document.getElementById('game-frame').focus();
+            }
+            wireGameLauncher();
 
             // ---- Calendar ----
             const calGrid = document.getElementById('cal-grid');
