@@ -150,8 +150,53 @@
             .single-post-mode #reports-panel,
             .single-post-mode #calendar-panel,
             .single-post-mode #stats-panel,
+            .single-post-mode #home-panel,
+            .single-post-mode #stuff-panel,
+            .single-post-mode #game-panel,
             .single-post-mode #demo-panel{display:none !important}
             .single-post-mode #posts-panel{display:block}
+
+            /* ---- Homepage ---- */
+            .home-mode .tabs{display:none}
+            .home-mode #search,
+            .home-mode #sort{display:none}
+            .home-grid{
+                display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+                gap:1rem;margin-top:1.5rem;
+            }
+            .area-card{
+                display:flex;flex-direction:column;align-items:center;gap:.5rem;
+                background:var(--card);border:1px solid var(--border);border-radius:12px;
+                padding:2rem 1.25rem;cursor:pointer;text-align:center;
+                color:var(--text);font-family:inherit;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
+                transition:transform .15s,border-color .2s,box-shadow .2s;
+            }
+            .area-card:hover{
+                transform:translateY(-3px);border-color:var(--accent);
+                box-shadow:0 4px 12px rgba(0,0,0,0.12);
+            }
+            .area-icon{font-size:2.5rem;line-height:1}
+            .area-title{font-size:1.15rem;font-weight:700;color:var(--accent)}
+            .area-desc{font-size:.88rem;color:var(--muted)}
+
+            /* ---- Stuff (3D objects) ---- */
+            .stuff-grid{
+                display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+                gap:1rem;
+            }
+            .stuff-card{
+                background:var(--card);border-radius:8px;padding:.75rem;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);
+            }
+            .stuff-card model-viewer{
+                width:100%;height:320px;border-radius:6px;
+                background:linear-gradient(180deg,var(--bg),var(--bg-end));
+            }
+            .stuff-name{
+                margin-top:.5rem;font-weight:600;color:var(--accent);text-align:center;
+            }
+            .stuff-hint{color:var(--muted);font-size:.85rem;margin:0 0 .75rem}
 
             /* ---- Tabs ---- */
             .tabs{
@@ -808,16 +853,37 @@
             </header>
 
             <div class="tabs">
-                <button class="tab-btn active" data-tab="posts-panel">📝 Posts</button>
+                <button class="tab-btn" data-tab="home-panel">🏠 Home</button>
+                <button class="tab-btn" data-tab="posts-panel">📝 Posts</button>
                 <button class="tab-btn" data-tab="reports-panel">📄 Reports</button>
                 <button class="tab-btn" data-tab="calendar-panel">📅 Calendar</button>
                 <button class="tab-btn" data-tab="stats-panel">📊 Stats</button>
                 <button class="tab-btn" data-tab="demo-panel">🧪 Demo</button>
                 <button class="tab-btn" data-tab="game-panel">🎮 Game</button>
+                <button class="tab-btn" data-tab="stuff-panel">🧊 Stuff</button>
             </div>
 
             <main>
-                <div id="posts-panel" class="tab-panel active">
+                <div id="home-panel" class="tab-panel active">
+                    <div class="home-grid">
+                        <button class="area-card" data-tab="posts-panel">
+                            <span class="area-icon">📝</span>
+                            <span class="area-title">Blog</span>
+                            <span class="area-desc">Daily experimentation posts, reports, calendar &amp; stats.</span>
+                        </button>
+                        <button class="area-card" data-tab="game-panel">
+                            <span class="area-icon">🎮</span>
+                            <span class="area-title">Game</span>
+                            <span class="area-desc">Play MechSurvivors directly in your browser.</span>
+                        </button>
+                        <button class="area-card" data-tab="stuff-panel">
+                            <span class="area-icon">🧊</span>
+                            <span class="area-title">Stuff</span>
+                            <span class="area-desc">3D objects you can rotate and inspect.</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="posts-panel" class="tab-panel">
                     <div id="posts" class="posts" aria-live="polite">
                         <div class="empty">Loading posts...</div>
                     </div>
@@ -861,10 +927,17 @@
                         </div>
                     </div>
                 </div>
+                <div id="stuff-panel" class="tab-panel">
+                    <p class="stuff-hint">Drag to rotate, scroll to zoom.</p>
+                    <div id="stuff-grid" class="stuff-grid" aria-live="polite">
+                        <div class="empty">Loading 3D objects...</div>
+                    </div>
+                </div>
             </main>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.1.0/dist/model-viewer.min.js"></script>
         <script>
             // Contract:
             // - Fetch posts/list.json (array of filenames relative to posts/)
@@ -1231,15 +1304,56 @@
 
             applyThemeIcon();
 
-            // ---- Tab switching ----
+            // ---- Tab / area switching ----
+            function switchTab(tabId){
+                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabId));
+                document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id===tabId));
+                document.body.classList.toggle('home-mode', tabId==='home-panel');
+            }
             document.querySelectorAll('.tab-btn').forEach(btn=>{
-                btn.addEventListener('click', ()=>{
-                    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-                    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(btn.dataset.tab).classList.add('active');
-                });
+                btn.addEventListener('click', ()=>switchTab(btn.dataset.tab));
             });
+            document.querySelectorAll('.area-card').forEach(card=>{
+                card.addEventListener('click', ()=>switchTab(card.dataset.tab));
+            });
+            if(!isSingleBlogMode){
+                switchTab('home-panel');
+            }
+
+            // ---- Stuff tab (3D objects) ----
+            async function loadStuff(){
+                const grid = document.getElementById('stuff-grid');
+                try{
+                    const r = await fetch('stuff/list.json', {cache:'no-store'});
+                    const items = await r.json();
+                    grid.innerHTML = '';
+                    if(!Array.isArray(items) || items.length === 0){
+                        grid.innerHTML = '<div class="empty">No 3D objects yet.</div>';
+                        return;
+                    }
+                    for(const item of items){
+                        const card = document.createElement('div');
+                        card.className = 'stuff-card';
+                        const mv = document.createElement('model-viewer');
+                        mv.setAttribute('src', 'stuff/' + item.file);
+                        mv.setAttribute('alt', item.name);
+                        if(item.orientation) mv.setAttribute('orientation', item.orientation);
+                        mv.setAttribute('camera-controls', '');
+                        mv.setAttribute('auto-rotate', '');
+                        mv.setAttribute('shadow-intensity', '1');
+                        const label = document.createElement('div');
+                        label.className = 'stuff-name';
+                        label.textContent = item.name;
+                        card.appendChild(mv);
+                        card.appendChild(label);
+                        grid.appendChild(card);
+                    }
+                }catch(e){
+                    grid.innerHTML = '<div class="empty">Failed to load 3D objects.</div>';
+                    console.error(e);
+                }
+            }
+            loadStuff();
 
             // ---- Game tab (lazy-load MechSurvivors iframe) ----
             const GAME_URL = 'https://vincps2000-ux.github.io/MechBenchmark/';
