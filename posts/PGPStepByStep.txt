@@ -1,0 +1,9 @@
+§Demo§
+The ban of Fable5 over the weekend got me thinking of a time, when a Programm was previously banned for export. The maker of PGP(Pretty Good Privacy) was investigated for 3 years by the US Government. 
+Looking back, it was both stupid,and not enforceable. 
+Here is an AI-generated demo of PGP. 
+The Key Point is that a normal, symmetric Encryption is used on top of the asymmetric, expensive RSA encryption, meaning 1 expensive asymmetric encryption can encryptic a whole session of cheap symmetric encryption:
+
+
+Inline demo:
+#pgp-demo#

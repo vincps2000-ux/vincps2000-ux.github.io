@@ -397,6 +397,59 @@
                 display:flex;align-items:center;gap:.35rem;
             }
 
+            /* ---- PGP demo ---- */
+            .pgp-widget{ display:flex;flex-direction:column;gap:.85rem; }
+            .pgp-intro{ font-size:.9rem;color:var(--muted);line-height:1.5; }
+            .pgp-compose{ display:flex;flex-direction:column;gap:.35rem; }
+            .pgp-compose label{ font-size:.8rem;font-weight:600;color:var(--muted); }
+            .pgp-msg{
+                width:100%;box-sizing:border-box;resize:vertical;padding:.5rem .6rem;
+                border:1px solid var(--border);border-radius:8px;background:var(--bg);
+                color:var(--text);font:inherit;
+            }
+            .pgp-msg:disabled{ opacity:.7; }
+            .pgp-controls{ display:flex;gap:.5rem;flex-wrap:wrap; }
+            .pgp-btn{
+                padding:.5rem .9rem;border:1px solid var(--border);border-radius:8px;
+                background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:.85rem;
+            }
+            .pgp-btn:disabled{ opacity:.45;cursor:not-allowed; }
+            .pgp-btn.pgp-auto,.pgp-btn.pgp-reset{ background:var(--card);color:var(--text); }
+            .pgp-steps{ display:flex;flex-direction:column;gap:.6rem; }
+            .pgp-step{
+                border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;
+                background:var(--card);transition:opacity .25s,border-color .25s,box-shadow .25s;
+            }
+            .pgp-step.pgp-pending{ opacity:.4; }
+            .pgp-step.pgp-active{ border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,0.12); }
+            .pgp-step-head{ display:flex;align-items:center;gap:.5rem;flex-wrap:wrap; }
+            .pgp-step-icon{ font-size:1.1rem; }
+            .pgp-step-title{ font-weight:700;font-size:.92rem; }
+            .pgp-step-who{
+                margin-left:auto;font-size:.7rem;font-weight:700;padding:.1rem .45rem;
+                border-radius:999px;text-transform:uppercase;letter-spacing:.04em;
+            }
+            .pgp-who-alice{ background:rgba(236,64,122,.15);color:#ec407a; }
+            .pgp-who-bob{ background:rgba(66,165,245,.15);color:#42a5f5; }
+            .pgp-who-wire{ background:rgba(158,158,158,.18);color:#9e9e9e; }
+            .pgp-step-desc{ font-size:.82rem;color:var(--muted);margin:.4rem 0 .1rem;line-height:1.45; }
+            .pgp-step-data{ display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem; }
+            .pgp-field{ display:flex;flex-direction:column;gap:.15rem; }
+            .pgp-field-label{
+                font-size:.7rem;font-weight:600;color:var(--muted);
+                text-transform:uppercase;letter-spacing:.03em;
+            }
+            .pgp-code{
+                font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;
+                background:var(--bg);border:1px solid var(--border);border-radius:6px;
+                padding:.4rem .5rem;word-break:break-all;white-space:pre-wrap;
+            }
+            .pgp-code.pgp-secret{ color:#e53935; }
+            .pgp-code.pgp-wire{ color:#9e9e9e; }
+            .pgp-code.pgp-result{ color:#2e7d32;border-color:#2e7d32;font-weight:600; }
+            .pgp-match{ font-size:.8rem;color:#2e7d32;font-weight:600; }
+            .pgp-err{ color:#e53935;font-size:.82rem; }
+
             /* ---- RunTarget demo ---- */
             .runtarget-widget{
                 display:flex;flex-direction:column;gap:.75rem;
@@ -3575,6 +3628,222 @@
                 });
             };
 
+            // ---- PGP step-by-step demo ----
+            // Real hybrid encryption with the Web Crypto API: AES-GCM session key
+            // wrapped by an RSA-OAEP key pair. Each PGP stage is shown one step at a time.
+            DEMOS['pgp-demo'] = function(container){
+                const widget = document.createElement('div');
+                widget.className = 'pgp-widget';
+                widget.innerHTML = `
+                    <div class="pgp-intro">
+                        PGP uses <strong>hybrid encryption</strong>: a fast, random <em>session key</em> encrypts the
+                        message, and the recipient's <em>public key</em> encrypts that session key. Step through every
+                        stage below — the cryptography is real, run live in your browser.
+                    </div>
+                    <div class="pgp-compose">
+                        <label>✉️ Alice's message to Bob</label>
+                        <textarea class="pgp-msg" rows="2">Meet me at the old bridge at midnight. — Alice</textarea>
+                    </div>
+                    <div class="pgp-controls">
+                        <button class="pgp-btn pgp-next">▶️ Start</button>
+                        <button class="pgp-btn pgp-auto">⏩ Run all</button>
+                        <button class="pgp-btn pgp-reset" disabled>🔁 Reset</button>
+                    </div>
+                    <div class="pgp-steps"></div>
+                `;
+                container.appendChild(widget);
+
+                const stepsEl = widget.querySelector('.pgp-steps');
+                const nextBtn = widget.querySelector('.pgp-next');
+                const autoBtn = widget.querySelector('.pgp-auto');
+                const resetBtn = widget.querySelector('.pgp-reset');
+                const msgInput = widget.querySelector('.pgp-msg');
+
+                const encoder = new TextEncoder();
+                const decoder = new TextDecoder();
+                let state = {};
+
+                function buf2b64(buf){
+                    const bytes = new Uint8Array(buf);
+                    let bin = '';
+                    for(const b of bytes) bin += String.fromCharCode(b);
+                    return btoa(bin);
+                }
+                function buf2hex(buf){
+                    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+                }
+                function trunc(s, n){ n = n || 120; return s.length > n ? s.slice(0, n) + '…' : s; }
+                function escapeHtml(s){
+                    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                }
+                function field(label, value, cls){
+                    return '<div class="pgp-field"><span class="pgp-field-label">' + label +
+                        '</span><code class="pgp-code ' + (cls || '') + '">' + value + '</code></div>';
+                }
+
+                const stepDefs = [
+                    {
+                        icon:'🔑', who:'Bob', title:'1. Bob generates his key pair',
+                        desc:'Bob creates a 2048-bit RSA key pair. He publishes the <strong>public key</strong> for anyone to use, but keeps the <strong>private key</strong> secret.',
+                        run: async () => {
+                            state.rsa = await crypto.subtle.generateKey(
+                                { name:'RSA-OAEP', modulusLength:2048, publicExponent:new Uint8Array([1,0,1]), hash:'SHA-256' },
+                                true, ['encrypt','decrypt']
+                            );
+                            const pub = await crypto.subtle.exportKey('jwk', state.rsa.publicKey);
+                            return field('🔓 Public key (modulus n, base64url)', escapeHtml(trunc(pub.n, 100))) +
+                                   field('🔒 Private key', 'kept secret on Bob\'s machine — never transmitted', 'pgp-secret');
+                        }
+                    },
+                    {
+                        icon:'✍️', who:'Alice', title:'2. Alice writes her message',
+                        desc:'Alice composes the plaintext she wants to send to Bob. The computer treats it as raw bytes.',
+                        run: async () => {
+                            state.plain = encoder.encode(msgInput.value);
+                            return field('Plaintext', escapeHtml(msgInput.value)) +
+                                   field('As bytes (hex, ' + state.plain.length + ' bytes)', escapeHtml(trunc(buf2hex(state.plain), 120)));
+                        }
+                    },
+                    {
+                        icon:'🎲', who:'Alice', title:'3. Alice generates a random session key',
+                        desc:'A fresh, random <strong>AES-256 session key</strong> is created for this one message only. Symmetric encryption is fast even for large data.',
+                        run: async () => {
+                            state.aes = await crypto.subtle.generateKey({ name:'AES-GCM', length:256 }, true, ['encrypt','decrypt']);
+                            state.aesRaw = await crypto.subtle.exportKey('raw', state.aes);
+                            return field('🎟️ Session key (256-bit, hex)', escapeHtml(buf2hex(state.aesRaw)));
+                        }
+                    },
+                    {
+                        icon:'🔒', who:'Alice', title:'4. Alice encrypts the message with the session key',
+                        desc:'The plaintext is encrypted with the fast symmetric session key (AES-GCM). The output is unreadable ciphertext plus a random IV (nonce).',
+                        run: async () => {
+                            state.iv = crypto.getRandomValues(new Uint8Array(12));
+                            state.cipher = await crypto.subtle.encrypt({ name:'AES-GCM', iv:state.iv }, state.aes, state.plain);
+                            return field('🔢 IV / nonce (hex)', escapeHtml(buf2hex(state.iv))) +
+                                   field('🔒 Ciphertext (base64)', escapeHtml(trunc(buf2b64(state.cipher), 140)));
+                        }
+                    },
+                    {
+                        icon:'📦', who:'Alice', title:'5. Alice locks the session key with Bob\'s public key',
+                        desc:'So only Bob can read it, Alice encrypts the session key using <strong>Bob\'s public key</strong> (RSA-OAEP). Only Bob\'s matching private key can unlock it.',
+                        run: async () => {
+                            state.wrapped = await crypto.subtle.encrypt({ name:'RSA-OAEP' }, state.rsa.publicKey, state.aesRaw);
+                            return field('🔐 Encrypted session key (base64)', escapeHtml(trunc(buf2b64(state.wrapped), 140)));
+                        }
+                    },
+                    {
+                        icon:'📡', who:'Wire', title:'6. The PGP message travels over the internet',
+                        desc:'Alice bundles the encrypted session key together with the ciphertext and sends it. Anyone intercepting it sees only this — meaningless without Bob\'s private key.',
+                        run: async () => {
+                            const packet = '-----BEGIN PGP MESSAGE-----\n' +
+                                trunc(buf2b64(state.wrapped), 60) + '\n' +
+                                trunc(buf2b64(state.cipher), 60) + '\n' +
+                                '-----END PGP MESSAGE-----';
+                            return field('📨 What an eavesdropper sees', escapeHtml(packet), 'pgp-wire');
+                        }
+                    },
+                    {
+                        icon:'🗝️', who:'Bob', title:'7. Bob unlocks the session key with his private key',
+                        desc:'Bob uses his secret <strong>private key</strong> to decrypt the session key. No one else can perform this step.',
+                        run: async () => {
+                            const rawKey = await crypto.subtle.decrypt({ name:'RSA-OAEP' }, state.rsa.privateKey, state.wrapped);
+                            state.recovered = await crypto.subtle.importKey('raw', rawKey, { name:'AES-GCM' }, false, ['decrypt']);
+                            const hex = buf2hex(rawKey);
+                            const match = hex === buf2hex(state.aesRaw);
+                            return field('🎟️ Recovered session key (hex)', escapeHtml(hex)) +
+                                   '<div class="pgp-match">' + (match ? '✅ Matches Alice\'s original session key exactly' : '⚠️ mismatch') + '</div>';
+                        }
+                    },
+                    {
+                        icon:'📖', who:'Bob', title:'8. Bob decrypts and reads the message',
+                        desc:'With the recovered session key, Bob decrypts the ciphertext (AES-GCM also verifies it was not tampered with) and reads Alice\'s original message.',
+                        run: async () => {
+                            const out = await crypto.subtle.decrypt({ name:'AES-GCM', iv:state.iv }, state.recovered, state.cipher);
+                            return field('✉️ Decrypted plaintext', escapeHtml(decoder.decode(out)), 'pgp-result');
+                        }
+                    }
+                ];
+
+                let current = -1;
+                const cards = stepDefs.map(def => {
+                    const card = document.createElement('div');
+                    card.className = 'pgp-step pgp-pending';
+                    card.innerHTML =
+                        '<div class="pgp-step-head">' +
+                            '<span class="pgp-step-icon">' + def.icon + '</span>' +
+                            '<span class="pgp-step-title">' + def.title + '</span>' +
+                            '<span class="pgp-step-who pgp-who-' + def.who.toLowerCase() + '">' + def.who + '</span>' +
+                        '</div>' +
+                        '<div class="pgp-step-desc">' + def.desc + '</div>' +
+                        '<div class="pgp-step-data"></div>';
+                    stepsEl.appendChild(card);
+                    return card;
+                });
+
+                async function doStep(i){
+                    const card = cards[i];
+                    if(i > 0) cards[i-1].classList.remove('pgp-active');
+                    card.classList.remove('pgp-pending');
+                    card.classList.add('pgp-active');
+                    const dataEl = card.querySelector('.pgp-step-data');
+                    try{
+                        dataEl.innerHTML = await stepDefs[i].run();
+                    }catch(err){
+                        dataEl.innerHTML = '<div class="pgp-err">❌ ' + escapeHtml(String(err.message || err)) + '</div>';
+                    }
+                    card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+                }
+
+                function finishUI(){
+                    nextBtn.disabled = true;
+                    autoBtn.disabled = true;
+                    nextBtn.textContent = '✅ Done';
+                    resetBtn.disabled = false;
+                }
+
+                nextBtn.addEventListener('click', async () => {
+                    msgInput.disabled = true;
+                    nextBtn.disabled = true;
+                    autoBtn.disabled = true;
+                    current++;
+                    await doStep(current);
+                    resetBtn.disabled = false;
+                    if(current >= stepDefs.length - 1){
+                        finishUI();
+                    } else {
+                        nextBtn.disabled = false;
+                        autoBtn.disabled = false;
+                        nextBtn.textContent = '▶️ Next step';
+                    }
+                });
+
+                autoBtn.addEventListener('click', async () => {
+                    msgInput.disabled = true;
+                    nextBtn.disabled = true;
+                    autoBtn.disabled = true;
+                    while(current < stepDefs.length - 1){
+                        current++;
+                        await doStep(current);
+                        await new Promise(r => setTimeout(r, 600));
+                    }
+                    finishUI();
+                });
+
+                resetBtn.addEventListener('click', () => {
+                    current = -1;
+                    state = {};
+                    msgInput.disabled = false;
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = '▶️ Start';
+                    autoBtn.disabled = false;
+                    resetBtn.disabled = true;
+                    for(const c of cards){
+                        c.className = 'pgp-step pgp-pending';
+                        c.querySelector('.pgp-step-data').innerHTML = '';
+                    }
+                });
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
@@ -3588,6 +3857,7 @@
                     { id: 'lang-wheel', title: '🎡 Programming Language Wheel', desc: 'Spin the wheel to randomly pick one of 25 diverse programming languages. Press Spin and see what you get!' },
                     { id: 'rps-helper', title: '✂️ Schere-Stein-Papier Helfer', desc: 'Beim Start wird Vollbild angefragt, dann wählt Spieler 1, danach Spieler 2. Anschließend wird der Sieger angezeigt.' },
                     { id: 'DillemaP', title: '🤝 50-Turn Prisoner\'s Dilemma', desc: 'Simulate 50 turns between two strategies (Cooperate unforgiving, Defect 100, Cooperate forgiving) with configurable information lag.' },
+                    { id: 'pgp-demo', title: '🔐 PGP, Step by Step', desc: 'Watch hybrid encryption happen live: Alice encrypts a message with a random AES session key, locks that key with Bob\'s RSA public key, and Bob unwraps and reads it. Real Web Crypto, one step at a time.' },
                     { id: 'pptx-to-txt', title: '📑 PPTX → TXT Konverter', desc: '.pptx-Datei auswählen und mit geänderter Dateiendung (.txt) herunterladen. Rein client-seitig, kein Upload.' },
                     { id: 'rem-white-noise-m4a', title: '😴 REM M4A Builder', desc: 'Estimate REM timing from bedtime settings, prepend generated white noise, and export a new M4A in-browser.' }
                 ];
