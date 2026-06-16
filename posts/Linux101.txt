@@ -1,0 +1,16 @@
+§Tools§
+Been some time since my last Linux-Adventures, so i went through the cli 101 box on https://labex.io/labs
+
+Interesting things:
+User ID: Split into unique ID(GUID), GroupID(primary Group), ang the groupid off every additional group.
+~ is the User Home
+files with .Filename are hidden
+
+Turtorial is basic, but smartly setup(Using Drift resulting of previous Exercise to teach smth.). 
+However, important basic controls are not taught(tab for autocomplete, Copy/Paste etc.).
+Flags like -r for recursive are being worked in nicely.
+
+Free plan limited to 3 VMs per day, a la 60 minutes(maybe entirely time based might be better, this is to little for short beginning lessions).
+Learning AI circumwnets rigid checking structure present in other LabBoxes.
+
+Verdict 7.8/10.
