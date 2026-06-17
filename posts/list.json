@@ -458,5 +458,9 @@
     {
         "file":  "Linux101.txt",
         "date":  "2026-06-16"
+    },
+    {
+        "file":  "HIDAdventures.txt",
+        "date":  "2026-06-17"
     }
 ]

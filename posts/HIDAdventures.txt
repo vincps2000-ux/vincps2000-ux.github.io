@@ -1,0 +1,9 @@
+§Tools§
+Built small hid (human interface device) Inspector, with the goal to see mouse and keyboard input.
+Used for this Project was pywinusb(https://github.com/rene-aguirre/pywinusb/tree/master).
+Windows only makes mouse and keyboard availble through event System, raw hid is not visible.
+
+Only Inputs looking like a alive bit(because of regular cadence and unchanging Payload) from an unknown hid were seen.(VID: 0x046D PID: 0xC52B)
+(https://nodeloop.org/projects/usb-identifier/) allowed Identification, though not supported on every browser (webusb is needed).
+It was my Logitech USB Receiver.
+
