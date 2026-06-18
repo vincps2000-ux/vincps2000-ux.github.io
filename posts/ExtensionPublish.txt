@@ -1,0 +1,12 @@
+§Tools§
+Build and Published a simple VSCode extension(It just ensures that needed Extensions are enabled in Workspace).
+
+Wanted to look at the Process from a Securtiy Perspective:
+Thngs that are needed: 
+    Control of a domain(only needed for verified Extensions, mine is not),
+    Microsoft Account(Email + 2nd Factor)
+
+There is also a short delay between publishing and it being public(probably for automated Scans).
+
+Here is the result:
+https://marketplace.visualstudio.com/items?itemName=VincentUntiedt.enableskript

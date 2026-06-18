@@ -462,5 +462,9 @@
     {
         "file":  "HIDAdventures.txt",
         "date":  "2026-06-17"
+    },
+    {
+        "file":  "ExtensionPublish.txt",
+        "date":  "2026-06-18"
     }
 ]
