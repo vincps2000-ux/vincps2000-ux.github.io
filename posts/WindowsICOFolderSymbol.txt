@@ -1,0 +1,8 @@
+§Fun§
+
+Created a Small .Ico File of a GDI(Global Defense Initiative)-Icon, for my user-Folder.
+Created/Converted in web using:  https://www.photopea.com
+
+Folder changable by properties-->Customize
+Weirdly, only a folder can be changed, files cant by default.
+maybe so hiding an .exe as a .txt or folder on Download is harder?    

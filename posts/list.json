@@ -466,5 +466,9 @@
     {
         "file":  "ExtensionPublish.txt",
         "date":  "2026-06-18"
+    },
+    {
+        "file":  "WindowsICOFolderSymbol.txt",
+        "date":  "2026-06-19"
     }
 ]
