@@ -1,0 +1,35 @@
+§Lecture§
+Read through https://www.w3schools.com/xml/schema_intro.asp to understand basics of xsd.
+
+XSDs Files main advantage is introducing datatypes (compley and simple) to xml files.
+Xsds are themselves xmls.
+
+In order to communicat that a xml has a schema, a note element with xsi:schemaLocation is used.
+
+schema - root element.
+
+BAsic element defined like this: <xs:element name="xxx" type="yyy"/>
+xxx is name of element, type is datatype.
+list of basic Types here: https://www.w3.org/TR/xmlschema11-2/#built-in-datatypes
+
+default value and fixed are available(default overwrites nulls, fixed is always provided value)
+
+
+Complex Types:
+Attributes can be defined using <xs:attribute name="XXX" type="xs:string" use="required"/>
+optional by default.
+
+ <xs:restriction> restrict values to a set of values. Can be Options based or Range-based
+
+complexTypes are surrounded by <xs:complexType> </xs:complexType>
+Extension are possible using <xs:extension base="XXX">
+ <xs:sequence> enforces provided sequence of Elements
+ mixed="true" allows mixing elements with normal Text, in a letter or similar.
+ <xs:choice> restricts to one of the following elements.
+ <maxOccurs> <minOccurs> defines how much 
+ <xs:group> can be referenced in another element, kind of like a declared object.
+ <xs:any> allows any element to be inserted.
+ xs:anyAttribute> allows every attribute.
+
+
+
