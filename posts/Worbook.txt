@@ -1,0 +1,14 @@
+§Fun§
+
+Build VSC extebsion Workbook., useful to ensure developers utilize the same naming across the company.
+
+Works like this: First a json with every Keyword and its translations is provide.
+marking some Code and hitting alt+shift+n will bring up a menu showing possible matches.
+Selecting one makes its default value overwrite your Code selection.
+
+Future possible features:
+Select between translations
+Multiple jsons at once
+Support large data amounts
+Activation and replacement regex
+Add new ones on the fly
