@@ -478,5 +478,9 @@
     {
         "file":  "Worbook.txt",
         "date":  "2026-06-23"
+    },
+    {
+        "file":  "VSCExtensionPack.txt",
+        "date":  "2026-06-24"
     }
 ]

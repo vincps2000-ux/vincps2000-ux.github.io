@@ -1,0 +1,7 @@
+§Tools§
+
+Created Basic VSC Extension Pack AL Language BasicDevKit for fast Development Startup on New machines.
+
+A VSC Extensionpack is very simple, it just has the extensionPack value filled with an array of the Extensions in the manifest json. 
+The entire app is just a manifest with a Licensce.
+(https://code.visualstudio.com/api/references/extension-manifest) 
