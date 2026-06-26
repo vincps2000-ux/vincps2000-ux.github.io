@@ -482,5 +482,9 @@
     {
         "file":  "VSCExtensionPack.txt",
         "date":  "2026-06-24"
+    },
+    {
+        "file":  "GameOfLifeSearch.txt",
+        "date":  "2026-06-26"
     }
 ]

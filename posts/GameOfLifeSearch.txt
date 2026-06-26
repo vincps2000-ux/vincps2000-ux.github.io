@@ -1,0 +1,9 @@
+§Fun§
+Watched this Video https://www.youtube.com/watch?v=QK_KZv-YyOc about Conways Game of Life.
+This motivated me to look at a wiki of the Game:
+https://catagolue.hatsya.com/home
+Using this script https://github.com/HuntingBot/apgsearch,
+anybody can contribute patterns to the website. 
+I ran a batch of 10000000 soups (randomized seeds) of TSnadrad Game of Life and found these rare patterns:
+xp4_37bkic    (Mold)
+xp8_gk2gb3z11 (Figure Eight)
