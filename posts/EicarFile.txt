@@ -1,0 +1,15 @@
+§Fun§
+A eicar file (https://www.eicar.org/download-anti-malware-testfile) is used to deileberatly trigger a Virus scanner.
+
+This allows easy testing of MalwareDetection, without introducing an actual virus, or a viruslike file to a System.
+
+eicar-String: "X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
+
+Testing the filoe download Leads to these result:
+Antivirus "Dangerous page blocked for your protection" page. --skipped
+Antivirus popup for dangerous URLs --skipped --> Downloaded as file
+Threat detected popup. --> Doubleclick on file 
+"No rights to open File" --> Open as admin --> Same Message
+deletion leads to the same Message.
+
+Opening Anti-Virus and deleting qurantined file there was needed.

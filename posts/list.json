@@ -486,5 +486,9 @@
     {
         "file":  "GameOfLifeSearch.txt",
         "date":  "2026-06-26"
+    },
+    {
+        "file":  "EicarFile.txt",
+        "date":  "2026-06-28"
     }
 ]
