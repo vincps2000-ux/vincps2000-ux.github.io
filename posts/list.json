@@ -490,5 +490,9 @@
     {
         "file":  "EicarFile.txt",
         "date":  "2026-06-28"
+    },
+    {
+        "file":  "GodotArtillery.txt",
+        "date":  "2026-07-01"
     }
 ]
