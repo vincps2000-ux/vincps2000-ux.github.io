@@ -1,0 +1,28 @@
+§Tools§
+
+Investigating Plant Uml, as a potential documenting Tool.
+
+Using Webserver:
+https://www.plantuml.com/
+Extreme Basic Turtorial:
+https://www.augmentedmind.de/2021/01/03/plantuml-tutorial-diagrams-as-code/
+By far the most useful resource, as a wiki:
+https://pdf.plantuml.net/1.2020.22/PlantUML_Language_Reference_Guide_en.pdf
+
+usecases are defined like:
+(class e.g. actor) (Caption) as (Name)
+default is actor
+
+relations are defined like:
+(element1) (connector) (element2): (line description)
+
+groups defined like:
+group (name) 
+[content]
+end
+
+
+Hierachy is from left to right, with - being equal, -- being down one, --- being down two, etc.
+
+Result: Interesting, but needs to be used in real project to decide.
+Prediction: high initial cost, medium payoff, good for people fast on keyboard, and working on unclear architecture
