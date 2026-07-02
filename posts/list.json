@@ -498,5 +498,9 @@
     {
         "file":  "PlantUmlBasics.txt",
         "date":  "2026-07-01"
+    },
+    {
+        "file":  "GodotFablebenchmark.txt",
+        "date":  "2026-07-02"
     }
 ]

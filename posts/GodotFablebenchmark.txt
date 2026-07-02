@@ -1,0 +1,16 @@
+§Application§
+the vibecoded nature of the godot Mech game repo makes it the perfect candidate for a Capability Test of Fabled 5.
+
+Major refactor chosen:
+Refactor mech datastructure(Game is designed around it, interacts with everything)
+into human readable json
+[Previously failed by Opus]
+
+Ran for ~15 min, Cost 1000 Ai credits.
+Refactor 95% sucess, runs correctly, but some easy polish wins were missed.
+Unclear if Scope Constraint or Model Lazyness is reason.
+
+Result:
+
+Very Sucessfull, but highly expensive (7 Calls of this size per month)
+
