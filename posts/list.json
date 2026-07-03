@@ -502,5 +502,9 @@
     {
         "file":  "GodotFablebenchmark.txt",
         "date":  "2026-07-02"
+    },
+    {
+        "file":  "libreOffice.txt",
+        "date":  "2026-07-03"
     }
 ]

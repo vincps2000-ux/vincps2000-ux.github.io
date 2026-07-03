@@ -1,0 +1,11 @@
+§Tools§§fail§
+Installed Libreoffice as alternative to Microsoft Office-Suite.
+
+Interesting: during install, a restart of vsc and steam webhelper wasrequired.
+Afterwards, the install froze, and had to be killed by taskmanager.
+
+
+Installed OnlyOffice instead, another open SOurce alternative, with focus on collaberative working.
+
+First tests went well, the Excel/spreadsheet Suite functions the same, as classic windows.
+The help function is genuinly good.
