@@ -506,5 +506,9 @@
     {
         "file":  "libreOffice.txt",
         "date":  "2026-07-03"
+    },
+    {
+        "file":  "FableModelCard.txt",
+        "date":  "2026-07-04"
     }
 ]

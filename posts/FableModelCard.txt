@@ -1,0 +1,6 @@
+§Lecture§
+Read through Chapter 2 of Mythos Model card(https://www-cdn.anthropic.com/d00db56fa754a1b115b6dd7cb2e3c342ee809620.pdf)
+
+Most interesting part was the redteam panel of 5 phs, since it is the only kind of redteam test, that looses efficency each time it is repeated.
+
+Also backed up my registry keys.
