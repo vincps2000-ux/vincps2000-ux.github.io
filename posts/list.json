@@ -510,5 +510,9 @@
     {
         "file":  "FableModelCard.txt",
         "date":  "2026-07-04"
+    },
+    {
+        "file":  "CCCResponse.txt",
+        "date":  "2026-07-06"
     }
 ]

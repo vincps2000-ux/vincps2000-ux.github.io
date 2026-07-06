@@ -1,0 +1,10 @@
+§Fun§§Application§
+
+Added Worlds better UI to Module Selection Screen.
+
+Went through https://abmahnbeantworter.ccc.de/ for a laugh.
+
+Interesting parts:
+ - The times given by the cease and desist are often far smaller than the legal limit. Scammer Style tactics.
+ - the dfinition of Störer(german) (https://www.juraforum.de/lexikon/stoerer). A person doing nothing illegal, but accepting harm of third partys.
+ - the abitlity to get a "negative judgement", a judgement that you didnt do something. 
