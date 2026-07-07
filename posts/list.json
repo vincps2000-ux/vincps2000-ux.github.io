@@ -514,5 +514,9 @@
     {
         "file":  "CCCResponse.txt",
         "date":  "2026-07-06"
+    },
+    {
+        "file":  "GodotFPVs.txt",
+        "date":  "2026-07-07"
     }
 ]
