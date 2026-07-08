@@ -1,0 +1,8 @@
+§Tools§
+Spent some time configuring my new MMOMouse (mouse with numpad on the side).
+
+Surprises:
+Numpad inputs normal numbers as default.
+Configurations are stored on Mouse.
+No M4/M5 (back/Forward) Buttons configured by default.
+strg + z saves as strg + y because of german keyboard. 
