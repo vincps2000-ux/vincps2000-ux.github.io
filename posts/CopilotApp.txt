@@ -1,0 +1,5 @@
+§Tools§§Application§
+Added 2 Torsos and 2 weapons to Godot game.
+
+Testes Githubcopilot app. In my Opinion, zero advatage over VSC-Extension, except ability to run automation. 
+Sadly the only point of time based automation for single person project, to interact with Internet and outside information, is not at all the point, so the app is dead to me.
