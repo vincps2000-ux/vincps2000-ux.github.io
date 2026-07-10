@@ -1,0 +1,10 @@
+§Tools§
+
+Downloaded Windhawk(https://windhawk.net/) , a programm for Windows Mods.
+
+Used Mods: 
+- Vertical taskbar: disabled because it takes up more focus than is saved by easy switching. More worth it in browsers, and Filesystems, where reading the header is critical.
+- Scrolling Voumne controls on taskbar : removed because not working
+- Folder file size displayer: removed because of needed external dependency
+
+Overall: More gimicks than usful productivity tools for now.
