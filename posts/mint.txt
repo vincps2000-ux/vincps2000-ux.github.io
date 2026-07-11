@@ -1,0 +1,6 @@
+§Tools§
+Installed Mint on second MAchine, replacing Ubuntu, whcih had trouble with the steam install.
+
+Worked well, used Rufus to create the Boot-USB.
+
+HArdest part was reseting google account password to enable github.
