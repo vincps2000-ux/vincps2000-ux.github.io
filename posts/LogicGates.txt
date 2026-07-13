@@ -1,0 +1,4 @@
+§Fun§
+Freshed up on Logic Gates here, by playing the first 5 levels: https://www.nandgame.com
+
+The first NAND is a bit hard, but the Rest was very doable, as long as one doesnt search for the optimal configuration.

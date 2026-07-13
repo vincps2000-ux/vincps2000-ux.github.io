@@ -534,5 +534,9 @@
     {
         "file":  "mint.txt",
         "date":  "2026-07-11"
+    },
+    {
+        "file":  "LogicGates.txt",
+        "date":  "2026-07-13"
     }
 ]
