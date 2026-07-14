@@ -1,0 +1,5 @@
+§Fun§
+Played NANDGame, addition-part (https://www.nandgame.com)
+
+Reminds me of the univerity Day ;-0
+hardest part was Multi-Adder, Later Levels were just dragging in the obvious Node.

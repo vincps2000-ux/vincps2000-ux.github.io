@@ -538,5 +538,9 @@
     {
         "file":  "LogicGates.txt",
         "date":  "2026-07-13"
+    },
+    {
+        "file":  "Nandgameadder.txt",
+        "date":  "2026-07-14"
     }
 ]
