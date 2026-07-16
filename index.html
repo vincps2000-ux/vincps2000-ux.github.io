@@ -501,6 +501,8 @@
             }
             .ascii-editor-copy{background:var(--accent);color:#fff;border-color:var(--accent)}
             @media (max-width:520px){
+                .demo-grid{grid-template-columns:minmax(0,1fr)}
+                .demo-card{padding:1rem}
                 .ascii-editor-widget{gap:.6rem}
                 .ascii-editor-controls{align-items:stretch}
                 .ascii-editor-controls label{width:100%}
@@ -4233,7 +4235,7 @@
                 if(!grid) return;
                 grid.innerHTML = '';
                 const demoList = [
-                    { id: 'ascii-editor', title: '⌨️ ASCII Visual Editor', desc: 'Draw ASCII art with a character brush, erase or clear the canvas, then copy the finished result.' },
+                    { id: 'ascii-editor', title: '⌨️ ASCII Visual Editor', desc: 'Draw with pen, line, and eraser tools on a resizable canvas, with fullscreen and phone-friendly controls.' },
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
