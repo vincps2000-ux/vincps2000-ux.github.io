@@ -450,6 +450,50 @@
             .pgp-match{ font-size:.8rem;color:#2e7d32;font-weight:600; }
             .pgp-err{ color:#e53935;font-size:.82rem; }
 
+            /* ---- ASCII visual editor demo ---- */
+            .ascii-editor-widget{display:flex;flex-direction:column;gap:.75rem}
+            .ascii-editor-controls,.ascii-editor-actions{
+                display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;
+            }
+            .ascii-editor-controls label{font-size:.8rem;font-weight:600;color:var(--muted)}
+            .ascii-editor-palette{display:flex;gap:.3rem;flex-wrap:wrap}
+            .ascii-editor-btn,.ascii-editor-char{
+                min-width:2rem;padding:.4rem .6rem;border:1px solid var(--border);
+                border-radius:6px;background:var(--input-bg);color:var(--text);
+                font-weight:700;cursor:pointer;
+            }
+            .ascii-editor-btn:hover,.ascii-editor-char:hover,
+            .ascii-editor-btn.active,.ascii-editor-char.active{border-color:var(--accent)}
+            .ascii-editor-btn.active,.ascii-editor-char.active{
+                background:var(--accent);color:#fff;
+            }
+            .ascii-editor-custom{
+                width:2.2rem;padding:.4rem;border:1px solid var(--border);
+                border-radius:6px;background:var(--input-bg);color:var(--text);
+                text-align:center;font:700 1rem ui-monospace,Menlo,Consolas,monospace;
+            }
+            .ascii-editor-grid-wrap{overflow-x:auto;padding-bottom:.2rem}
+            .ascii-editor-grid{
+                display:grid;grid-template-columns:repeat(16,1fr);gap:2px;
+                min-width:480px;touch-action:none;user-select:none;
+            }
+            .ascii-editor-cell{
+                aspect-ratio:1;border:1px solid var(--border);border-radius:3px;
+                background:var(--input-bg);color:var(--text);cursor:crosshair;
+                padding:0;font:700 1rem ui-monospace,Menlo,Consolas,monospace;
+            }
+            .ascii-editor-cell:hover,.ascii-editor-cell:focus-visible{
+                border-color:var(--accent);outline:none;
+            }
+            .ascii-editor-output{
+                width:100%;box-sizing:border-box;min-height:9rem;resize:vertical;
+                padding:.65rem;border:1px solid var(--border);border-radius:8px;
+                background:var(--code-bg);color:var(--text);
+                font: .9rem/1.2 ui-monospace,Menlo,Consolas,monospace;
+                white-space:pre;overflow:auto;
+            }
+            .ascii-editor-copy{background:var(--accent);color:#fff;border-color:var(--accent)}
+
             /* ---- RunTarget demo ---- */
             .runtarget-widget{
                 display:flex;flex-direction:column;gap:.75rem;
@@ -3844,12 +3888,186 @@
                 });
             };
 
+            // ---- ASCII visual editor demo ----
+            DEMOS['ascii-editor'] = function(container){
+                const COLS = 16;
+                const ROWS = 10;
+                const characters = ['#', '@', '*', '+', '.', '/', '\\'];
+                const values = Array(COLS * ROWS).fill(' ');
+                let brush = characters[0];
+                let erasing = false;
+                let drawing = false;
+
+                const widget = document.createElement('div');
+                widget.className = 'ascii-editor-widget';
+
+                const controls = document.createElement('div');
+                controls.className = 'ascii-editor-controls';
+                const brushLabel = document.createElement('label');
+                brushLabel.textContent = 'Brush:';
+                controls.appendChild(brushLabel);
+
+                const palette = document.createElement('div');
+                palette.className = 'ascii-editor-palette';
+                controls.appendChild(palette);
+
+                const custom = document.createElement('input');
+                custom.className = 'ascii-editor-custom';
+                custom.maxLength = 1;
+                custom.value = brush;
+                custom.setAttribute('aria-label', 'Custom ASCII brush character');
+                custom.title = 'Custom character';
+                controls.appendChild(custom);
+
+                const eraseBtn = document.createElement('button');
+                eraseBtn.type = 'button';
+                eraseBtn.className = 'ascii-editor-btn';
+                eraseBtn.textContent = '⌫ Erase';
+                controls.appendChild(eraseBtn);
+                widget.appendChild(controls);
+
+                const gridWrap = document.createElement('div');
+                gridWrap.className = 'ascii-editor-grid-wrap';
+                const grid = document.createElement('div');
+                grid.className = 'ascii-editor-grid';
+                grid.setAttribute('role', 'grid');
+                grid.setAttribute('aria-label', 'ASCII drawing grid');
+                gridWrap.appendChild(grid);
+                widget.appendChild(gridWrap);
+
+                const output = document.createElement('textarea');
+                output.className = 'ascii-editor-output';
+                output.readOnly = true;
+                output.setAttribute('aria-label', 'ASCII art result');
+                widget.appendChild(output);
+
+                const actions = document.createElement('div');
+                actions.className = 'ascii-editor-actions';
+                const clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = 'ascii-editor-btn';
+                clearBtn.textContent = 'Clear';
+                const copyBtn = document.createElement('button');
+                copyBtn.type = 'button';
+                copyBtn.className = 'ascii-editor-btn ascii-editor-copy';
+                copyBtn.textContent = '📋 Copy result';
+                actions.appendChild(clearBtn);
+                actions.appendChild(copyBtn);
+                widget.appendChild(actions);
+                container.appendChild(widget);
+
+                function selectBrush(char, selectedButton){
+                    brush = char || ' ';
+                    erasing = false;
+                    eraseBtn.classList.remove('active');
+                    eraseBtn.setAttribute('aria-pressed', 'false');
+                    palette.querySelectorAll('button').forEach(button => {
+                        const selected = button === selectedButton;
+                        button.classList.toggle('active', selected);
+                        button.setAttribute('aria-pressed', String(selected));
+                    });
+                    custom.value = brush;
+                }
+
+                characters.forEach((char, index) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'ascii-editor-char' + (index === 0 ? ' active' : '');
+                    button.textContent = char;
+                    button.title = 'Use ' + char;
+                    button.setAttribute('aria-label', 'Use ' + char + ' brush');
+                    button.setAttribute('aria-pressed', String(index === 0));
+                    button.addEventListener('click', () => selectBrush(char, button));
+                    palette.appendChild(button);
+                });
+
+                function syncOutput(){
+                    const lines = [];
+                    for(let row = 0; row < ROWS; row++){
+                        lines.push(values.slice(row * COLS, (row + 1) * COLS).join('').trimEnd());
+                    }
+                    while(lines.length && !lines[lines.length - 1]) lines.pop();
+                    output.value = lines.join('\n');
+                }
+
+                function paint(cell, forceErase){
+                    const index = Number(cell.dataset.index);
+                    const value = erasing || forceErase ? ' ' : brush;
+                    values[index] = value;
+                    cell.textContent = value === ' ' ? '\u00a0' : value;
+                    cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: ${value === ' ' ? 'empty' : value}`);
+                    syncOutput();
+                }
+
+                for(let index = 0; index < values.length; index++){
+                    const cell = document.createElement('button');
+                    cell.type = 'button';
+                    cell.className = 'ascii-editor-cell';
+                    cell.dataset.index = index;
+                    cell.textContent = '\u00a0';
+                    cell.setAttribute('role', 'gridcell');
+                    cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: empty`);
+                    cell.addEventListener('pointerdown', event => {
+                        event.preventDefault();
+                        drawing = true;
+                        paint(cell, event.button === 2);
+                    });
+                    cell.addEventListener('pointerenter', event => {
+                        if(drawing) paint(cell, event.buttons === 2);
+                    });
+                    cell.addEventListener('click', event => {
+                        if(event.detail === 0) paint(cell, false);
+                    });
+                    cell.addEventListener('contextmenu', event => event.preventDefault());
+                    grid.appendChild(cell);
+                }
+
+                window.addEventListener('pointerup', () => { drawing = false; });
+                custom.addEventListener('input', () => {
+                    if(custom.value) selectBrush(custom.value[0], null);
+                });
+                eraseBtn.addEventListener('click', () => {
+                    erasing = !erasing;
+                    eraseBtn.classList.toggle('active', erasing);
+                    eraseBtn.setAttribute('aria-pressed', String(erasing));
+                    if(erasing){
+                        palette.querySelectorAll('button').forEach(button => {
+                            button.classList.remove('active');
+                            button.setAttribute('aria-pressed', 'false');
+                        });
+                    }
+                });
+                clearBtn.addEventListener('click', () => {
+                    values.fill(' ');
+                    grid.querySelectorAll('.ascii-editor-cell').forEach(cell => {
+                        cell.textContent = '\u00a0';
+                        const index = Number(cell.dataset.index);
+                        cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: empty`);
+                    });
+                    syncOutput();
+                });
+                copyBtn.addEventListener('click', async () => {
+                    const original = copyBtn.textContent;
+                    try{
+                        await copyTextToClipboard(output.value);
+                        copyBtn.textContent = '✅ Copied!';
+                    }catch(error){
+                        console.warn('Clipboard copy failed', error);
+                        copyBtn.textContent = 'Copy failed';
+                    }
+                    setTimeout(() => { copyBtn.textContent = original; }, 1500);
+                });
+
+                syncOutput();
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
                 if(!grid) return;
                 grid.innerHTML = '';
                 const demoList = [
+                    { id: 'ascii-editor', title: '⌨️ ASCII Visual Editor', desc: 'Draw ASCII art with a character brush, erase or clear the canvas, then copy the finished result.' },
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
