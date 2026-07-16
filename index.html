@@ -4182,6 +4182,10 @@
                 rebuildGrid();
                 resolution.addEventListener('change', () => {
                     const [nextCols, nextRows] = resolution.value.split('x').map(Number);
+                    if(!Number.isInteger(nextCols) || !Number.isInteger(nextRows) || nextCols < 1 || nextRows < 1){
+                        resolution.value = `${cols}x${rows}`;
+                        return;
+                    }
                     const resized = Array(nextCols * nextRows).fill(' ');
                     for(let row = 0; row < Math.min(rows, nextRows); row++){
                         for(let col = 0; col < Math.min(cols, nextCols); col++){
@@ -4208,7 +4212,7 @@
                             await widget.requestFullscreen();
                         }
                     }catch(error){
-                        console.warn('Fullscreen failed', error);
+                        console.warn('Fullscreen toggle failed', error);
                     }
                 });
                 document.addEventListener('fullscreenchange', () => {
