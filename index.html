@@ -3990,12 +3990,17 @@
                     output.value = lines.join('\n');
                 }
 
+                function updateCell(cell, value){
+                    const index = Number(cell.dataset.index);
+                    cell.textContent = value === ' ' ? '\u00a0' : value;
+                    cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: ${value === ' ' ? 'empty' : value}`);
+                }
+
                 function paint(cell, forceErase){
                     const index = Number(cell.dataset.index);
                     const value = erasing || forceErase ? ' ' : brush;
                     values[index] = value;
-                    cell.textContent = value === ' ' ? '\u00a0' : value;
-                    cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: ${value === ' ' ? 'empty' : value}`);
+                    updateCell(cell, value);
                     syncOutput();
                 }
 
@@ -4004,16 +4009,15 @@
                     cell.type = 'button';
                     cell.className = 'ascii-editor-cell';
                     cell.dataset.index = index;
-                    cell.textContent = '\u00a0';
                     cell.setAttribute('role', 'gridcell');
-                    cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: empty`);
+                    updateCell(cell, ' ');
                     cell.addEventListener('pointerdown', event => {
                         event.preventDefault();
                         drawing = true;
                         paint(cell, event.button === 2);
                     });
                     cell.addEventListener('pointerenter', event => {
-                        if(drawing) paint(cell, event.buttons === 2);
+                        if(drawing) paint(cell, (event.buttons & 2) !== 0);
                     });
                     cell.addEventListener('click', event => {
                         if(event.detail === 0) paint(cell, false);
@@ -4022,7 +4026,9 @@
                     grid.appendChild(cell);
                 }
 
-                window.addEventListener('pointerup', () => { drawing = false; });
+                grid.addEventListener('pointerup', () => { drawing = false; });
+                grid.addEventListener('pointercancel', () => { drawing = false; });
+                grid.addEventListener('pointerleave', () => { drawing = false; });
                 custom.addEventListener('input', () => {
                     if(custom.value) selectBrush(custom.value[0], null);
                 });
@@ -4040,9 +4046,7 @@
                 clearBtn.addEventListener('click', () => {
                     values.fill(' ');
                     grid.querySelectorAll('.ascii-editor-cell').forEach(cell => {
-                        cell.textContent = '\u00a0';
-                        const index = Number(cell.dataset.index);
-                        cell.setAttribute('aria-label', `Row ${Math.floor(index / COLS) + 1}, column ${index % COLS + 1}: empty`);
+                        updateCell(cell, ' ');
                     });
                     syncOutput();
                 });
