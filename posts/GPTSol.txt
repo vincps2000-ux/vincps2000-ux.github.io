@@ -1,0 +1,9 @@
+§Tools§
+
+Tested GPT 5.6 Sol, much cheaper with similar enough performance to Fable.
+Will be my new main Model.
+
+was able to implement multiple interdependend functionalities into existing code.
+
+Tested VSCode Agents Windows as well, Results were horrible, and i See no Real advantage over build in Window, (maybe testing independent things in multiple windows). Might be missing pratice.
+Essentially only usable for Workflows that never look at the code.
