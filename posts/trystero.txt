@@ -1,0 +1,31 @@
+§Fun§
+Used Trystero JS-library (https://trystero.dev/) to build a Serverless p2p-App Proof of Concept in the Browser.
+
+WebRTC allows p2p Connections, but a intial signaling Server is required.
+(Imagine Person 21324 says i want to talk to Person 67577). The two need to find each other on the web.
+
+In order to do this serverless, Trystero uses public messaging infrastructure to do this, like:
+ - BitTorrent trackers (Server that tracks were ?sharded/split? files are)
+ - Nostr relays (Internet protocol made to resist Censorship)
+ - MQTT brokers (Publisher/subscriber Manager von Mqtt-events)
+
+ essentialy piggybacking on them.
+
+ Build a simple Chat-App using it, it worked first try.
+
+
+Usage is simple:
+First a room with appid and username is joined:
+joinRoom({appId: 'my-app'}, 'lobby')
+
+an Action with a specific name is made: room.makeAction('chat')
+
+and a sending and receive event is created using the onMessage event and the send() function:
+chat.onMessage = (message, {peerId}) => {
+  addMessage(peerId, message)
+}
+
+sendButton.onclick = () => {
+  chat.send({text: messageInput.value})
+}
+
