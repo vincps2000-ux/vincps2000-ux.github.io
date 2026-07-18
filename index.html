@@ -451,6 +451,73 @@
             .pgp-match{ font-size:.8rem;color:#2e7d32;font-weight:600; }
             .pgp-err{ color:#e53935;font-size:.82rem; }
 
+            /* ---- ASCII visual editor demo ---- */
+            .ascii-editor-widget{display:flex;flex-direction:column;gap:.75rem}
+            .ascii-editor-widget:fullscreen{
+                padding:1rem;box-sizing:border-box;background:var(--card);overflow:auto;
+            }
+            .ascii-editor-controls,.ascii-editor-actions{
+                display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;
+            }
+            .ascii-editor-controls label{font-size:.8rem;font-weight:600;color:var(--muted)}
+            .ascii-editor-palette{display:flex;gap:.3rem;flex-wrap:wrap}
+            .ascii-editor-btn,.ascii-editor-char{
+                min-width:2rem;padding:.4rem .6rem;border:1px solid var(--border);
+                border-radius:6px;background:var(--input-bg);color:var(--text);
+                font-weight:700;cursor:pointer;
+            }
+            .ascii-editor-btn:hover,.ascii-editor-char:hover,
+            .ascii-editor-btn.active,.ascii-editor-char.active{border-color:var(--accent)}
+            .ascii-editor-btn.active,.ascii-editor-char.active{
+                background:var(--accent);color:#fff;
+            }
+            .ascii-editor-custom{
+                width:2.2rem;padding:.4rem;border:1px solid var(--border);
+                border-radius:6px;background:var(--input-bg);color:var(--text);
+                text-align:center;font:700 1rem ui-monospace,Menlo,Consolas,monospace;
+            }
+            .ascii-editor-resolution{
+                padding:.4rem;border:1px solid var(--border);border-radius:6px;
+                background:var(--input-bg);color:var(--text);
+            }
+            .ascii-editor-grid-wrap{overflow-x:auto;padding-bottom:.2rem}
+            .ascii-editor-grid{
+                display:grid;grid-template-columns:repeat(var(--ascii-cols),minmax(1.75rem,1fr));gap:2px;
+                min-width:calc(var(--ascii-cols) * 1.75rem);touch-action:none;user-select:none;
+            }
+            .ascii-editor-cell{
+                aspect-ratio:1;border:1px solid var(--border);border-radius:3px;
+                background:var(--input-bg);color:var(--text);cursor:crosshair;
+                padding:0;font:700 1rem ui-monospace,Menlo,Consolas,monospace;
+            }
+            .ascii-editor-cell:hover,.ascii-editor-cell:focus-visible{
+                border-color:var(--accent);outline:none;
+            }
+            .ascii-editor-output{
+                width:100%;box-sizing:border-box;min-height:9rem;resize:vertical;
+                padding:.65rem;border:1px solid var(--border);border-radius:8px;
+                background:var(--code-bg);color:var(--text);
+                font: .9rem/1.2 ui-monospace,Menlo,Consolas,monospace;
+                white-space:pre;overflow:auto;
+            }
+            .ascii-editor-copy{background:var(--accent);color:#fff;border-color:var(--accent)}
+            @media (max-width:520px){
+                .demo-grid{grid-template-columns:minmax(0,1fr)}
+                .demo-card{padding:1rem}
+                .ascii-editor-widget{gap:.6rem}
+                .ascii-editor-controls{align-items:stretch}
+                .ascii-editor-controls label{width:100%}
+                .ascii-editor-btn,.ascii-editor-char{min-width:2.75rem;min-height:2.75rem}
+                .ascii-editor-custom{width:2.75rem;min-height:2.75rem;box-sizing:border-box}
+                .ascii-editor-resolution{min-height:2.75rem;flex:1}
+                .ascii-editor-grid{
+                    grid-template-columns:repeat(var(--ascii-cols),minmax(2.25rem,1fr));
+                    min-width:calc(var(--ascii-cols) * 2.25rem);
+                }
+                .ascii-editor-output{min-height:7rem}
+                .ascii-editor-actions .ascii-editor-btn{flex:1}
+            }
+
             /* ---- RunTarget demo ---- */
             .runtarget-widget{
                 display:flex;flex-direction:column;gap:.75rem;
@@ -3850,12 +3917,335 @@
                 });
             };
 
+            // ---- ASCII visual editor demo ----
+            DEMOS['ascii-editor'] = function(container){
+                const characters = ['#', '@', '*', '+', '.', '/', '\\'];
+                let cols = 16;
+                let rows = 10;
+                let values = Array(cols * rows).fill(' ');
+                let brush = characters[0];
+                let tool = 'pen';
+                let drawing = false;
+                let lastIndex = null;
+                let lineStart = null;
+                let lineSnapshot = null;
+
+                const widget = document.createElement('div');
+                widget.className = 'ascii-editor-widget';
+
+                const controls = document.createElement('div');
+                controls.className = 'ascii-editor-controls';
+                const brushLabel = document.createElement('label');
+                brushLabel.textContent = 'Brush:';
+                controls.appendChild(brushLabel);
+
+                const palette = document.createElement('div');
+                palette.className = 'ascii-editor-palette';
+                controls.appendChild(palette);
+
+                const custom = document.createElement('input');
+                custom.className = 'ascii-editor-custom';
+                custom.maxLength = 1;
+                custom.value = brush;
+                custom.setAttribute('aria-label', 'Custom ASCII brush character');
+                custom.title = 'Custom character';
+                controls.appendChild(custom);
+
+                const toolButtons = new Map();
+                [
+                    ['pen', '✏️ Pen'],
+                    ['line', '╱ Line'],
+                    ['eraser', '⌫ Eraser']
+                ].forEach(([name, label]) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'ascii-editor-btn' + (name === tool ? ' active' : '');
+                    button.textContent = label;
+                    button.setAttribute('aria-pressed', String(name === tool));
+                    button.addEventListener('click', () => selectTool(name));
+                    toolButtons.set(name, button);
+                    controls.appendChild(button);
+                });
+
+                const resolutionLabel = document.createElement('label');
+                resolutionLabel.textContent = 'Resolution:';
+                resolutionLabel.htmlFor = 'ascii-editor-resolution';
+                controls.appendChild(resolutionLabel);
+                const resolution = document.createElement('select');
+                resolution.id = 'ascii-editor-resolution';
+                resolution.className = 'ascii-editor-resolution';
+                [
+                    ['8x6', '8 × 6'],
+                    ['16x10', '16 × 10'],
+                    ['24x15', '24 × 15'],
+                    ['32x20', '32 × 20']
+                ].forEach(([value, label]) => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = label;
+                    option.selected = value === '16x10';
+                    resolution.appendChild(option);
+                });
+                controls.appendChild(resolution);
+                widget.appendChild(controls);
+
+                const gridWrap = document.createElement('div');
+                gridWrap.className = 'ascii-editor-grid-wrap';
+                const grid = document.createElement('div');
+                grid.className = 'ascii-editor-grid';
+                grid.setAttribute('role', 'grid');
+                grid.setAttribute('aria-label', 'ASCII drawing grid');
+                gridWrap.appendChild(grid);
+                widget.appendChild(gridWrap);
+
+                const output = document.createElement('textarea');
+                output.className = 'ascii-editor-output';
+                output.readOnly = true;
+                output.setAttribute('aria-label', 'ASCII art result');
+                widget.appendChild(output);
+
+                const actions = document.createElement('div');
+                actions.className = 'ascii-editor-actions';
+                const clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = 'ascii-editor-btn';
+                clearBtn.textContent = 'Clear';
+                const fullscreenBtn = document.createElement('button');
+                fullscreenBtn.type = 'button';
+                fullscreenBtn.className = 'ascii-editor-btn';
+                fullscreenBtn.textContent = '⛶ Fullscreen';
+                const copyBtn = document.createElement('button');
+                copyBtn.type = 'button';
+                copyBtn.className = 'ascii-editor-btn ascii-editor-copy';
+                copyBtn.textContent = '📋 Copy result';
+                actions.appendChild(clearBtn);
+                actions.appendChild(fullscreenBtn);
+                actions.appendChild(copyBtn);
+                widget.appendChild(actions);
+                container.appendChild(widget);
+
+                function selectTool(name){
+                    tool = name;
+                    toolButtons.forEach((button, buttonTool) => {
+                        const selected = buttonTool === name;
+                        button.classList.toggle('active', selected);
+                        button.setAttribute('aria-pressed', String(selected));
+                    });
+                }
+
+                function selectBrush(char, selectedButton){
+                    brush = char || ' ';
+                    selectTool('pen');
+                    palette.querySelectorAll('button').forEach(button => {
+                        const selected = button === selectedButton;
+                        button.classList.toggle('active', selected);
+                        button.setAttribute('aria-pressed', String(selected));
+                    });
+                    custom.value = brush;
+                }
+
+                characters.forEach((char, index) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'ascii-editor-char' + (index === 0 ? ' active' : '');
+                    button.textContent = char;
+                    button.title = 'Use ' + char;
+                    button.setAttribute('aria-label', 'Use ' + char + ' brush');
+                    button.setAttribute('aria-pressed', String(index === 0));
+                    button.addEventListener('click', () => selectBrush(char, button));
+                    palette.appendChild(button);
+                });
+
+                function syncOutput(){
+                    const lines = [];
+                    for(let row = 0; row < rows; row++){
+                        lines.push(values.slice(row * cols, (row + 1) * cols).join('').trimEnd());
+                    }
+                    while(lines.length && !lines[lines.length - 1]) lines.pop();
+                    output.value = lines.join('\n');
+                }
+
+                function updateCell(cell, value){
+                    const index = Number(cell.dataset.index);
+                    cell.textContent = value === ' ' ? '\u00a0' : value;
+                    cell.setAttribute('aria-label', `Row ${Math.floor(index / cols) + 1}, column ${index % cols + 1}: ${value === ' ' ? 'empty' : value}`);
+                }
+
+                function renderGrid(){
+                    grid.querySelectorAll('.ascii-editor-cell').forEach(cell => {
+                        updateCell(cell, values[Number(cell.dataset.index)]);
+                    });
+                    syncOutput();
+                }
+
+                function lineIndexes(fromIndex, toIndex){
+                    let x0 = fromIndex % cols;
+                    let y0 = Math.floor(fromIndex / cols);
+                    const x1 = toIndex % cols;
+                    const y1 = Math.floor(toIndex / cols);
+                    const dx = Math.abs(x1 - x0);
+                    const dy = -Math.abs(y1 - y0);
+                    const sx = x0 < x1 ? 1 : -1;
+                    const sy = y0 < y1 ? 1 : -1;
+                    let error = dx + dy;
+                    const indexes = [];
+                    while(true){
+                        indexes.push(y0 * cols + x0);
+                        if(x0 === x1 && y0 === y1) break;
+                        const doubleError = 2 * error;
+                        if(doubleError >= dy){
+                            error += dy;
+                            x0 += sx;
+                        }
+                        if(doubleError <= dx){
+                            error += dx;
+                            y0 += sy;
+                        }
+                    }
+                    return indexes;
+                }
+
+                function drawBetween(fromIndex, toIndex, erase){
+                    const value = erase ? ' ' : brush;
+                    lineIndexes(fromIndex, toIndex).forEach(index => {
+                        values[index] = value;
+                    });
+                    renderGrid();
+                }
+
+                function cellAtPoint(x, y){
+                    const target = document.elementFromPoint(x, y);
+                    return target && target.closest('.ascii-editor-cell');
+                }
+
+                function rebuildGrid(){
+                    grid.replaceChildren();
+                    grid.style.setProperty('--ascii-cols', cols);
+                    for(let index = 0; index < values.length; index++){
+                        const cell = document.createElement('button');
+                        cell.type = 'button';
+                        cell.className = 'ascii-editor-cell';
+                        cell.dataset.index = index;
+                        cell.setAttribute('role', 'gridcell');
+                        updateCell(cell, values[index]);
+                        cell.addEventListener('click', event => {
+                            if(event.detail === 0) drawBetween(index, index, tool === 'eraser');
+                        });
+                        cell.addEventListener('contextmenu', event => event.preventDefault());
+                        grid.appendChild(cell);
+                    }
+                    syncOutput();
+                }
+
+                grid.addEventListener('pointerdown', event => {
+                    const cell = event.target.closest('.ascii-editor-cell');
+                    if(!cell) return;
+                    event.preventDefault();
+                    drawing = true;
+                    lastIndex = Number(cell.dataset.index);
+                    grid.setPointerCapture(event.pointerId);
+                    if(tool === 'line'){
+                        lineStart = lastIndex;
+                        lineSnapshot = values.slice();
+                        drawBetween(lineStart, lineStart, false);
+                    }else{
+                        drawBetween(lastIndex, lastIndex, tool === 'eraser' || event.button === 2);
+                    }
+                });
+                grid.addEventListener('pointermove', event => {
+                    if(!drawing) return;
+                    const cell = cellAtPoint(event.clientX, event.clientY);
+                    if(!cell || !grid.contains(cell)) return;
+                    const index = Number(cell.dataset.index);
+                    if(index === lastIndex) return;
+                    if(tool === 'line'){
+                        values = lineSnapshot.slice();
+                        drawBetween(lineStart, index, false);
+                    }else{
+                        drawBetween(lastIndex, index, tool === 'eraser' || (event.buttons & 2) !== 0);
+                    }
+                    lastIndex = index;
+                });
+                function finishDrawing(event){
+                    if(!drawing) return;
+                    drawing = false;
+                    lastIndex = null;
+                    lineStart = null;
+                    lineSnapshot = null;
+                    if(grid.hasPointerCapture(event.pointerId)){
+                        grid.releasePointerCapture(event.pointerId);
+                    }
+                }
+                grid.addEventListener('pointerup', finishDrawing);
+                grid.addEventListener('pointercancel', event => {
+                    if(tool === 'line' && lineSnapshot){
+                        values = lineSnapshot;
+                        renderGrid();
+                    }
+                    finishDrawing(event);
+                });
+
+                rebuildGrid();
+                resolution.addEventListener('change', () => {
+                    const [nextCols, nextRows] = resolution.value.split('x').map(Number);
+                    if(!Number.isInteger(nextCols) || !Number.isInteger(nextRows) || nextCols < 1 || nextRows < 1){
+                        resolution.value = `${cols}x${rows}`;
+                        return;
+                    }
+                    const resized = Array(nextCols * nextRows).fill(' ');
+                    for(let row = 0; row < Math.min(rows, nextRows); row++){
+                        for(let col = 0; col < Math.min(cols, nextCols); col++){
+                            resized[row * nextCols + col] = values[row * cols + col];
+                        }
+                    }
+                    cols = nextCols;
+                    rows = nextRows;
+                    values = resized;
+                    rebuildGrid();
+                });
+                custom.addEventListener('input', () => {
+                    if(custom.value) selectBrush(custom.value[0], null);
+                });
+                clearBtn.addEventListener('click', () => {
+                    values.fill(' ');
+                    renderGrid();
+                });
+                fullscreenBtn.addEventListener('click', async () => {
+                    try{
+                        if(document.fullscreenElement === widget){
+                            await document.exitFullscreen();
+                        }else if(widget.requestFullscreen){
+                            await widget.requestFullscreen();
+                        }
+                    }catch(error){
+                        console.warn('Fullscreen toggle failed', error);
+                    }
+                });
+                document.addEventListener('fullscreenchange', () => {
+                    fullscreenBtn.textContent = document.fullscreenElement === widget ? '⛶ Exit fullscreen' : '⛶ Fullscreen';
+                });
+                copyBtn.addEventListener('click', async () => {
+                    const original = copyBtn.textContent;
+                    try{
+                        await copyTextToClipboard(output.value);
+                        copyBtn.textContent = '✅ Copied!';
+                    }catch(error){
+                        console.warn('Clipboard copy failed', error);
+                        copyBtn.textContent = 'Copy failed';
+                    }
+                    setTimeout(() => { copyBtn.textContent = original; }, 1500);
+                });
+
+                syncOutput();
+            };
+
             // Build demo panel cards
             function buildDemoPanel(){
                 const grid = document.getElementById('demo-grid');
                 if(!grid) return;
                 grid.innerHTML = '';
                 const demoList = [
+                    { id: 'ascii-editor', title: '⌨️ ASCII Visual Editor', desc: 'Draw with pen, line, and eraser tools on a resizable canvas, with fullscreen and phone-friendly controls.' },
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
                     { id: 'element-extractor', title: '🔍 Element Extractor', desc: 'Enter any URL and a CSS selector to extract and preview a specific element from that page. Uses a CORS proxy and sandboxed iframe.' },
