@@ -176,6 +176,7 @@
                 transform:translateY(-3px);border-color:var(--accent);
                 box-shadow:0 4px 12px rgba(0,0,0,0.12);
             }
+            .area-link{text-decoration:none}
             .area-icon{font-size:2.5rem;line-height:1}
             .area-title{font-size:1.15rem;font-weight:700;color:var(--accent)}
             .area-desc{font-size:.88rem;color:var(--muted)}
@@ -934,6 +935,11 @@
                             <span class="area-title">Stuff</span>
                             <span class="area-desc">3D objects you can rotate and inspect.</span>
                         </button>
+                        <a class="area-card area-link" href="p2p-chat/">
+                            <span class="area-icon">↔️</span>
+                            <span class="area-title">P2P Chat</span>
+                            <span class="area-desc">Serverless WebRTC chat with browser-only message history.</span>
+                        </a>
                     </div>
                 </div>
                 <div id="posts-panel" class="tab-panel">
@@ -1366,7 +1372,7 @@
             document.querySelectorAll('.tab-btn').forEach(btn=>{
                 btn.addEventListener('click', ()=>switchTab(btn.dataset.tab));
             });
-            document.querySelectorAll('.area-card').forEach(card=>{
+            document.querySelectorAll('.area-card[data-tab]').forEach(card=>{
                 card.addEventListener('click', ()=>switchTab(card.dataset.tab));
             });
             if(!isSingleBlogMode){
