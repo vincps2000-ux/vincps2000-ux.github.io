@@ -550,5 +550,9 @@
     {
         "file":  "trystero.txt",
         "date":  "2026-07-18"
+    },
+    {
+        "file":  "ChromeOnDeviceAI.txt",
+        "date":  "2026-07-19"
     }
 ]

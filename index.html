@@ -501,6 +501,34 @@
                 white-space:pre;overflow:auto;
             }
             .ascii-editor-copy{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+            /* ---- Chrome on-device AI demo ---- */
+            .chrome-ai-widget{display:flex;flex-direction:column;gap:.75rem}
+            .chrome-ai-status{
+                padding:.55rem .7rem;border:1px solid var(--border);border-radius:8px;
+                background:var(--input-bg);color:var(--muted);font-size:.82rem;line-height:1.4;
+            }
+            .chrome-ai-status[data-state="ready"]{border-color:#10b981;color:#047857}
+            .chrome-ai-status[data-state="working"]{border-color:#f59e0b;color:#b45309}
+            .chrome-ai-status[data-state="error"]{border-color:#ef4444;color:#b91c1c}
+            .chrome-ai-source,.chrome-ai-output{
+                width:100%;box-sizing:border-box;min-height:9rem;resize:vertical;padding:.65rem;
+                border:1px solid var(--border);border-radius:8px;background:var(--input-bg);
+                color:var(--text);font:inherit;line-height:1.45;
+            }
+            .chrome-ai-output{min-height:6rem;background:var(--code-bg);white-space:pre-wrap}
+            .chrome-ai-controls{display:flex;align-items:end;gap:.55rem;flex-wrap:wrap}
+            .chrome-ai-controls label{display:flex;flex-direction:column;gap:.25rem;color:var(--muted);font-size:.75rem;font-weight:600}
+            .chrome-ai-controls select{
+                min-height:2.35rem;padding:.4rem .55rem;border:1px solid var(--border);
+                border-radius:6px;background:var(--input-bg);color:var(--text);
+            }
+            .chrome-ai-run{
+                min-height:2.35rem;padding:.45rem .9rem;border:1px solid var(--accent);
+                border-radius:7px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;
+            }
+            .chrome-ai-run:disabled{opacity:.55;cursor:not-allowed}
+            .chrome-ai-privacy{margin:0;color:var(--muted);font-size:.75rem;line-height:1.4}
             @media (max-width:520px){
                 .demo-grid{grid-template-columns:minmax(0,1fr)}
                 .demo-card{padding:1rem}
@@ -516,6 +544,8 @@
                 }
                 .ascii-editor-output{min-height:7rem}
                 .ascii-editor-actions .ascii-editor-btn{flex:1}
+                .chrome-ai-controls label{flex:1;min-width:7rem}
+                .chrome-ai-run{width:100%}
             }
 
             /* ---- RunTarget demo ---- */
@@ -3917,6 +3947,143 @@
                 });
             };
 
+            // ---- Chrome on-device AI summarizer demo ----
+            DEMOS['chrome-on-device-ai'] = function(container){
+                const widget = document.createElement('div');
+                widget.className = 'chrome-ai-widget';
+
+                const status = document.createElement('div');
+                status.className = 'chrome-ai-status';
+                status.setAttribute('role', 'status');
+                status.setAttribute('aria-live', 'polite');
+
+                const source = document.createElement('textarea');
+                source.className = 'chrome-ai-source';
+                source.setAttribute('aria-label', 'Text to summarize');
+                source.value = `Web browsers started as document viewers, but gradually gained APIs for graphics, audio, storage, video calls, and hardware access. Built-in AI is another step in that evolution. Instead of every website uploading text to a remote service, Chrome can expose task-specific interfaces backed by a model installed on the user's computer.
+
+The Summarizer API accepts text and can return key points, a short overview, a teaser, or a headline. A site first checks whether the feature is available. On the first use Chrome may download the model, while later requests can run locally without a network connection. The website never receives direct access to the model files and does not need to ship an API key.
+
+Local execution can improve privacy and remove per-request server costs, but it also has trade-offs. The feature is limited to supported desktop systems with enough memory, storage, and processing power. Generated summaries can omit details or make mistakes, and developers still need to clearly communicate download progress and let the user decide when AI should run.`;
+
+                const controls = document.createElement('div');
+                controls.className = 'chrome-ai-controls';
+                controls.innerHTML = `
+                    <label>Summary type
+                        <select class="chrome-ai-type">
+                            <option value="key-points">Key points</option>
+                            <option value="tldr">TL;DR</option>
+                            <option value="teaser">Teaser</option>
+                            <option value="headline">Headline</option>
+                        </select>
+                    </label>
+                    <label>Length
+                        <select class="chrome-ai-length">
+                            <option value="short">Short</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="long">Long</option>
+                        </select>
+                    </label>
+                    <button type="button" class="chrome-ai-run">✨ Summarize on device</button>
+                `;
+
+                const output = document.createElement('div');
+                output.className = 'chrome-ai-output';
+                output.setAttribute('role', 'region');
+                output.setAttribute('aria-label', 'Generated summary');
+                output.textContent = 'The locally generated summary will appear here.';
+
+                const privacy = document.createElement('p');
+                privacy.className = 'chrome-ai-privacy';
+                privacy.textContent = '🔒 No API key or website backend: supported Chrome installations process the text on this device. The first run may download the browser-managed model.';
+
+                widget.appendChild(status);
+                widget.appendChild(source);
+                widget.appendChild(controls);
+                widget.appendChild(output);
+                widget.appendChild(privacy);
+                container.appendChild(widget);
+
+                const typeSelect = controls.querySelector('.chrome-ai-type');
+                const lengthSelect = controls.querySelector('.chrome-ai-length');
+                const runBtn = controls.querySelector('.chrome-ai-run');
+
+                function setStatus(message, state){
+                    status.textContent = message;
+                    status.dataset.state = state || '';
+                }
+
+                async function checkAvailability(){
+                    if(!('Summarizer' in globalThis)){
+                        setStatus('❌ Summarizer API not found. Use desktop Chrome or Edge 138+ on supported hardware.', 'error');
+                        runBtn.disabled = true;
+                        return;
+                    }
+                    try{
+                        const availability = await Summarizer.availability();
+                        if(availability === 'unavailable'){
+                            setStatus('❌ The on-device model is unavailable on this device. Check Chrome\'s hardware and storage requirements.', 'error');
+                            runBtn.disabled = true;
+                        }else if(availability === 'available'){
+                            setStatus('✅ Chrome\'s on-device summarizer is ready.', 'ready');
+                        }else{
+                            setStatus('⬇️ The model is ' + availability + '. Press Summarize to start or continue the browser-managed download.', 'working');
+                        }
+                    }catch(error){
+                        setStatus('⚠ Could not check model availability: ' + error.message, 'error');
+                    }
+                }
+
+                runBtn.addEventListener('click', async () => {
+                    const text = source.value.trim();
+                    if(!text){
+                        setStatus('Enter some text to summarize first.', 'error');
+                        source.focus();
+                        return;
+                    }
+
+                    runBtn.disabled = true;
+                    output.textContent = '';
+                    let summarizer = null;
+                    try{
+                        setStatus('Preparing Chrome\'s on-device model…', 'working');
+                        summarizer = await Summarizer.create({
+                            type: typeSelect.value,
+                            format: 'plain-text',
+                            length: lengthSelect.value,
+                            expectedInputLanguages: ['en'],
+                            outputLanguage: 'en',
+                            monitor(monitor){
+                                monitor.addEventListener('downloadprogress', event => {
+                                    const percent = Math.round(event.loaded * 100);
+                                    setStatus(`⬇️ Downloading on-device model: ${percent}%`, 'working');
+                                });
+                            }
+                        });
+
+                        setStatus('🧠 Generating locally…', 'working');
+                        let result = '';
+                        const stream = summarizer.summarizeStreaming(text, {
+                            context: 'Summarize this text accurately for a general reader.'
+                        });
+                        for await(const chunk of stream){
+                            result = chunk.startsWith(result) ? chunk : result + chunk;
+                            output.textContent = result;
+                        }
+                        setStatus('✅ Summary generated on this device.', 'ready');
+                    }catch(error){
+                        const message = error && error.message ? error.message : String(error);
+                        output.textContent = 'Generation failed. ' + message;
+                        setStatus('❌ ' + message, 'error');
+                    }finally{
+                        if(summarizer && typeof summarizer.destroy === 'function') summarizer.destroy();
+                        runBtn.disabled = false;
+                    }
+                });
+
+                checkAvailability();
+            };
+
             // ---- ASCII visual editor demo ----
             DEMOS['ascii-editor'] = function(container){
                 const characters = ['#', '@', '*', '+', '.', '/', '\\'];
@@ -4245,6 +4412,7 @@
                 if(!grid) return;
                 grid.innerHTML = '';
                 const demoList = [
+                    { id: 'chrome-on-device-ai', title: '🧠 Chrome On-Device AI', desc: 'Summarize text locally with Chrome\'s built-in AI model. Includes capability checks, first-run download progress, and streamed output.' },
                     { id: 'ascii-editor', title: '⌨️ ASCII Visual Editor', desc: 'Draw with pen, line, and eraser tools on a resizable canvas, with fullscreen and phone-friendly controls.' },
                     { id: 'star-selector', title: '0–5 Star Selector', desc: 'Asymptotic star rating — hold the buttons to change. Slows dramatically near 0 and 5. Bounce animation at max!' },
                     { id: 'runtarget', title: '🏃 RunTarget', desc: 'Set a min & max distance range, and get a random target on the map from your current location. Uses Leaflet + OpenStreetMap.' },
