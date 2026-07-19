@@ -1,11 +1,17 @@
 §API§§Demo§
 Chrome now exposes built-in AI APIs that run a small foundation model directly on the device. I made an interactive demo with the Summarizer API, which has been available on desktop from Chrome 138.
 
-The interesting part is that the page does not contain a model, API key, or server endpoint. It first checks Summarizer.availability(), creates a session after a button click, and then streams the result from summarizeStreaming(). Chrome downloads the model on first use and keeps later inference local, so the text is not sent to my server or to an external AI provider.
+How to use:
+download model if not available using: const availability = await Summarizer.availability();
 
-There are still fairly high hardware requirements: desktop Chrome on a supported OS, at least 22 GB of free storage, and either more than 4 GB of VRAM or at least 16 GB RAM with 4 CPU cores. The first model download also requires an unmetered connection. Unsupported browsers will show their status instead of silently failing.
+use create() with a passed options struct, defining parameters of session.
 
-Try changing the summary style and length below. The supplied text can be replaced with anything in English. Generated summaries can be wrong, so important output should still be checked against the original.
+important options:
+Typ: Art der zusammenfassung (tldr, teasr, headline, etc..) 
+sharedContext : Kontext der abfrage
+format: Format of summarized text
+
+after that function summarize can be used for a batched summerisation, and summarizeStreaming for token by token generation.
 
 #chrome-on-device-ai#
 
