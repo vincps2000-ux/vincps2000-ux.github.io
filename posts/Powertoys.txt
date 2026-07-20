@@ -1,0 +1,11 @@
+§Tools§
+Had an Idea for a COPY&Paste Gadget based on OCR on Screenshots.
+After realising Windows Powertoys already has this, I looked at the automations more. 
+
+
+Text Extraxtor: Copy based on OCR in a selected Area. Works on any dispalyed Text.
+Expanded Paste: Allows Pasting in as specific Format. The Default-Text is goated for pasting from places with heavy Styling.
+New+: Allows creating Schemas that are available under New. 
+Registry-Editor: Allows editing Editing of Registry data.
+ZoomIt: Activation of Zoom function
+Enviromentvariables: Editor for Enviromentvariables. A bit Strange since the normal Editor is very much functional, just in a weirtd place.
