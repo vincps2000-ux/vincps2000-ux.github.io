@@ -558,5 +558,9 @@
     {
         "file":  "Powertoys.txt",
         "date":  "2026-07-20"
+    },
+    {
+        "file":  "GodotAmmoHolder.txt",
+        "date":  "2026-07-21"
     }
 ]
