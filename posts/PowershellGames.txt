@@ -1,0 +1,6 @@
+§Fun§
+Found and played some Powershell based games.
+
+Hangman with tech firms and fun facts (https://github.com/ehmiiz/PSHangMan) Basic, but very well made
+Wordle (https://github.com/bwya77/PSModules/tree/main/PSWordle) its just Wordle
+powershelldle, wordle for Powershell commands (https://powershelldle.com/) Not strictly in powershell, but fun, and informative! Though some wordle features are missing, like last days puzzle. =( .
