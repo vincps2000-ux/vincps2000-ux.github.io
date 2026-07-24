@@ -1,0 +1,12 @@
+§Fun§
+
+Created a small incremental GAme to test the capabilities of opus 5.
+
+They are Head and shoulders above what used to be possible last december, when i already tried a Incremental gaem with AI.
+
+Especially impressive is the large amount of decent Quality Flavour Text.
+Graphical Presentation is unsinpired , but safe and effective.
+Some Quality of Life features a human would see after 2 seconds of playing were missed.
+
+Result here: https://github.com/vincps2000-ux/MICofAges 
+Price was about 9 Dollars.
