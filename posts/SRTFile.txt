@@ -1,0 +1,14 @@
+§Fun§
+
+Looked into Subtitle Files (SRT Files) (https://fileinfo.com/extension/srt)
+
+Interesting:
+Information is often stoired in filename:
+    often target language (.eng for english)
+    I found versions using it for other Information (e.g. 2009.BluRay.720p.DTS.2Audio)
+
+Essentially a Textfile with entrys in this Format:
+3
+00:00:54,292 --> 00:00:55,657
+Subtitle Text
+

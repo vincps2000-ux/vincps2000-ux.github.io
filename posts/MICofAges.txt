@@ -1,6 +1,6 @@
 §Fun§
 
-Created a small incremental GAme to test the capabilities of opus 5.
+Created a small incremental Game to test the capabilities of opus 5.
 
 They are Head and shoulders above what used to be possible last december, when i already tried a Incremental gaem with AI.
 
