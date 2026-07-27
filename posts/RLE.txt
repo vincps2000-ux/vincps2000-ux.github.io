@@ -1,0 +1,31 @@
+§Lecture§
+
+Build Small RLE(https://en.wikipedia.org/wiki/Run-length_encoding) Algorithm in Python.
+
+Core idea, Count a Char like this, if it turns up multiple times: XXXee --> 3X2e
+
+Just iterate through text, if Char matches previous char, count up.
+If it doesnt, Add result, and count with new char.
+
+
+Decoding is obvious.
+
+Core problems:
+larger strings might be needed:
+andandand --> 3and
+
+replacement of most used tokens beforehand might increase compression:
+andandand -> &&& [and->&]
+
+When to stop compressing?
+ -after X times
+ -after last pass yields no imporvment
+
+Search whole Compression Space?
+    -Compression actions can be executed in diffrent order. large amount of Options
+    -Best Compression order might differ based on file area 
+
+Creative Soloutions might Outperform?
+    -Based on file types, special techniques might Outperform.
+        --> Token with Options like a Schema Hello <X> ,  when compressing Mails
+        --> large pixel areas in Images <Black>box<3,4,8,9>  
