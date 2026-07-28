@@ -1,0 +1,24 @@
+§Lecture§
+Came across Proebstings Law, a claim from Todd Proebsting, that claims a 18 Years performance doubling happens in Compiler Research.
+This is contrasted to the 18-24 doubling claimed by Moore. (It was a bit of a Joke, implying compiler Research only for speed to be somewhat misplaced)
+
+This is tested in this: (https://web.archive.org/web/20220603004137/http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.29.434&rep=rep1&type=pdf)
+
+The test is running code without and with Optimisations, and then working with the Speed-Up, assuming they were the reason of of Compiler optimisation.
+
+Problems:
+    - test Assumes the Speedup is evenly distributed across the years and not frontloaded.
+    - Code might be optimized using other means.
+
+A Speedup of 3.3 by Compiler is found(until 2001).
+
+Later Looks at it Suggest that the Speedup is even less(https://oleksii.shmalko.com/20211028115609/). 
+
+Around 1-2% speed up per year seems to be the common trend.
+
+
+possible Intuitive Reasons for this:
+    - smallest atomic unit of construction is closer to target Metric.
+    - self-fufilling Prophecy: Speed up not main Goal on most applications.
+    - Hard Limit: A certain amount of Computations F will be needed for every Programm P, to stay correct.
+
