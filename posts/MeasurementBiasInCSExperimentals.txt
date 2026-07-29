@@ -1,0 +1,25 @@
+$Lecture$
+Read through this: https://dl.acm.org/doi/epdf/10.1145/2528521.1508275
+
+Core Claim: 
+
+The Nuances of a Experimental Setup  have a huge effect on Experiment outcome in CS, and is barely being controlled for.
+Because Computer systems are complex and highly interdependent, small changes can have huge effects.
+E.g. Changing a single unreelated variable, can have effects like taking up memory, making the experiment non-transferable (pr less-transferable).
+
+Core method:
+Survey of 133 recent papers.
+
+Setup:
+Tested with  SPEC CPU2006 Benchmark suite(C only),
+across Pentium 4 and Core 2 workstation.
+
+Possible Measurement Bias Inducers:
+    - Temperature ( Memory vs CPU speed changes)
+    - order of libraries passed to linker (conflict with caching and branch prediction(e.g. whether a loop fit entirly in chache)) (Link order Speedup is MAchine dependent)
+    - unix Enviroment size(Enviroment Variables) (Change in Alignment of stack due to stating Point)
+
+Ways to fix:
+-More diverse benchmarks
+-Setup randomistaion
+-Remove Causes
