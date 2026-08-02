@@ -1,0 +1,19 @@
+§Fun§
+
+Saw "Project Loom" mentioned somewhere, and looked a bit deeper into it.
+
+What is it:
+ - Java-Functionality for Thread management
+ - implements "virtual threads", threads that are not "real, Operating System Threads", but Threads that stay in User Context.
+ - makes using Threads cheaper, when just used for timing/programming/User Interaction reasons. 
+ - virtual Threads should not be used when trying to improve raw Programm performance through concurrency 
+
+General Rule, when slowdown stems from:
+I/O-bound(User Interaction, API Interaction): virtual thread.
+CPU-bound(To many Calculations needed): OS Thread
+
+
+Small example pulled from here (www.geeksforgeeks.org/java/virtual-threads-in-java/) : 
+
+Thread thread = Thread.ofVirtual().start(() -> System.out.println("Hello")); //Thread declared and started
+thread.join(); //main thread waits for thread to finish
