@@ -1,0 +1,15 @@
+§Tools§
+
+Created a Task of many sub tasks, to check Sol Performance with subagents:
+
+Tasks:
+    -Ensure the number of units are much smaller in all ages, gaining on average 2 unit slots per age. [tecnically correct, no changes in surrounding mechanincs]
+    -Ranged units should have a higher dps than melee troops on average[not done].
+    -Units should have a miss chance(diffrent per unit, boostable by Upgrade/certain units)[correctly added].
+    -Units should have differing targeting Rules and targets (arrows hit backline as well, artillery goes for support units as well, Orbital strikes target highest health units)[worked, tho no unique rules except given ones added]
+    -Units should all be unqie in some way(Spear gets retaliation damage/Missile teams ignore armor/orbital strikes one shots evrything it hits/CIWS has a chance to negate range attacks/ EMP trooper deals more damage to robotic enemies). Every Unit should have a identity.[only excatly those mechnics were implemented]
+    -Units providing passive buffs armor(also add other equipment like first aid kit(self healing) or scope) should instead be a buff item build in afactory, and given to individual units. no Stacking Buffs only one of each buff.[Done]
+    -Add quality of Life features: Factories should have a upgrade button/display ranged attack as temporary red line.[wrongly done, created as new Mechanics]
+    -Units should change as the era changes (e.g. no modern melee units, mine unit which deals big retaliation damage and bunker unit that tanks for other units in frontline. later a drone crontroller that spwan single attack drone frontline units)[only excatly those mechanincs were implemented]
+
+Followed to the Letter, and nothing more. Mo0dels till need to be treated like a lazy genie, that ony ever Builds excatly what was requested, nothing more. Maybe Reducing to one task is more efficient, and prompting for creativity/ adding more than requested improves this?
