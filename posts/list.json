@@ -598,5 +598,9 @@
     {
         "file":  "MultiTasktest.txt",
         "date":  "2026-08-03"
+    },
+    {
+        "file":  "LeetCode3731.txt",
+        "date":  "2026-08-04"
     }
 ]

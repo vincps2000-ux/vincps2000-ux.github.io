@@ -1,0 +1,13 @@
+§LeetCode§
+Solved Leetcode Problem 3731.
+Problem is about finding missing integers in a vector.
+
+Solved Problem by simply getting min and max from vector, and then looping over every number between those, cheking the vector.
+
+This works, but is slow.
+
+Core insight for being fast:
+A Vector is not guranteed to be ordered , so find() must search through every element n.
+A set is guranteed to be orderer so its functions can take advantage of this in search functions.
+
+So converting into a Set would have made the programm faster.
