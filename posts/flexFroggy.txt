@@ -1,0 +1,9 @@
+§Fun§
+Played through: https://flexboxfroggy.com
+A game that helps to learn positioning inside flexboxes.
+
+Learned:
+    -Terrible naming.
+    -Probably the reason reading in diffrent directions works on the Internet.
+    -Gets very confusing, very fast.
+    -Feels similar to moving objects in 3D Gamedev, just in 2D.

@@ -602,5 +602,9 @@
     {
         "file":  "LeetCode3731.txt",
         "date":  "2026-08-04"
+    },
+    {
+        "file":  "flexFroggy.txt",
+        "date":  "2026-08-05"
     }
 ]
