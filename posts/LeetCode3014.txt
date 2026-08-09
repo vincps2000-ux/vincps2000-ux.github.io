@@ -1,0 +1,13 @@
+§LeetCode§
+Solved Leetcode Problem 3014.
+(https://leetcode.com/problems/minimum-number-of-pushes-to-type-word-i)
+The Problem: How many minimum pushes does a remappable old mobile phone keyboard need for a given word?
+
+Approach: Create soreted Set of appearances of char in word. (char is not needed afzter this, so no mapo needed.)
+
+For first x(Number of mappable Keys) add 1, for next x chars add 2 ,etc, etc.
+
+Interesting:
+description is misleading, containing this line: Note that 1, *, #, and 0 do not map to any letters.
+However , it also contains this line: You are given a string word containing distinct lowercase English letters.,
+Meaining that checking for these is not needed, saving one iteration. 
