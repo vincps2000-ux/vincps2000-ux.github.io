@@ -1,0 +1,5 @@
+§Application§
+
+Added Sword Weapon to Mech Game.
+2 Iterations wiht Gpt5.6 were required.
+Cost: around 3 Euros.
