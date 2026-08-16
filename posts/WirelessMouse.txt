@@ -1,0 +1,8 @@
+§Fun§
+Disassembled a Wireless Mouse.
+
+
+Interesting:
+    - Scrolling works by a wheel with spokes rotating, and a laser emmiter being blocked/unblocked repatedly.
+    - wireless module is extremly small , antenna mostly hidden in board
+    - The whole Scrolling module is free floating, so it can be clicked from side to side.
