@@ -1,0 +1,6 @@
+§Tools§
+Installed Rstudio (https://docs.posit.co/ide/user/#rstudio-ide-oss-downloads), a IDE for R and Python for all Data Scientist needs.
+
+Used it to create a basic graph of a simple bankaccount.
+
+Conclusion: More training needed with r/python to become useful.
