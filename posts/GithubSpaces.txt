@@ -1,0 +1,13 @@
+§Tools§
+Tested Github Spaces by commiting from one. 
+A Github Space is essentialy just a VSC Instance in the Cloud. Thats it.
+In my Opinion, it offers little Advantages over normal VSC for individuals.
+
+I can see the value in a easy to distribute Version of VSC with certain Integrations setup, but surely a container can do the same thing.
+
+and it doesnt even include Browser lag.
+
+Possible Uses:
+    - Sandboxing of suspected Repos
+    - Fast Project-testing without setup
+    - Working on weak machine
