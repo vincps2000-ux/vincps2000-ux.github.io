@@ -1,0 +1,13 @@
+§Tools§
+tested new AI Prompting Style.
+
+Previously:
+
+Classic Prompting (task-based) :
+Prompt(task: Do X) --> Ai finds state of project from workspace --> Modify code
+
+New Style (State-based):
+Desired State ( Need X(planned), Need Y(planned), Need Z(implemented)) --> State assumed from State --> State compared to actual State --> Modify code
+
+Results: 
+Way more User control, way slower, because fewer Assumptions are made.
