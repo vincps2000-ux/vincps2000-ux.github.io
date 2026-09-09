@@ -1,0 +1,7 @@
+§Tools§
+
+A reddit post got me interested in this Tool for removing a white Background from any Copied image(goal was to see if it could be modified to be colour adaptable(always choosing most present colour, second most present if possible)).
+(https://github.com/KhaledHleis/RemoveWhiteBG_hotkey)
+
+Sadly, it seems a File is missing in the Repo, making the Scvript unusable.
+Contacted Author about it. 

@@ -2,7 +2,6 @@
 tested new AI Prompting Style.
 
 Previously:
-
 Classic Prompting (task-based) :
 Prompt(task: Do X) --> Ai finds state of project from workspace --> Modify code
 

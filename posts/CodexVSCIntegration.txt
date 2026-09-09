@@ -1,0 +1,6 @@
+§Tools§
+
+Tested Codex integration with GHCopilot.
+It worked, but the best Model available with copilot AI credits was 5.6 Terra, making it useless.
+
+Tested Copilot harness, this worked well, but doubled token cost. (Though the Problem was hard, and proper tests were createed).
