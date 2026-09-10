@@ -1,0 +1,22 @@
+§Fun§
+Read Article about looped Transformers (https://magazine.sebastianraschka.com/p/gpt-6-astra-looped-transformers-and).
+
+Interesting Parts:
+
+Insight into how Computer Use is trained:
+    -give task to bve done on MAC
+    -provide screenshot of current state
+    -execute predicted action
+    - loop this until success, then rate
+
+looped transformers core idea:
+    -Reuse the same Reasoning Block multiple times in a loop.
+    -first use was just stacking the same block twice
+    -this reuces memory by requiring fewer reasoning blocks
+
+next evoloution is dynamic loop counts:
+    -use halting probablity (trained chance that answer is correct, then halt)
+    -use halting probability + token  + hidden state to build a Router that decides amount of steps
+    - two routing ways: re run token through router each recursion, decide total amount immeadiatly
+
+Result: less Tokens use, higher computation per token
