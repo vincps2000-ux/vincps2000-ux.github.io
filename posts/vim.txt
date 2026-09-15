@@ -1,0 +1,17 @@
+§Fun§
+
+
+Learned some vim, experience was horrible, never using it again.
+
+No adherance to modern Standards, 
+commands are all cryptic,
+Onboarding is zero,
+User is expected to set Usage-flags,
+Errors overlap with command line,
+strg+z is u, while strg+y is strg-r (what?),
+strg+z, pretty much the only universal keybind, is bound to exit?
+
+
+
+A Program that should have been rewritten 8 times over. 
+Editor for People who have convinced themselves Regex Search & Replace is the only Function a editor needs. 
