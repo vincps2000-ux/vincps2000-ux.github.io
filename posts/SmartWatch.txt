@@ -1,0 +1,11 @@
+$Tools$
+
+Bought a Cheap Smart watch using Wear OS Version 2 (https://en.wikipedia.org/wiki/Wear_OS).
+Set it up today. Observations:
+- Intial link caused a unprompted pop up on unconnected smartphone (Seems unusual).
+- Set up was really pleasant, with a solid turtorial.
+- Boot Mode can be acessed via holding both buttons
+- After deinstalling Companion app, watch needed a Factory Reset to connect again.
+- Getting a custom Wachface was surprisingly hard -- only ones available were watchfaces downloadable from Playstore.
+    --> App https://play.google.com/store/apps/details?id=com.sparkistic.photowear was used to regain custom background functionality
+- The only recommended App is weirdly a Nike branded one?
