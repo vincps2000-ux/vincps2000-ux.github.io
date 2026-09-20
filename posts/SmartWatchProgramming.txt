@@ -1,0 +1,11 @@
+§Tools§
+Remembering Yesterdays trouble with a Background switch, i deployed a small diashow app onto the Watch.
+
+Biggest problem : Setting up android debug Bridge (adb)
+
+Pairing was easy once it was clear which values are used where (IP:port), displayed number to confirm.
+Installing was hard: Watch neeed restart(not communicated) and needed to be set to always active.
+
+App requires a sister app on connected phone, to initially load the photos.
+
+The 2 Apps where two shot using Astra-medium, harness got confused when first app was complete and killed chat.

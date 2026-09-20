@@ -1,0 +1,7 @@
+§LeetCode§
+Solved Leetcode Problem 3498.
+
+Problem can be solved by looking at a Ascii table for C char (https://en.cppreference.com/cpp/language/ascii)
+Alphabet lowercase is in area 97-122, from this point onwards, its simple math. 
+
+not just lowercase, but uppercase would be harder, with two option: either branch into two formulas, or remove 32 on Uppercase.

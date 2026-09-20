@@ -658,5 +658,13 @@
     {
         "file":  "SmartWatch.txt",
         "date":  "2026-09-16"
+    },
+    {
+        "file":  "Leetcode3498.txt",
+        "date":  "2026-09-20"
+    },
+    {
+        "file":  "SmartWatchProgramming.txt",
+        "date":  "2026-09-20"
     }
 ]
