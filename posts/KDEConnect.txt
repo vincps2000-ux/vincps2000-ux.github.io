@@ -1,0 +1,4 @@
+§Tools§
+Installed KDE (https://kdeconnect.kde.org/download.html?utm_source=chatgpt.com), and on Phone (https://play.google.com/store/apps/details?id=org.kde.kdeconnect_tp&hl=en-US)
+
+Tool is used to replace mouse with phone, share copy content, and Start/Pause Media. out of the box has better features than Windows Phone link.
