@@ -1,0 +1,12 @@
+§Leetcode§
+Solved Leetcode problem 2.
+
+Core Insight:
+Handling Starting/Stopping Code outside of Loop is always dangerous when there is State-dependent Code expected.
+
+Example:
+In a list, if the last number is 4, add 6 to result.
+
+Handling outside of loop: run loop, after loop, check if last is 4, then add 6
+Handling inside loop: Run loop, each loop, check if last, mark if true, then add 6 at end if last is 4.
+
