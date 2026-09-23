@@ -1,0 +1,17 @@
+§Tools§
+Looked at Poedit, a Tool for managing Xlf files.
+
+Plus:
+Good error detection
+Nice Presentation
+Good Linter
+
+Minus:
+No add new element button (Safety Feature?)
+Pro feature ads everywhere
+No way to add translation (why?)
+No editing Original-Text (Safety Feature?)
+Long Load time for small file
+
+
+A deliberatly reduced Tool only useful in Post-Application Building Step. Useable safely by any technical Skill Level.
