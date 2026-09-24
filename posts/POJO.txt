@@ -1,0 +1,7 @@
+§Fun§
+Came across the term Pojo in the utility Steps extension in Jenkins(https://www.jenkins.io/doc/pipeline/steps/pipeline-utility-steps/). (returnPojo: true).
+
+What is a POJO (Plain Old Java Object) (https://www.martinfowler.com/bliki/POJO.html)? 
+Essentially just KISS for Objects. THe Idea is, that often, a unrestrained Object will be best.
+
+In Jenkins returnPojo returns a simple ArrayList instead of a JSOn Object. How that tracks to the name is unknown to me.
