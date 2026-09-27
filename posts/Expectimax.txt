@@ -1,0 +1,11 @@
+$Fun$
+
+Read through (https://www.geeksforgeeks.org/dsa/expectimax-algorithm-in-game-theory/).
+What is Expectimax? 
+A Gametheory algorithm, that is based on the Chance of all possible Outcomes, not on Optimnal play.
+
+E.g. when choosing betweent two Options one with Value 100, and one with a Chance for 1000 Points on Enemy misplay, otherwise 99%:
+Typical Algorithm assumes optimal play takes the 100. Expectimax calculates ((1000 + 99) / 2) abd chooses risky Option.
+
+Disadvantage: 
+Chance of Misplay are often hard to quantify, only really useful against random opponent.
