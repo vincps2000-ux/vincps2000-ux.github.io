@@ -1,0 +1,10 @@
+§Fun§
+
+Tested Opus 5.5 (NEw Month, new Credits) on a simple wear OS app, that displays my remaining Credits balance, using a Github PAT.
+
+App was one shot, presented problems were circumwented easily:
+    - Moving from github to VSC endpoint
+    - User refusing to u8se android studio
+Much better at giving Instructions on how to pair debugging mode, than Astra.
+
+Cheaper at 250 Credits as well.
