@@ -1,0 +1,9 @@
+§Tools§
+Used Libre Sprite(https://github.com/LibreSprite/LibreSprite/releases/tag/v1.3) to create a small Pixel-Art image.
+
+Originally meant to use Asesprite(https://www.aseprite.org/?download), but this is paid only.
+
+
+Libreoffice was designed to be easily Useable, despite having a Pixel-based UI.
+One Caveat: The default Windows File-Explorer is not used when selecting/saving Files, instead a much poorer, pixel-based Selector is used. 
+This works well in the Apllication, where everything is designed around it, but messes with strongly trained muscle memory when replacing the File Explorer.
