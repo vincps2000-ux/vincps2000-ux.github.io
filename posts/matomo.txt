@@ -1,0 +1,20 @@
+§Fun§
+Investigated what matomo(A Browser Fingerprinting tool) sends back.
+Done by running a local Docker, and then opening small local page.
+
+Info sent: (Basics: Time, url, pseudoanonymus id derived from Fingerprint, flash, java, pdf, quick time, legacy suport, etc., resoloution )
+
+Interesting, probably hardest to spoof: 
+    -Performance time of site loading, and serer processing
+
+Server side observation:
+    -IP-Adress, User-Agent
+
+derived information(Information geneerated by matomo from incoming data):
+    -browser name/family
+    -Operating system + version (I wonder how version is determined)
+    - device type
+    - language
+
+
+Found a good site to reduce/expose fingerprint: (https://coveryourtracks.eff.org)
