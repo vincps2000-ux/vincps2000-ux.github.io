@@ -1,0 +1,11 @@
+§Fun§
+
+Dissasembled a cheap Wireless Keyboard. 
+
+Not much interesting was found, except the larger keys having Mechnical Stabilisation "Switches" ensuring a proper functioning of the keys.
+
+The Chip in the Keyboard contains both Antenna and MAtrix inputs for keys: 6 Row inputs, and 16 Columnn inputs. Weirdly Row Count matches Rows on Keyboard excatly, but Columnn is short 4 Columnns. 
+Ideas why:
+-   Optimisation programm for the Tracing 
+-   Normal Grid LAyout first , then Optimisation during later Phase
+-   Layout/ Chip is also used for other Keyboard Layouts (No Nujmpad, QWERTY/QWERTZ , etc..)
