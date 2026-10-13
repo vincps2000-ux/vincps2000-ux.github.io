@@ -1,0 +1,11 @@
+§Tools§
+
+Testing Photocraft (https://github.com/storytold/photocraft/releases/tag/v0.8.2) a vibecoded photoshop-alternative.
+
+Last release is 3 days in the mkaing, has  4-5 pages of added features.
+
+I was not able to install and execute Photocraft, programm failed on launch.
+
+Claude installed it for me (I was using the 32 bit version, lmao).
+
+Main short 20 minutes of editing confirms normal functioning of default functions (Stamp, default painiting & shading tools )
