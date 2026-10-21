@@ -1,0 +1,22 @@
+§Tools§
+Todays PHP Cybersecurity Problem prompted me to take a deeper look into PHP.
+
+
+
+PHP stands for Hypertext Preprocessor, and is essentially a All-in-one Webserver, with things like dynamic html, database connections, user management.
+
+Installed php and setup dev-Server.
+
+Observations:
+Files need to be named .php to be dynamic, .html serves static version.
+Advantages over JS:
+    -Computation can be moved to Server, where it can be optimized.
+    -There can be acess to local resources
+    -Information can be hidden from User.
+
+
+Alternatives:
+Data-stuff/APIs only: Python
+JS-only: Node.JS
+NEwer: Go, Ruby on Rails
+Not bring fired for choosing it: C# + ASP.net
