@@ -1,0 +1,9 @@
+§Fun§
+Installed Lean, and created a basic theoerem:
+
+theorem add_one (n : Nat) : n + 1 >= 1 := by
+  omega 
+
+(n : Nat) means n belongs to natural Numbers
+by omega is a solving tactic, i do not understand enough math to explain it(https://leanprover-community.github.io/mathlib4_docs/Lean/Elab/Tactic/Omega.html)
+
