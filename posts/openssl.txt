@@ -1,0 +1,5 @@
+§Tools§
+Used openssl(https://www.openssl.org/) to do some basic operations:
+    -Creatring Public/Private Key combo via genpkey/pkey
+    -getting checksum via dgst
+    -creating new server cert via req -newkey (Asks for things like country and city interestingly)
