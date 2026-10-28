@@ -1,0 +1,6 @@
+§Tools§
+Compared Spellcheck Browser Extension, since Language Tool free premium ran out.
+
+LinguaCheck  -- Bad UI Integration, did not detect Text in Youtube Comment (Browser Issue)
+Grammar & Spell Checker – 5 Languages -- Functioned Correctly, weird UI (Toogle for each Language in main UI Layer?)
+grammai -- Repo only, binned for Overhead Reasons

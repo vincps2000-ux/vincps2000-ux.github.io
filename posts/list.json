@@ -722,5 +722,9 @@
     {
         "file":  "openssl.txt",
         "date":  "2026-10-27"
+    },
+    {
+        "file":  "Spellcheck-Browser.txt",
+        "date":  "2026-10-28"
     }
 ]
