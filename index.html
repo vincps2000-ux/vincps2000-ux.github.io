@@ -1927,6 +1927,51 @@
             // ---- Demo registry & widgets ----
             const DEMOS = {};
 
+            // Dimensional Defense benchmark: same prompt, two models, both builds playable
+            DEMOS['dimensional-defense'] = function(container){
+                const GAMES = [
+                    { id:'sol',  title:'GPT 5.6 Sol', url:'games/dimensional-defense-sol/' },
+                    { id:'opus', title:'Claude Opus', url:'games/dimensional-defense-opus/' }
+                ];
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'display:flex;flex-direction:column;gap:1rem';
+                container.appendChild(wrap);
+                for(const g of GAMES){
+                    const card = document.createElement('div');
+                    card.className = 'game-embed';
+                    card.style.cssText = 'border:1px solid var(--border);border-radius:8px;overflow:hidden';
+                    const launcher = `
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 1rem;flex-wrap:wrap">
+                            <strong>${g.title}</strong>
+                            <span style="display:flex;gap:.5rem">
+                                <a class="game-hint" href="${g.url}" target="_blank" rel="noopener">Open in new tab ↗</a>
+                                <button class="game-play-btn" data-act="play" style="padding:.4rem 1.2rem;font-size:.95rem">▶ Play</button>
+                            </span>
+                        </div>`;
+                    const showLauncher = ()=>{
+                        card.innerHTML = launcher;
+                        card.querySelector('[data-act="play"]').addEventListener('click', play);
+                    };
+                    const play = ()=>{
+                        card.innerHTML = `
+                            <div class="game-toolbar" style="justify-content:space-between;align-items:center">
+                                <strong style="font-size:.85rem">${g.title}</strong>
+                                <span style="display:flex;gap:.5rem">
+                                    <button data-act="fs" title="Fullscreen">⛶ Fullscreen</button>
+                                    <button data-act="stop" title="Stop game">✕ Stop</button>
+                                </span>
+                            </div>
+                            <iframe src="${g.url}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+                        const frame = card.querySelector('iframe');
+                        card.querySelector('[data-act="fs"]').addEventListener('click', ()=>frame.requestFullscreen());
+                        card.querySelector('[data-act="stop"]').addEventListener('click', showLauncher);
+                        frame.focus();
+                    };
+                    showLauncher();
+                    wrap.appendChild(card);
+                }
+            };
+
             // Star-selector demo builder
             DEMOS['star-selector'] = function(container){
                 let rating = 2.5;

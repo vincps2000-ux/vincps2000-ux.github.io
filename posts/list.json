@@ -726,5 +726,9 @@
     {
         "file":  "Spellcheck-Browser.txt",
         "date":  "2026-10-28"
+    },
+    {
+        "file":  "DimensionalDefenseBenchmark.txt",
+        "date":  "2026-10-29"
     }
 ]

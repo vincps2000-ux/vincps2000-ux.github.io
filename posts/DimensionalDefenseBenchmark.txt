@@ -1,0 +1,9 @@
+§Fun§
+Benchmark: GPT 5.6 Sol vs Claude Opus, both tasked with building "Dimensional Defense", an X-COM inspired turn-based strategy game in the browser.
+
+GPT 5.6 Sol: TypeScript + three.js, low-poly Earth, spatial inventories, base building, research, turn-based ground combat.
+Claude Opus: JavaScript + three.js, pixel-art style, rotatable globe, base grid, dropship missions, research, turn-based tactical battles.
+
+Both builds are playable below (saves are stored separately in your browser):
+
+#dimensional-defense#
