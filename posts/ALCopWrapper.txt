@@ -1,0 +1,4 @@
+§Tools§
+
+Build vincentuntiedt.alcops-static-dependencies-offline VSC Extension,
+a small Wrapper around the alcops extension, to ensure nothing is dynamically loaded in after the install of the extension.

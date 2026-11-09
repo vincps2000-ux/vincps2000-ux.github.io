@@ -4,6 +4,26 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+$gitCommand = Get-Command git -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+$gitPath = if ($gitCommand) { $gitCommand.Source } else { $null }
+
+if (-not $gitPath) {
+    $gitPath = @(
+        foreach ($installRoot in @($env:ProgramW6432, $env:ProgramFiles, ${env:ProgramFiles(x86)})) {
+            if ($installRoot) {
+                Join-Path $installRoot "Git\cmd\git.exe"
+            }
+        }
+        if ($env:LOCALAPPDATA) {
+            Join-Path $env:LOCALAPPDATA "Programs\Git\cmd\git.exe"
+        }
+    ) | Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } | Select-Object -First 1
+}
+
+if (-not $gitPath) {
+    throw "Git was not found. Install Git for Windows or add its cmd directory to PATH, then restart VS Code and run the task again."
+}
+
 $statsPath       = Join-Path $Root "stats.json"
 $statsImportPath = Join-Path $Root "BlogImport\Statisticoutput.json"
 
@@ -116,13 +136,23 @@ if (Test-Path $statsImportPath) {
 
 # -- 4. Git commit ---------------------------------------------------------------
 Set-Location $Root
-if (-not (git status --porcelain)) {
+$gitStatus = & $gitPath status --porcelain
+if ($LASTEXITCODE -ne 0) {
+    throw "git status failed with exit code $LASTEXITCODE."
+}
+if (-not $gitStatus) {
     Write-Host "Nothing to commit after update."
     exit 0
 }
 
-git add -A
+& $gitPath add -A
+if ($LASTEXITCODE -ne 0) {
+    throw "git add failed with exit code $LASTEXITCODE."
+}
 $allNewFiles = $newContentByRoot.GetEnumerator() | ForEach-Object { $_.Value.NewFiles } | ForEach-Object { $_ }
 $message = "Add content: $($allNewFiles -join ', ') [$today]"
-git commit -m $message
+& $gitPath commit -m $message
+if ($LASTEXITCODE -ne 0) {
+    throw "git commit failed with exit code $LASTEXITCODE."
+}
 Write-Host "Committed: $message"
