@@ -1,0 +1,6 @@
+§fail§
+
+Tried the XCOM Benchmark on Fable 5.2, due to Operator Error,
+the previous Opus 5.5 Result was in the prompt, causing a copy of the Game.
+
+2000 Credits down the drain =(
