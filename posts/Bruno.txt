@@ -1,0 +1,25 @@
+§Tools§
+Quickly Tested the API-Tool Bruno, a Postman-Alternative.
+
+Tested basic REST against public https://dummyjson.com Testing API.
+
+Biggest advantage is that every Collection is just .yml files, allowing easy git managment(weirdly, the git GUI is a premium feature, despite being trivial to replace)
+Example of simple Request:
+
+info:
+  name: dummyjsonpost
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: https://dummyjson.com/products/add
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
