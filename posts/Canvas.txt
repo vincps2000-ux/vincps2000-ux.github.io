@@ -1,0 +1,4 @@
+§DevOps§
+VSC-Canvas are well suited for repeatable Tasks that are executed from inside the Workspace.
+
+As a small Example: Build a small Canvas that allows easy Creation of new Blogposts via GUI.

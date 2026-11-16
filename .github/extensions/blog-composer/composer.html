@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Daily blog composer</title>
+    <link rel="stylesheet" href="/composer.css">
+    <script src="/composer.js" defer></script>
+</head>
+<body>
+    <main>
+        <header><p class="eyebrow">VINCPS / DAILY BLOG</p><h1>A little something, every day.</h1>
+            <p>Write, preview, and save a new post. No commit or push.</p></header>
+        <p id="status" role="status" aria-live="polite">Loading composer...</p>
+        <form id="composer">
+            <fieldset id="editor" disabled>
+                <legend class="sr-only">New blog post</legend>
+                <div class="columns">
+                    <section class="panel" aria-labelledby="write-heading">
+                        <h2 id="write-heading">01 / Write</h2>
+                        <label for="title">Display title <span>(optional)</span></label>
+                        <input id="title" maxlength="160" placeholder="What did you try today?">
+                        <div class="metadata">
+                            <div><label for="filename">Filename</label><input id="filename" required maxlength="104" pattern="[A-Za-z0-9][A-Za-z0-9_\-]{0,99}\.txt" placeholder="TodaysExperiment.txt"></div>
+                            <div><label for="date">Post date</label><input id="date" type="date" required></div>
+                        </div>
+                        <fieldset class="tags"><legend>Tags</legend><div id="tags"></div></fieldset>
+                        <label for="body">Post content</label>
+                        <textarea id="body" required maxlength="200000" rows="16" placeholder="Plain text, just like your existing posts."></textarea>
+                        <div class="picture-tools">
+                            <label for="picture">Existing picture</label>
+                            <select id="picture"><option value="">Choose a picture...</option></select>
+                            <button id="insert-picture" type="button">Insert picture</button>
+                        </div>
+                        <p class="hint">Pictures use $filename.png$. Interactive #demo# markers are saved as-is; demos run on the blog, not in this preview.</p>
+                    </section>
+                    <section class="panel preview-panel" aria-labelledby="preview-heading">
+                        <h2 id="preview-heading">02 / Preview</h2>
+                        <h3 id="preview-title">Your next post</h3>
+                        <p id="preview-meta" class="hint"></p>
+                        <div id="preview-tags"></div>
+                        <div id="preview-body"></div>
+                        <p id="counts" class="hint"></p>
+                    </section>
+                </div>
+                <footer><p>Saved posts are kept in the workspace. Unfinished text is kept only for this live canvas session, not on disk.</p>
+                    <button id="save" type="submit">Save new post</button></footer>
+            </fieldset>
+        </form>
+        <section id="result" class="panel" hidden aria-labelledby="result-heading">
+            <h2 id="result-heading">Ready in your workspace</h2><p id="result-text"></p>
+            <p>Review the changes, then commit and push when ready.</p>
+            <button id="new-post" type="button">Write another post</button>
+        </section>
+    </main>
+</body>
+</html>
