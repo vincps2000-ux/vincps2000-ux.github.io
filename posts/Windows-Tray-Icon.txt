@@ -1,0 +1,16 @@
+§Fun§
+Created a basic Exe that adds a TrayIcon (Qudratic button extendable on Bottom right of windows bar).
+
+It plays a small sound when pressed. Interestingly, the Function of the tray is added like a lambda function by windows-Forms:
+
+new TrayApplicationContext(icon, delegate
+                    {
+                        if (!sound.Play())
+                        {
+                            MessageBox.Show(
+                                "Windows could not play the sound. Check that an audio output device is available.",
+                                "Sound Tray Icon",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    })

@@ -746,5 +746,10 @@
     {
         "file": "Canvas.txt",
         "date": "2026-11-16"
+    },
+    {
+        "file": "Windows-Tray-Icon.txt",
+        "date": "2026-11-24",
+        "title": "Windows Tray Icon"
     }
 ]
